@@ -58,13 +58,47 @@ src/
 - Sin teléfono ni WhatsApp en el frontend público
 - Copys de CTA y meta orientados a marca **Habluj-first**
 
-## Deploy
+## Deploy (100% gratuito)
+
+### Estado actual
+
+- Frontend: **Vercel** (auto-deploy conectado al repo)
+- Backend: **PythonAnywhere (free tier)** en `https://legolas228.pythonanywhere.com`
+- Ramas principales activas: `master` y `producción`
+
+### Frontend (Vercel)
 
 Proyecto preparado para Vercel:
 
 - output en `build/`
 - rewrite SPA hacia `index.html`
 - headers de seguridad reforzados en `vercel.json` (CSP, HSTS, Referrer-Policy, Permissions-Policy)
+
+La app usa `VITE_API_BASE_URL` si existe. Si no existe, en producción cae por defecto a:
+
+- `https://legolas228.pythonanywhere.com`
+
+### Backend (PythonAnywhere)
+
+Configuracion usada:
+
+- tipo de web app: **Manual configuration**
+- version Python: **3.11**
+- virtualenv: `/home/Legolas228/.virtualenvs/habluj`
+- codigo backend: `/home/Legolas228/Habluj/backend`
+- WSGI file: `/var/www/legolas228_pythonanywhere_com_wsgi.py`
+
+El root (`/`) puede devolver `404 Not Found` y es normal en Django si no hay ruta raiz; el API vive bajo `/api/`.
+
+### Nota importante sobre repo privado
+
+Si el repositorio vuelve a `private`, **la web ya desplegada sigue funcionando**, pero para futuras actualizaciones del backend en PythonAnywhere necesitaras una de estas opciones:
+
+1. Usar token de GitHub (PAT) para `git clone`/`git pull`.
+2. Poner el repo temporalmente publico para actualizar y volverlo privado.
+3. Subir el codigo por zip/archivo manualmente.
+
+No afecta al frontend ya desplegado en Vercel mientras no cambies su conexion Git.
 
 ## Seguridad backend (Django)
 
@@ -81,6 +115,14 @@ Para despliegue, configura estas variables de entorno en backend:
 - `BREVO_SENDER_NAME` (opcional, por defecto `Habluj`)
 - `BREVO_NOTIFICATION_TO` (por defecto `habluj.sk@gmail.com`)
 - `DJANGO_ADMIN_BASE_URL` (opcional, para enlazar al lead en el email)
+
+Ejemplo minimo para produccion gratuita (PythonAnywhere):
+
+- `DJANGO_DEBUG=false`
+- `DJANGO_SECRET_KEY=<clave-larga-segura>`
+- `DJANGO_ALLOWED_HOSTS=legolas228.pythonanywhere.com,localhost,127.0.0.1`
+- `DJANGO_CORS_ALLOWED_ORIGINS=https://habluj.vercel.app`
+- `DJANGO_CSRF_TRUSTED_ORIGINS=https://habluj.vercel.app`
 
 ### Crear cuenta de Ester (admin de leads)
 
@@ -109,3 +151,35 @@ Por tanto, la cuenta debe ser `staff` y tener permisos sobre `Lead`.
 El frontend necesita `VITE_API_BASE_URL` en Vercel para enviar consultas al backend real.
 
 Si falta en producción, el formulario mostrará error y no enviará el lead.
+
+Valor recomendado actual:
+
+- `VITE_API_BASE_URL=https://legolas228.pythonanywhere.com`
+
+## Mantenimiento rapido
+
+### Actualizar backend en PythonAnywhere
+
+Desde consola bash en PythonAnywhere:
+
+```bash
+source ~/.virtualenvs/habluj/bin/activate
+cd ~/Habluj
+# si repo publico:
+git pull
+# si repo privado sin token, usar zip manual
+cd backend
+pip install -r requirements.txt
+python manage.py migrate --noinput
+python manage.py check
+```
+
+Luego, en la pestaña **Web** de PythonAnywhere, pulsa:
+
+- `Reload Legolas228.pythonanywhere.com`
+
+### Mantener la web gratis activa
+
+En cuentas free de PythonAnywhere, hay que entrar al panel y pulsar periodicamente:
+
+- `Run until 1 month from today`
