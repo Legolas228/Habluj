@@ -1,6 +1,6 @@
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL;
 const isDevelopment = import.meta.env.DEV;
-const rawBaseUrl = configuredBaseUrl || (isDevelopment ? 'http://localhost:8000' : '');
+const rawBaseUrl = configuredBaseUrl || (isDevelopment ? 'http://localhost:8000' : 'https://legolas228.pythonanywhere.com');
 const withoutTrailingSlash = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
 const apiBaseUrl = withoutTrailingSlash.endsWith('/api') ? withoutTrailingSlash.slice(0, -4) : withoutTrailingSlash;
 
