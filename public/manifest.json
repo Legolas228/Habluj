@@ -1,0 +1,17 @@
+{
+  "short_name": "Habluj",
+  "name": "Habluj — Španielčina online",
+  "description": "Personalizované online lekcie španielčiny s Ester Mesároš. 20 €/lekcia.",
+  "lang": "sk",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#C4622D",
+  "background_color": "#FAFAF8"
+}

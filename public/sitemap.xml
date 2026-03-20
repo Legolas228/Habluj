@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://habluj.sk/</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/about-the-teacher</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/about-the-teacher" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/about-the-teacher" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/about-the-teacher" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/about-the-teacher" />
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/tutoring-services</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/tutoring-services" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/tutoring-services" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/tutoring-services" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/tutoring-services" />
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/contact</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/contact" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/contact" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/contact" />
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/booking-system</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/booking-system" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/booking-system" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/booking-system" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/booking-system" />
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/privacy-policy</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/privacy-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/privacy-policy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/terms-and-conditions</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/terms-and-conditions" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/terms-and-conditions" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/terms-and-conditions" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/terms-and-conditions" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://habluj.sk/cookies-policy</loc>
+    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.sk/cookies-policy" />
+    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.sk/cookies-policy" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.sk/cookies-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.sk/cookies-policy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+</urlset>

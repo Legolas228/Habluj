@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="sk">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary Meta -->
+  <title>Habluj — Španielčina pre Slovákov a Čechov | Online lekcie</title>
+  <meta name="description" content="Personalizované online lekcie španielčiny s Ester Mesároš — lektorkou, ktorá vyhrala 2 Národné olympiády zo španielčiny. 30+ aktívnych študentov, 4 roky skúseností. 20 €/lekcia." />
+  <meta name="author" content="Ester Mesároš" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://habluj.sk/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Habluj" />
+  <meta property="og:url" content="https://habluj.sk/" />
+  <meta property="og:title" content="Habluj — Španielčina pre Slovákov a Čechov" />
+  <meta property="og:description" content="Personalizované online lekcie španielčiny s Ester Mesároš. 2× víťazka Národnej olympiády zo španielčiny. 20 €/lekcia, 100% online." />
+  <meta property="og:image" content="https://habluj.sk/assets/images/og-image.webp" />
+  <meta property="og:locale" content="sk_SK" />
+  <meta property="og:locale:alternate" content="cs_CZ" />
+  <meta property="og:locale:alternate" content="es_ES" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Habluj — Španielčina pre Slovákov a Čechov" />
+  <meta name="twitter:description" content="Personalizované online lekcie španielčiny s Ester Mesároš. 2× víťazka Národnej olympiády. 20 €/lekcia." />
+  <meta name="twitter:image" content="https://habluj.sk/assets/images/og-image.webp" />
+
+  <!-- Structured Data: Person + EducationalOrganization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://habluj.sk/#ester",
+        "name": "Ester Mesároš",
+        "jobTitle": "Lektorka španielčiny",
+        "description": "Lektorka španielčiny z východného Slovenska a 2× víťazka Národnej olympiády zo španielčiny na Slovensku.",
+        "image": "https://habluj.sk/assets/images/ester-placeholder.webp",
+        "knowsLanguage": ["sk", "es", "cs"],
+        "worksFor": { "@id": "https://habluj.sk/#org" },
+        "url": "https://habluj.sk/about-the-teacher",
+        "sameAs": ["https://www.instagram.com/habluj_sk/"]
+      },
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://habluj.sk/#org",
+        "name": "Habluj",
+        "description": "Personalizované online lekcie španielčiny pre slovenských a českých študentov.",
+        "url": "https://habluj.sk",
+        "logo": "https://habluj.sk/favicon.ico",
+        "areaServed": [
+          { "@type": "Country", "name": "Slovakia" },
+          { "@type": "Country", "name": "Czechia" }
+        ],
+        "availableLanguage": ["Slovak", "Czech", "Spanish"],
+        "priceRange": "20 €",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "habluj.sk@gmail.com",
+          "availableLanguage": ["sk", "cs", "es"]
+        }
+      },
+      {
+        "@type": "Service",
+        "provider": { "@id": "https://habluj.sk/#org" },
+        "name": "Individuálne lekcie španielčiny online",
+        "description": "Personalizované online lekcie španielčiny pre slovenských a českých študentov. Všetky úrovne od nuly.",
+        "serviceType": "Online language tutoring",
+        "areaServed": [
+          { "@type": "Country", "name": "Slovakia" },
+          { "@type": "Country", "name": "Czechia" }
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "20",
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Theme & PWA -->
+  <meta name="theme-color" content="#C4622D" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="manifest" href="/manifest.json" />
+
+</head>
+
+<body>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div class="dhiwise-code" id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+.DS_Store
+node_modules
+.idea
+package-lock.json
+/build
+.vscode/
+.idea/
+vite.config.*s.*
+
+.vercel
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+backend/env/
+
+# Local env files
+.env
+backend/.env

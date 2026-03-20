@@ -1,0 +1,289 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core System Colors */
+    --color-background: #FEFCF8; /* warm-50 */
+    --color-foreground: #2A2A2A; /* gray-800 */
+    --color-border: #E5E5E5; /* gray-200 */
+    --color-input: #FFFFFF; /* white */
+    --color-ring: #B91C1C; /* deep red */
+    
+    /* Card & Surface Colors */
+    --color-card: #F5F2ED; /* stone-100 */
+    --color-card-foreground: #2A2A2A; /* gray-800 */
+    --color-popover: #FFFFFF; /* white */
+    --color-popover-foreground: #2A2A2A; /* gray-800 */
+    
+    /* Muted Colors */
+    --color-muted: #F5F2ED; /* stone-100 */
+    --color-muted-foreground: #4A4A4A; /* higher-contrast gray */
+    
+    /* Brand Primary Colors */
+    --color-primary: #9F1239; /* refined burgundy */
+    --color-primary-foreground: #FFFFFF; /* white */
+    --color-secondary: #1E3A8A; /* trustworthy deep blue */
+    --color-secondary-foreground: #FFFFFF; /* white */
+    
+    /* Accent Colors */
+    --color-accent: #F4B400; /* optimistic amber */
+    --color-accent-foreground: #2A2A2A; /* gray-800 */
+    
+    /* State Colors */
+    --color-success: #4A7C59; /* green-700 */
+    --color-success-foreground: #FFFFFF; /* white */
+    --color-warning: #D4941E; /* amber-600 */
+    --color-warning-foreground: #FFFFFF; /* white */
+    --color-error: #B85450; /* red-600 */
+    --color-error-foreground: #FFFFFF; /* white */
+    --color-destructive: #B85450; /* red-600 */
+    --color-destructive-foreground: #FFFFFF; /* white */
+    
+    /* Brand Specific Colors */
+    --color-brand-slovak: #0B4EA2; /* blue-700 */
+    --color-brand-spanish: #C81E1E; /* spanish red */
+    --color-conversion-accent: #F43F5E; /* conversion rose */
+    --color-trust-builder: #2E8B57; /* green-600 */
+    --color-cta: #E11D48; /* vivid red-rose (reserved for main CTAs) */
+    
+    /* Typography */
+    --font-headlines: 'Inter', sans-serif;
+    --font-body: 'Source Sans Pro', sans-serif;
+    --font-accent: 'Crimson Text', serif;
+    
+    /* Spacing Scale (Golden Ratio) */
+    --spacing-xs: 8px;
+    --spacing-sm: 13px;
+    --spacing-md: 21px;
+    --spacing-lg: 34px;
+    --spacing-xl: 55px;
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-warm: 0 4px 20px rgba(159, 18, 57, 0.2);
+    --shadow-cultural: 0 8px 32px rgba(0, 0, 0, 0.12);
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    /* Animation Timing */
+    --timing-fast: 0.3s;
+    --timing-medium: 0.4s;
+    --timing-slow: 0.6s;
+    --timing-cultural: 2.5s;
+    --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  :where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headlines);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  a {
+    transition: color var(--timing-fast) var(--easing-smooth), background-color var(--timing-fast) var(--easing-smooth);
+  }
+  
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+}
+
+@layer components {
+  /* Cultural Bridge Animation */
+  .cultural-bridge {
+    @apply relative overflow-hidden;
+  }
+  
+  .cultural-bridge::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-brand-slovak via-primary to-brand-spanish opacity-10;
+    animation: bridge-flow 6s ease-in-out infinite;
+  }
+  
+  @keyframes bridge-flow {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+  }
+  
+  /* Progress Journey Visualization */
+  .learning-path {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-4;
+  }
+  
+  .learning-milestone {
+    @apply transform transition-all duration-500 hover:scale-105;
+    animation: milestone-reveal 0.6s ease-out forwards;
+    animation-delay: calc(var(--milestone-index, 0) * 0.4s);
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  
+  @keyframes milestone-reveal {
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* Interactive Success Stories */
+  .testimonial-card {
+    @apply relative preserve-3d transition-transform duration-700;
+  }
+  
+  .testimonial-card:hover {
+    transform: rotateY(180deg);
+  }
+  
+  .testimonial-front,
+  .testimonial-back {
+    @apply absolute inset-0 backface-hidden;
+  }
+  
+  .testimonial-back {
+    transform: rotateY(180deg);
+  }
+  
+  /* Warm Gradient Backgrounds */
+  .gradient-cultural {
+    background: linear-gradient(135deg, var(--color-brand-slovak) 0%, var(--color-primary) 50%, var(--color-brand-spanish) 100%);
+  }
+  
+  .gradient-warm {
+    background: linear-gradient(135deg, var(--color-background) 0%, var(--color-card) 100%);
+  }
+  
+  /* Text Reveal Animation */
+  .text-reveal {
+    @apply inline-block overflow-hidden;
+    clip-path: inset(0 100% 0 0);
+    animation: text-reveal 1.2s ease-out forwards;
+  }
+  
+  @keyframes text-reveal {
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  
+  /* Authority Glow Effect */
+  .authority-badge {
+    @apply transition-all duration-300;
+    box-shadow: 0 0 20px rgba(11, 78, 162, 0.3);
+  }
+  
+  .authority-badge:hover {
+    box-shadow: 0 0 30px rgba(11, 78, 162, 0.5);
+  }
+  
+  /* Pulse Animation for Urgency */
+  .pulse-urgent {
+    animation: pulse-urgent 2s infinite;
+  }
+  
+  @keyframes pulse-urgent {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Mobile Sticky CTA */
+  .sticky-cta {
+    @apply fixed bottom-0 left-0 right-0 z-50 p-4 bg-white shadow-lg border-t;
+    transform: translateY(100%);
+    transition: transform var(--timing-medium) var(--easing-smooth);
+  }
+  
+  .sticky-cta.visible {
+    transform: translateY(0);
+  }
+  
+  /* Cultural Color Utilities */
+  .text-slovak { color: var(--color-brand-slovak); }
+  .text-spanish { color: var(--color-brand-spanish); }
+  .text-conversion { color: var(--color-conversion-accent); }
+  .text-trust { color: var(--color-trust-builder); }
+  .text-cta { color: var(--color-cta); }
+  
+  .bg-slovak { background-color: var(--color-brand-slovak); }
+  .bg-spanish { background-color: var(--color-brand-spanish); }
+  .bg-conversion { background-color: var(--color-conversion-accent); }
+  .bg-trust { background-color: var(--color-trust-builder); }
+  .bg-cta { background-color: var(--color-cta); }
+  
+  .border-slovak { border-color: var(--color-brand-slovak); }
+  .border-spanish { border-color: var(--color-brand-spanish); }
+  .border-conversion { border-color: var(--color-conversion-accent); }
+  .border-trust { border-color: var(--color-trust-builder); }
+  .border-cta { border-color: var(--color-cta); }
+}
+
+@layer utilities {
+  /* Golden Ratio Spacing */
+  .space-xs { margin: var(--spacing-xs); }
+  .space-sm { margin: var(--spacing-sm); }
+  .space-md { margin: var(--spacing-md); }
+  .space-lg { margin: var(--spacing-lg); }
+  .space-xl { margin: var(--spacing-xl); }
+  
+  .p-xs { padding: var(--spacing-xs); }
+  .p-sm { padding: var(--spacing-sm); }
+  .p-md { padding: var(--spacing-md); }
+  .p-lg { padding: var(--spacing-lg); }
+  .p-xl { padding: var(--spacing-xl); }
+  
+  /* Cultural Shadows */
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-warm { box-shadow: var(--shadow-warm); }
+  .shadow-cultural { box-shadow: var(--shadow-cultural); }
+  
+  /* Preserve 3D for animations */
+  .preserve-3d { transform-style: preserve-3d; }
+  .backface-hidden { backface-visibility: hidden; }
+  
+  /* Smooth transitions */
+  .transition-smooth { 
+    transition: all var(--timing-fast) var(--easing-smooth); 
+  }
+  
+  .transition-cultural { 
+    transition: all var(--timing-medium) var(--easing-smooth); 
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
