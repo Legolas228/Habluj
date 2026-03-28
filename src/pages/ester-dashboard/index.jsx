@@ -1,7 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Icon from '../../components/AppIcon';
+import StudentLessonsPanel from '../student-dashboard/components/StudentLessonsPanel';
+import StudentResourcesPanel from '../student-dashboard/components/StudentResourcesPanel';
+import ProgressChart from '../student-dashboard/components/ProgressChart';
+import PaymentHistory from '../student-dashboard/components/PaymentHistory';
 import {
   createBasicAuthHeader,
   exportLeadsCsv,
@@ -13,36 +17,57 @@ import {
   verifyAdminCredentials,
 } from '../../services/leads';
 import {
+  createAdminAvailabilityRange,
+  createAdminBooking,
+  createAdminWeeklyAvailability,
   createAdminGoal,
   createAdminMaterial,
   createAdminMessage,
   createAdminProgress,
+  createAdminSlotBlock,
+  deleteAdminAvailabilityRange,
+  deleteAdminSlotBlock,
   deleteAdminGoal,
   deleteAdminMaterial,
   deleteAdminMessage,
   deleteAdminProgress,
+  getAdminAvailabilityRanges,
   getAdminBookings,
   getAdminGoals,
   getAdminLessons,
   getAdminMaterials,
   getAdminMessages,
   getAdminProgress,
+  getAdminSlotBlocks,
   getAdminStudents,
+  getAdminWeeklyAvailability,
+  updateAdminAvailabilityRange,
   updateAdminGoal,
   updateAdminMaterial,
   updateAdminMessage,
   updateAdminBooking,
   updateAdminProgress,
   updateAdminStudent,
+  updateAdminWeeklyAvailability,
 } from '../../services/adminPortal';
 
 const AUTH_STORAGE_KEY = 'ester_dashboard_auth';
 const STUDENT_TAB_STORAGE_PREFIX = 'ester_student_editor_tab_';
 
 const STAGE_OPTIONS = ['new', 'nurturing', 'qualified', 'booked', 'won', 'lost'];
-const ADMIN_SECTIONS = ['leads', 'students', 'bookings'];
+const ADMIN_SECTIONS = ['leads', 'students', 'bookings', 'waitlist', 'agenda', 'messages'];
 const BOOKING_STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 const PROFILE_LEVEL_OPTIONS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const WAITLIST_SOURCES = ['waitlist_intensive', 'waitlist_small_group'];
+const WEEKDAY_OPTIONS = [
+  { value: 0, label: 'Lunes' },
+  { value: 1, label: 'Martes' },
+  { value: 2, label: 'Miércoles' },
+  { value: 3, label: 'Jueves' },
+  { value: 4, label: 'Viernes' },
+  { value: 5, label: 'Sábado' },
+  { value: 6, label: 'Domingo' },
+];
 
 const statusLabel = (status) => {
   if (status === 'pending') return 'Pendiente';
@@ -84,6 +109,17 @@ const sectionMeta = {
   leads: { label: 'Oportunidades', icon: 'BarChart3' },
   students: { label: 'Estudiantes', icon: 'Users' },
   bookings: { label: 'Reservas', icon: 'Calendar' },
+  waitlist: { label: 'Lista de espera', icon: 'ListOrdered' },
+  agenda: { label: 'Agenda', icon: 'CalendarDays' },
+  messages: { label: 'Mensajes', icon: 'MessageCircle' },
+};
+const EMPTY_SECTION_COUNTS = {
+  leads: 0,
+  students: 0,
+  bookings: 0,
+  waitlist: 0,
+  agenda: 0,
+  messages: 0,
 };
 
 const toDateTimeLocal = (isoString) => {
@@ -122,6 +158,64 @@ const isPastDate = (dateString) => {
   today.setHours(0, 0, 0, 0);
   targetDate.setHours(0, 0, 0, 0);
   return targetDate < today;
+};
+
+const toTimeValue = (value = '') => String(value).slice(0, 5);
+const isQuarterHourTime = (value = '') => {
+  const match = /^(\d{2}):(\d{2})$/.exec(String(value));
+  if (!match) return false;
+  const minutes = Number(match[2]);
+  return [0, 15, 30, 45].includes(minutes);
+};
+const addMinutesToTimeValue = (timeValue = '', minutesToAdd = 0) => {
+  const match = /^(\d{2}):(\d{2})$/.exec(String(timeValue));
+  if (!match) return '';
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  const total = hours * 60 + minutes + minutesToAdd;
+  if (total < 0 || total >= 24 * 60) return '';
+  const targetHour = Math.floor(total / 60);
+  const targetMinute = total % 60;
+  return `${String(targetHour).padStart(2, '0')}:${String(targetMinute).padStart(2, '0')}`;
+};
+const timeToMinutes = (value = '') => {
+  const match = /^(\d{2}):(\d{2})$/.exec(String(value));
+  if (!match) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+};
+const isTimeWithinRange = (timeValue, startValue, endValue) => {
+  const timeMinutes = timeToMinutes(timeValue);
+  const startMinutes = timeToMinutes(startValue);
+  const endMinutes = timeToMinutes(endValue);
+  if (timeMinutes === null || startMinutes === null || endMinutes === null) return false;
+  return timeMinutes >= startMinutes && timeMinutes < endMinutes;
+};
+const toNumericOrNull = (value) => {
+  if (value === '' || value === null || value === undefined) return null;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return null;
+  return num;
+};
+const QUARTER_HOUR_OPTIONS = Array.from({ length: 24 * 4 }).map((_, index) => {
+  const totalMinutes = index * 15;
+  const hour = Math.floor(totalMinutes / 60);
+  const minute = totalMinutes % 60;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+});
+const toIsoDateValue = (date) => {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+const getWeekStartMonday = (sourceDate = new Date()) => {
+  const date = new Date(sourceDate);
+  date.setHours(0, 0, 0, 0);
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  date.setDate(date.getDate() + diff);
+  return date;
 };
 
 const buildLeadsCsvBlob = (items = []) => {
@@ -173,9 +267,12 @@ const EsterDashboard = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [isStudentsLoading, setIsStudentsLoading] = useState(false);
   const [isBookingsLoading, setIsBookingsLoading] = useState(false);
+  const [isWaitlistLoading, setIsWaitlistLoading] = useState(false);
+  const [isAgendaLoading, setIsAgendaLoading] = useState(false);
   const [isLessonsLoading, setIsLessonsLoading] = useState(false);
   const [isStudentUpdating, setIsStudentUpdating] = useState(false);
   const [isBookingUpdating, setIsBookingUpdating] = useState(false);
+  const [isAgendaSaving, setIsAgendaSaving] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -184,7 +281,12 @@ const EsterDashboard = () => {
   const [leads, setLeads] = useState([]);
   const [students, setStudents] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [waitlistLeads, setWaitlistLeads] = useState([]);
+  const [sectionCounts, setSectionCounts] = useState(EMPTY_SECTION_COUNTS);
   const [lessons, setLessons] = useState([]);
+  const [availabilityRanges, setAvailabilityRanges] = useState([]);
+  const [weeklyAvailability, setWeeklyAvailability] = useState([]);
+  const [slotBlocks, setSlotBlocks] = useState([]);
   const [studentMaterials, setStudentMaterials] = useState([]);
   const [studentGoals, setStudentGoals] = useState([]);
   const [studentMessages, setStudentMessages] = useState([]);
@@ -223,11 +325,14 @@ const EsterDashboard = () => {
   const [studentLevelFilter, setStudentLevelFilter] = useState('all');
   const [bookingSearchTerm, setBookingSearchTerm] = useState('');
   const [bookingStatusFilter, setBookingStatusFilter] = useState('all');
+  const [waitlistSearchTerm, setWaitlistSearchTerm] = useState('');
+  const [waitlistStageFilter, setWaitlistStageFilter] = useState('all');
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [selectedLeadDetail, setSelectedLeadDetail] = useState(null);
   const [followUpDraft, setFollowUpDraft] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState(null);
-  const [studentEditorTab, setStudentEditorTab] = useState('profile');
+  const [studentEditorTab, setStudentEditorTab] = useState('dashboard');
+  const [studentPreviewTab, setStudentPreviewTab] = useState('overview');
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [materialDraft, setMaterialDraft] = useState({
     title: '',
@@ -253,6 +358,12 @@ const EsterDashboard = () => {
     lesson_id: '',
     completed: false,
     score: '',
+    speaking_score: '',
+    listening_score: '',
+    reading_score: '',
+    writing_score: '',
+    grammar_score: '',
+    vocabulary_score: '',
     notes: '',
   });
   const [studentDraft, setStudentDraft] = useState({
@@ -270,6 +381,84 @@ const EsterDashboard = () => {
     status: 'pending',
     notes: '',
   });
+  const [weeklyRangeDraft, setWeeklyRangeDraft] = useState({
+    weekday: 0,
+    start_time: '09:00',
+    end_time: '12:00',
+    buffer_minutes: 10,
+    is_active: true,
+  });
+  const [punctualRangeDraft, setPunctualRangeDraft] = useState({
+    date: '',
+    start_time: '09:00',
+    end_time: '10:00',
+    status: 'unavailable',
+    reason: '',
+  });
+  const [manualBookingDraft, setManualBookingDraft] = useState({
+    student_id: '',
+    lesson_id: '',
+    date: '',
+    time: '',
+    status: 'confirmed',
+    notes: '',
+  });
+  const [agendaWeekStart, setAgendaWeekStart] = useState(() => getWeekStartMonday(new Date()));
+  const [selectedAgendaCell, setSelectedAgendaCell] = useState(null);
+  const [selectedAgendaState, setSelectedAgendaState] = useState('unavailable');
+  const [isAgendaStateModalOpen, setIsAgendaStateModalOpen] = useState(false);
+  const [isManualBookingModalOpen, setIsManualBookingModalOpen] = useState(false);
+  const [bookingModalError, setBookingModalError] = useState('');
+  const [messageComposerDraft, setMessageComposerDraft] = useState('');
+  const [messageComposerError, setMessageComposerError] = useState('');
+  const [messageComposerSuccess, setMessageComposerSuccess] = useState('');
+  const [isComposerSending, setIsComposerSending] = useState(false);
+  const pendingReadMessagesRef = useRef(new Set());
+
+  const refreshSectionCounts = useCallback(async (header, options = {}) => {
+    if (!header) {
+      setSectionCounts(EMPTY_SECTION_COUNTS);
+      return;
+    }
+
+    const { silent = true } = options;
+    try {
+      const [leadsResult, studentsResult, bookingsResult, rangesResult, weeklyResult, waitlistResult, messagesResult] = await Promise.allSettled([
+        getLeads(header, {}),
+        getAdminStudents(header, {}),
+        getAdminBookings(header, {}),
+        getAdminAvailabilityRanges(header, { active: 'true' }),
+        getAdminWeeklyAvailability(header, { active: 'true' }),
+        Promise.all(WAITLIST_SOURCES.map((source) => getLeads(header, { source }))),
+        getAdminMessages(header, {}),
+      ]);
+
+      const allLeads = leadsResult.status === 'fulfilled' ? leadsResult.value : leads;
+      const allStudents = studentsResult.status === 'fulfilled' ? studentsResult.value : students;
+      const allBookings = bookingsResult.status === 'fulfilled' ? bookingsResult.value : bookings;
+      const activeRanges = rangesResult.status === 'fulfilled' ? rangesResult.value : availabilityRanges.filter((item) => item.is_active);
+      const activeWeeklySlots = weeklyResult.status === 'fulfilled' ? weeklyResult.value : weeklyAvailability;
+      const waitlistGroups = waitlistResult.status === 'fulfilled' ? waitlistResult.value : [waitlistLeads];
+      const allMessages = messagesResult.status === 'fulfilled' ? messagesResult.value : studentMessages;
+      const unreadMessagesCount = allMessages.filter((item) => !item.is_read).length;
+      setSectionCounts({
+        leads: allLeads.length,
+        students: allStudents.length,
+        bookings: allBookings.length,
+        waitlist: waitlistGroups.flat().length,
+        agenda: activeRanges.length || activeWeeklySlots.filter((slot) => slot?.is_active).length,
+        messages: unreadMessagesCount,
+      });
+    } catch (error) {
+      if (!silent) {
+        setErrorMessage(error?.message || 'No se pudieron actualizar los contadores de secciones.');
+      }
+      if ((error?.message || '').toLowerCase().includes('unauthorized')) {
+        sessionStorage.removeItem(AUTH_STORAGE_KEY);
+        setAuthHeader('');
+      }
+    }
+  }, [availabilityRanges, bookings, leads, studentMessages, students, waitlistLeads, weeklyAvailability]);
 
   useEffect(() => {
     const storedAuth = sessionStorage.getItem(AUTH_STORAGE_KEY);
@@ -322,12 +511,12 @@ const EsterDashboard = () => {
     }
   };
 
-  const loadStudentsData = async (header) => {
+  const loadStudentsData = async (header, customFilters = null) => {
     setIsStudentsLoading(true);
     setErrorMessage('');
 
     try {
-      const studentsData = await getAdminStudents(header, {
+      const studentsData = await getAdminStudents(header, customFilters || {
         q: studentSearchTerm,
         level: studentLevelFilter,
       });
@@ -361,6 +550,51 @@ const EsterDashboard = () => {
       }
     } finally {
       setIsBookingsLoading(false);
+    }
+  };
+
+  const loadWaitlistData = async (header) => {
+    setIsWaitlistLoading(true);
+    setErrorMessage('');
+    try {
+      const waitlistGroups = await Promise.all(WAITLIST_SOURCES.map((source) => (
+        getLeads(header, { source, q: waitlistSearchTerm })
+      )));
+      const merged = waitlistGroups.flat().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setWaitlistLeads(merged);
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo cargar la lista de espera.');
+    } finally {
+      setIsWaitlistLoading(false);
+    }
+  };
+
+  const loadAgendaData = async (header) => {
+    setIsAgendaLoading(true);
+    setErrorMessage('');
+    try {
+      const now = new Date();
+      const startDate = toIsoDateValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7));
+      const endDate = toIsoDateValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 90));
+      const [rangesResult, weeklyResult, blocksResult, bookingsResult, lessonsResult, studentsResult] = await Promise.allSettled([
+        getAdminAvailabilityRanges(header, {}),
+        getAdminWeeklyAvailability(header, {}),
+        getAdminSlotBlocks(header, { active: 'true', start_date: startDate, end_date: endDate }),
+        getAdminBookings(header, {}),
+        getAdminLessons(header),
+        getAdminStudents(header, {}),
+      ]);
+
+      if (rangesResult.status === 'fulfilled') setAvailabilityRanges(rangesResult.value);
+      if (weeklyResult.status === 'fulfilled') setWeeklyAvailability(weeklyResult.value);
+      if (blocksResult.status === 'fulfilled') setSlotBlocks(blocksResult.value);
+      if (bookingsResult.status === 'fulfilled') setBookings(bookingsResult.value);
+      if (lessonsResult.status === 'fulfilled') setLessons(lessonsResult.value);
+      if (studentsResult.status === 'fulfilled') setStudents(studentsResult.value);
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo cargar la agenda.');
+    } finally {
+      setIsAgendaLoading(false);
     }
   };
 
@@ -475,7 +709,18 @@ const EsterDashboard = () => {
 
   const resetProgressDraft = () => {
     setSelectedProgressId(null);
-    setProgressDraft({ lesson_id: '', completed: false, score: '', notes: '' });
+    setProgressDraft({
+      lesson_id: '',
+      completed: false,
+      score: '',
+      speaking_score: '',
+      listening_score: '',
+      reading_score: '',
+      writing_score: '',
+      grammar_score: '',
+      vocabulary_score: '',
+      notes: '',
+    });
   };
 
   const hydrateMaterialDraft = (material) => {
@@ -520,6 +765,12 @@ const EsterDashboard = () => {
       lesson_id: progress.lesson?.id ? String(progress.lesson.id) : '',
       completed: !!progress.completed,
       score: progress.score ?? '',
+      speaking_score: progress.speaking_score ?? '',
+      listening_score: progress.listening_score ?? '',
+      reading_score: progress.reading_score ?? '',
+      writing_score: progress.writing_score ?? '',
+      grammar_score: progress.grammar_score ?? '',
+      vocabulary_score: progress.vocabulary_score ?? '',
       notes: progress.notes || '',
     });
   };
@@ -588,6 +839,21 @@ const EsterDashboard = () => {
     } finally {
       setIsMaterialCreating(false);
     }
+  };
+
+  const onCreateStudentMaterialFromPanel = async (payload) => {
+    if (!authHeader || !selectedStudentId) return;
+    const created = await createAdminMaterial({
+      authHeader,
+      payload: {
+        ...payload,
+        student_id: selectedStudentId,
+      },
+    });
+    setStudentMaterials((prev) => [created, ...prev]);
+    setActionToast('Material creado.');
+    refreshSectionCounts(authHeader, { silent: true });
+    return created;
   };
 
   const onMaterialFileChange = (event) => {
@@ -761,7 +1027,13 @@ const EsterDashboard = () => {
         student_id: selectedStudentId,
         lesson_id: progressDraft.lesson_id ? Number(progressDraft.lesson_id) : null,
         completed: progressDraft.completed,
-        score: progressDraft.score === '' ? null : Number(progressDraft.score),
+        score: computedGeneralProgressScore === '' ? null : Number(computedGeneralProgressScore),
+        speaking_score: progressDraft.speaking_score === '' ? null : Number(progressDraft.speaking_score),
+        listening_score: progressDraft.listening_score === '' ? null : Number(progressDraft.listening_score),
+        reading_score: progressDraft.reading_score === '' ? null : Number(progressDraft.reading_score),
+        writing_score: progressDraft.writing_score === '' ? null : Number(progressDraft.writing_score),
+        grammar_score: progressDraft.grammar_score === '' ? null : Number(progressDraft.grammar_score),
+        vocabulary_score: progressDraft.vocabulary_score === '' ? null : Number(progressDraft.vocabulary_score),
         notes: progressDraft.notes,
       };
 
@@ -807,16 +1079,44 @@ const EsterDashboard = () => {
   }, [authHeader, stageFilter, sourceFilter, languageFilter, followUpFilter, duplicatesOnly]);
 
   useEffect(() => {
+    if (!authHeader) {
+      setSectionCounts(EMPTY_SECTION_COUNTS);
+      return undefined;
+    }
+
+    refreshSectionCounts(authHeader, { silent: true });
+    return undefined;
+  }, [authHeader, refreshSectionCounts]);
+
+  useEffect(() => {
     if (authHeader && activeSection === 'students') {
       loadStudentsData(authHeader);
     }
   }, [authHeader, activeSection, studentSearchTerm, studentLevelFilter]);
 
   useEffect(() => {
+    if (authHeader && activeSection === 'messages') {
+      loadStudentsData(authHeader, {});
+    }
+  }, [authHeader, activeSection]);
+
+  useEffect(() => {
     if (authHeader && activeSection === 'bookings') {
       loadBookingsData(authHeader);
     }
   }, [authHeader, activeSection, bookingSearchTerm, bookingStatusFilter]);
+
+  useEffect(() => {
+    if (authHeader && activeSection === 'waitlist') {
+      loadWaitlistData(authHeader);
+    }
+  }, [authHeader, activeSection, waitlistSearchTerm]);
+
+  useEffect(() => {
+    if (authHeader && activeSection === 'agenda') {
+      loadAgendaData(authHeader);
+    }
+  }, [authHeader, activeSection]);
 
   useEffect(() => {
     if (authHeader && activeSection === 'students' && bookings.length === 0) {
@@ -840,9 +1140,18 @@ const EsterDashboard = () => {
   }, [authHeader, activeSection, selectedStudentId]);
 
   useEffect(() => {
+    if (authHeader && activeSection === 'messages' && selectedStudentId) {
+      loadStudentMessages(authHeader, selectedStudentId);
+      setMessageComposerError('');
+      setMessageComposerSuccess('');
+    }
+  }, [authHeader, activeSection, selectedStudentId]);
+
+  useEffect(() => {
     if (selectedStudentId) {
       const storedTab = sessionStorage.getItem(`${STUDENT_TAB_STORAGE_PREFIX}${selectedStudentId}`);
-      setStudentEditorTab(storedTab || 'profile');
+      const allowedTabs = new Set(['dashboard', 'profile', 'materials', 'progress']);
+      setStudentEditorTab(allowedTabs.has(storedTab) ? storedTab : 'dashboard');
       setGoalStatusFilter('all');
       setMessageStatusFilter('all');
       setProgressStatusFilter('all');
@@ -850,6 +1159,10 @@ const EsterDashboard = () => {
       setPendingDeleteGoalId(null);
       setPendingDeleteMessageId(null);
       setPendingDeleteProgressId(null);
+      setStudentPreviewTab('overview');
+      setMessageComposerDraft('');
+      setMessageComposerError('');
+      setMessageComposerSuccess('');
     }
   }, [selectedStudentId]);
 
@@ -857,6 +1170,16 @@ const EsterDashboard = () => {
     if (!selectedStudentId) return;
     sessionStorage.setItem(`${STUDENT_TAB_STORAGE_PREFIX}${selectedStudentId}`, studentEditorTab);
   }, [selectedStudentId, studentEditorTab]);
+
+  useEffect(() => {
+    if (!selectedStudentId || !studentProgress.length) return;
+    if (selectedProgressId) return;
+    const latest = [...studentProgress]
+      .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))[0];
+    if (latest) {
+      hydrateProgressDraft(latest);
+    }
+  }, [selectedProgressId, selectedStudentId, studentProgress]);
 
   const onLogin = async (event) => {
     event.preventDefault();
@@ -893,6 +1216,7 @@ const EsterDashboard = () => {
     setStudentGoals([]);
     setStudentMessages([]);
     setStudentProgress([]);
+    setSectionCounts(EMPTY_SECTION_COUNTS);
     setSelectedLeadId(null);
     setSelectedStudentId(null);
     setSelectedBookingId(null);
@@ -900,18 +1224,37 @@ const EsterDashboard = () => {
     resetGoalDraft();
     resetMessageDraft();
     resetProgressDraft();
+    setMessageComposerDraft('');
+    setMessageComposerError('');
+    setMessageComposerSuccess('');
     setErrorMessage('');
     setSuccessMessage('Sesión cerrada.');
   };
 
   const onRefresh = () => {
     if (!authHeader) return;
+    refreshSectionCounts(authHeader, { silent: false });
     if (activeSection === 'students') {
       loadStudentsData(authHeader);
       return;
     }
     if (activeSection === 'bookings') {
       loadBookingsData(authHeader);
+      return;
+    }
+    if (activeSection === 'waitlist') {
+      loadWaitlistData(authHeader);
+      return;
+    }
+    if (activeSection === 'agenda') {
+      loadAgendaData(authHeader);
+      return;
+    }
+    if (activeSection === 'messages') {
+      loadStudentsData(authHeader, {});
+      if (selectedStudentId) {
+        loadStudentMessages(authHeader, selectedStudentId);
+      }
       return;
     }
     if (activeSection === 'leads') {
@@ -937,7 +1280,10 @@ const EsterDashboard = () => {
         prevLeads.map((lead) => (lead.id === leadId ? updatedLead : lead))
       );
       setSuccessMessage('Estado del lead actualizado.');
-      loadDashboardData(authHeader);
+      await Promise.all([
+        loadDashboardData(authHeader),
+        refreshSectionCounts(authHeader, { silent: true }),
+      ]);
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo actualizar el estado.');
     } finally {
@@ -966,6 +1312,7 @@ const EsterDashboard = () => {
       if (selectedBookingId === bookingId) {
         setBookingDraft((prev) => ({ ...prev, status: updatedBooking.status || prev.status }));
       }
+      refreshSectionCounts(authHeader, { silent: true });
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo actualizar la reserva.');
     } finally {
@@ -1010,6 +1357,7 @@ const EsterDashboard = () => {
       )));
       setSuccessMessage('Reserva actualizada correctamente.');
       hydrateBookingDraft(updatedBooking);
+      refreshSectionCounts(authHeader, { silent: true });
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo actualizar la reserva.');
     } finally {
@@ -1053,11 +1401,31 @@ const EsterDashboard = () => {
       )));
       setSuccessMessage('Estudiante actualizado correctamente.');
       hydrateStudentDraft(updatedStudent);
+      refreshSectionCounts(authHeader, { silent: true });
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo actualizar el estudiante.');
     } finally {
       setIsStudentUpdating(false);
     }
+  };
+
+  const onSaveStudentProfileQuick = async ({ language_level, bio }) => {
+    if (!authHeader || !selectedStudentId) return;
+    const updatedStudent = await updateAdminStudent({
+      authHeader,
+      studentId: selectedStudentId,
+      patch: { language_level, bio },
+    });
+    setStudents((prevStudents) => prevStudents.map((student) => (
+      student.id === selectedStudentId ? updatedStudent : student
+    )));
+    setStudentDraft((prev) => ({
+      ...prev,
+      language_level: updatedStudent.language_level || prev.language_level,
+      bio: updatedStudent.bio || '',
+    }));
+    refreshSectionCounts(authHeader, { silent: true });
+    return updatedStudent;
   };
 
   useEffect(() => {
@@ -1094,6 +1462,7 @@ const EsterDashboard = () => {
       await updateLead({ leadId: selectedLeadId, patch: payload, authHeader });
       setSuccessMessage('Seguimiento actualizado.');
       await loadDashboardData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
       const detail = await getLeadDetail({ leadId: selectedLeadId, authHeader });
       setSelectedLeadDetail(detail);
       setFollowUpDraft(toDateTimeLocal(detail.follow_up_at));
@@ -1232,6 +1601,55 @@ const EsterDashboard = () => {
   const selectedStudent = useMemo(() => {
     return students.find((student) => student.id === selectedStudentId) || null;
   }, [students, selectedStudentId]);
+  const computedGeneralProgressScore = useMemo(() => {
+    const skillScores = [
+      toNumericOrNull(progressDraft.speaking_score),
+      toNumericOrNull(progressDraft.listening_score),
+      toNumericOrNull(progressDraft.reading_score),
+      toNumericOrNull(progressDraft.writing_score),
+      toNumericOrNull(progressDraft.grammar_score),
+      toNumericOrNull(progressDraft.vocabulary_score),
+    ].filter((value) => value !== null);
+    if (!skillScores.length) return '';
+    const average = skillScores.reduce((sum, value) => sum + value, 0) / skillScores.length;
+    return String(Math.round(average));
+  }, [
+    progressDraft.speaking_score,
+    progressDraft.listening_score,
+    progressDraft.reading_score,
+    progressDraft.writing_score,
+    progressDraft.grammar_score,
+    progressDraft.vocabulary_score,
+  ]);
+
+  const selectedStudentBookings = useMemo(() => {
+    if (!selectedStudentId) return [];
+    return bookings.filter((booking) => Number(booking.student?.id) === Number(selectedStudentId));
+  }, [bookings, selectedStudentId]);
+
+  const selectedStudentUpcomingBookings = useMemo(() => {
+    const now = new Date();
+    return selectedStudentBookings
+      .filter((item) => {
+        const dt = new Date(`${item.date}T${item.time || '00:00:00'}`);
+        return !Number.isNaN(dt.getTime()) && dt >= now;
+      })
+      .sort((a, b) => new Date(`${a.date}T${a.time || '00:00:00'}`) - new Date(`${b.date}T${b.time || '00:00:00'}`));
+  }, [selectedStudentBookings]);
+
+  const selectedStudentPastBookings = useMemo(() => {
+    const now = new Date();
+    return selectedStudentBookings
+      .filter((item) => {
+        const dt = new Date(`${item.date}T${item.time || '00:00:00'}`);
+        return !Number.isNaN(dt.getTime()) && dt < now;
+      })
+      .sort((a, b) => new Date(`${b.date}T${b.time || '00:00:00'}`) - new Date(`${a.date}T${a.time || '00:00:00'}`));
+  }, [selectedStudentBookings]);
+
+  const selectedStudentNextBooking = useMemo(() => {
+    return selectedStudentUpcomingBookings[0] || null;
+  }, [selectedStudentUpcomingBookings]);
 
   useEffect(() => {
     if (!bookings.length) {
@@ -1298,14 +1716,6 @@ const EsterDashboard = () => {
     });
   }, [studentProgress, progressStatusFilter]);
 
-  const sectionCounts = useMemo(() => {
-    return {
-      leads: leads.length,
-      students: students.length,
-      bookings: bookings.length,
-    };
-  }, [leads.length, students.length, bookings.length]);
-
   const studentMaterialStats = useMemo(() => {
     const total = studentMaterials.length;
     const visible = studentMaterials.filter((item) => item.is_active).length;
@@ -1319,6 +1729,517 @@ const EsterDashboard = () => {
     const completedProgress = studentProgress.filter((item) => item.completed).length;
     return { pendingGoals, unreadMessages, completedProgress };
   }, [studentGoals, studentMessages, studentProgress]);
+
+  const orderedConversationMessages = useMemo(() => {
+    return [...studentMessages].sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+  }, [studentMessages]);
+
+  const unreadFromSelectedStudent = useMemo(() => {
+    if (!selectedStudentId) return 0;
+    return orderedConversationMessages.filter((message) => (
+      !message.is_read && Number(message.sender?.id) === Number(selectedStudentId)
+    )).length;
+  }, [orderedConversationMessages, selectedStudentId]);
+
+  const onMarkConversationMessageRead = useCallback(async (messageId) => {
+    if (!authHeader || !messageId) return;
+    try {
+      const updated = await updateAdminMessage({
+        authHeader,
+        messageId,
+        payload: { is_read: true },
+      });
+      setStudentMessages((prev) => prev.map((item) => (
+        item.id === messageId ? { ...item, ...updated, is_read: true } : item
+      )));
+      refreshSectionCounts(authHeader, { silent: true });
+    } catch (error) {
+      // Keep this silent to avoid noisy alerts while browsing a thread.
+    }
+  }, [authHeader, refreshSectionCounts]);
+
+  useEffect(() => {
+    if (!authHeader || activeSection !== 'messages' || !selectedStudentId) return;
+    orderedConversationMessages.forEach((message) => {
+      const isFromSelectedStudent = Number(message.sender?.id) === Number(selectedStudentId);
+      if (!isFromSelectedStudent || message.is_read) return;
+      if (pendingReadMessagesRef.current.has(message.id)) return;
+      pendingReadMessagesRef.current.add(message.id);
+      Promise.resolve(onMarkConversationMessageRead(message.id)).finally(() => {
+        pendingReadMessagesRef.current.delete(message.id);
+      });
+    });
+  }, [activeSection, authHeader, onMarkConversationMessageRead, orderedConversationMessages, selectedStudentId]);
+
+  const onSendConversationMessage = async () => {
+    if (!authHeader || !selectedStudentId) return;
+    const body = messageComposerDraft.trim();
+    if (!body) return;
+
+    setMessageComposerError('');
+    setMessageComposerSuccess('');
+    setIsComposerSending(true);
+    try {
+      const created = await createAdminMessage({
+        authHeader,
+        payload: {
+          student_id: selectedStudentId,
+          subject: 'Chat',
+          body,
+        },
+      });
+      setStudentMessages((prev) => [...prev, created]);
+      setMessageComposerDraft('');
+      setMessageComposerSuccess('Mensaje enviado correctamente.');
+      refreshSectionCounts(authHeader, { silent: true });
+    } catch (error) {
+      setMessageComposerError(error?.message || 'No se pudo enviar el mensaje.');
+    } finally {
+      setIsComposerSending(false);
+    }
+  };
+
+  const filteredWaitlistLeads = useMemo(() => {
+    return waitlistLeads.filter((lead) => (
+      waitlistStageFilter === 'all' || lead.stage === waitlistStageFilter
+    ));
+  }, [waitlistLeads, waitlistStageFilter]);
+
+  const weeklySlotsByDay = useMemo(() => {
+    return WEEKDAY_OPTIONS.map((weekday) => ({
+      ...weekday,
+      slots: weeklyAvailability
+        .filter((slot) => Number(slot.weekday) === Number(weekday.value))
+        .sort((a, b) => String(a.time).localeCompare(String(b.time))),
+    }));
+  }, [weeklyAvailability]);
+  const agendaWeekDays = useMemo(() => {
+    return WEEKDAY_OPTIONS.map((weekday, index) => {
+      const date = new Date(agendaWeekStart);
+      date.setDate(agendaWeekStart.getDate() + index);
+      return {
+        ...weekday,
+        date,
+        isoDate: toIsoDateValue(date),
+      };
+    });
+  }, [agendaWeekStart]);
+  const agendaWeekRangeLabel = useMemo(() => {
+    if (!agendaWeekDays.length) return '';
+    const start = agendaWeekDays[0]?.date;
+    const end = agendaWeekDays[agendaWeekDays.length - 1]?.date;
+    if (!start || !end) return '';
+    return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+  }, [agendaWeekDays]);
+  const agendaHourRows = useMemo(() => {
+    const rows = [];
+    for (let hour = 7; hour <= 21; hour += 1) {
+      for (const minute of [0, 15, 30, 45]) {
+        rows.push({
+          key: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+          hour,
+          minute,
+        });
+      }
+    }
+    return rows;
+  }, []);
+  const agendaWeeklyGrid = useMemo(() => {
+    const bookingsByDay = bookings.reduce((acc, booking) => {
+      const key = booking?.date || '';
+      if (!key) return acc;
+      acc[key] = acc[key] || [];
+      acc[key].push(booking);
+      return acc;
+    }, {});
+
+    return agendaWeekDays.map((day) => {
+      const dayBookings = (bookingsByDay[day.isoDate] || []).slice().sort((a, b) => (
+        String(a.time || '').localeCompare(String(b.time || ''))
+      ));
+      const dayBlocks = slotBlocks
+        .filter((block) => block.date === day.isoDate && block.is_active)
+        .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+      const dayRanges = availabilityRanges
+        .filter((range) => Number(range.weekday) === Number(day.value) && range.is_active)
+        .sort((a, b) => String(a.start_time || '').localeCompare(String(b.start_time || '')));
+      const weeklySlots = weeklyAvailability
+        .filter((slot) => Number(slot.weekday) === Number(day.value) && slot.is_active)
+        .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+
+      const byHour = {};
+      dayBookings.forEach((booking) => {
+        const startKey = toTimeValue(booking.time || '');
+        if (!startKey) return;
+        const durationMinutes = Number(booking?.lesson?.duration) || 60;
+        const slotsCount = Math.max(1, Math.ceil(durationMinutes / 15));
+        for (let slotIndex = 0; slotIndex < slotsCount; slotIndex += 1) {
+          const slotKey = addMinutesToTimeValue(startKey, slotIndex * 15);
+          if (!slotKey) continue;
+          byHour[slotKey] = byHour[slotKey] || { booking: null, hasAvailability: false, isBookingStart: false };
+          byHour[slotKey].booking = booking;
+          byHour[slotKey].isBookingStart = slotIndex === 0;
+        }
+      });
+      weeklySlots.forEach((slot) => {
+        const key = toTimeValue(slot.time || '');
+        if (!key) return;
+        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
+        byHour[key].hasAvailability = true;
+      });
+      agendaHourRows.forEach((row) => {
+        const key = row.key;
+        const hasRangeAvailability = dayRanges.some((range) => (
+          isTimeWithinRange(key, toTimeValue(range.start_time), toTimeValue(range.end_time))
+        ));
+        if (hasRangeAvailability) {
+          byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
+          byHour[key].hasAvailability = true;
+        }
+      });
+      dayBlocks.forEach((block) => {
+        const key = toTimeValue(block.time || '');
+        if (!key) return;
+        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
+        byHour[key].hasAvailability = false;
+      });
+
+      return { day, byHour, dayBookings, weeklySlots, dayRanges, dayBlocks };
+    });
+  }, [agendaHourRows, agendaWeekDays, availabilityRanges, bookings, slotBlocks, weeklyAvailability]);
+
+  const upcomingAgendaBookings = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return bookings
+      .filter((booking) => booking.date >= today && booking.status !== 'cancelled')
+      .sort((a, b) => {
+        const aKey = `${a.date}T${a.time || '00:00:00'}`;
+        const bKey = `${b.date}T${b.time || '00:00:00'}`;
+        return new Date(aKey) - new Date(bKey);
+      })
+      .slice(0, 12);
+  }, [bookings]);
+  const agendaWeekStats = useMemo(() => {
+    const totalCells = agendaHourRows.length * agendaWeekDays.length;
+    let available = 0;
+    let reserved = 0;
+    agendaWeeklyGrid.forEach((column) => {
+      Object.values(column.byHour).forEach((cell) => {
+        if (cell?.booking) {
+          reserved += 1;
+          return;
+        }
+        if (cell?.hasAvailability) {
+          available += 1;
+        }
+      });
+    });
+    const unavailable = Math.max(totalCells - reserved - available, 0);
+    return { totalCells, available, reserved, unavailable };
+  }, [agendaHourRows.length, agendaWeekDays.length, agendaWeeklyGrid]);
+  const onAgendaJumpToday = () => {
+    setAgendaWeekStart(getWeekStartMonday(new Date()));
+  };
+  const onAgendaPrevWeek = () => {
+    const target = new Date(agendaWeekStart);
+    target.setDate(target.getDate() - 7);
+    setAgendaWeekStart(getWeekStartMonday(target));
+  };
+  const onAgendaNextWeek = () => {
+    const target = new Date(agendaWeekStart);
+    target.setDate(target.getDate() + 7);
+    setAgendaWeekStart(getWeekStartMonday(target));
+  };
+  const onAgendaSelectCell = ({ day, timeValue, cell }) => {
+    const state = cell?.booking ? 'reserved' : (cell?.hasAvailability ? 'available' : 'unavailable');
+    setSelectedAgendaCell({
+      day,
+      timeValue,
+      hasBooking: !!cell?.booking,
+      booking: cell?.booking || null,
+    });
+    setSelectedAgendaState(state);
+    setPunctualRangeDraft((prev) => ({
+      ...prev,
+      date: day.isoDate,
+      start_time: timeValue,
+      end_time: addMinutesToTimeValue(timeValue, 15) || prev.end_time,
+    }));
+    setIsAgendaStateModalOpen(true);
+  };
+  const onOpenManualBookingModal = ({ date, time }) => {
+    setManualBookingDraft((prev) => ({
+      ...prev,
+      date: date || prev.date,
+      time: time || prev.time,
+      student_id: prev.student_id || (students[0]?.id ? String(students[0].id) : ''),
+      lesson_id: prev.lesson_id || (lessons[0]?.id ? String(lessons[0].id) : ''),
+    }));
+    setBookingModalError('');
+    setIsManualBookingModalOpen(true);
+  };
+  const onApplyAgendaState = async () => {
+    if (!selectedAgendaCell || !authHeader) return;
+    const { day, timeValue, hasBooking } = selectedAgendaCell;
+
+    if (selectedAgendaState === 'reserved') {
+      onOpenManualBookingModal({ date: day.isoDate, time: timeValue });
+      setIsAgendaStateModalOpen(false);
+      return;
+    }
+
+    if (hasBooking) {
+      setErrorMessage('Esa franja ya está reservada. Cambia la reserva desde el editor.');
+      return;
+    }
+
+    const shouldBeAvailable = selectedAgendaState === 'available';
+    const slotBlock = slotBlocks.find((block) => (
+      block.date === day.isoDate && toTimeValue(block.time) === timeValue
+    ));
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      if (shouldBeAvailable) {
+        if (slotBlock?.id) {
+          await deleteAdminSlotBlock({ authHeader, blockId: slotBlock.id });
+          setSlotBlocks((prev) => prev.filter((block) => block.id !== slotBlock.id));
+        } else {
+          setActionToast('La franja ya estaba disponible para ese día.');
+        }
+      } else if (!slotBlock) {
+        const createdBlock = await createAdminSlotBlock({
+          authHeader,
+          payload: {
+            date: day.isoDate,
+            time: `${timeValue}:00`,
+            reason: 'No disponible puntual',
+            is_active: true,
+          },
+        });
+        if (createdBlock?.id) {
+          setSlotBlocks((prev) => [...prev, createdBlock].sort((a, b) => (
+            `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)
+          )));
+        }
+      } else {
+        setActionToast('La franja ya estaba no disponible para ese día.');
+      }
+
+      loadAgendaData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
+      setActionToast('Estado de franja actualizado.');
+      setIsAgendaStateModalOpen(false);
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo actualizar la disponibilidad.');
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
+
+  const onCreateWeeklyRange = async () => {
+    if (!authHeader) return;
+    if (!isQuarterHourTime(weeklyRangeDraft.start_time) || !isQuarterHourTime(weeklyRangeDraft.end_time)) {
+      setErrorMessage('Las horas deben terminar en 00, 15, 30 o 45.');
+      return;
+    }
+    const startMinutes = timeToMinutes(weeklyRangeDraft.start_time);
+    const endMinutes = timeToMinutes(weeklyRangeDraft.end_time);
+    if (startMinutes === null || endMinutes === null || startMinutes >= endMinutes) {
+      setErrorMessage('La hora de fin debe ser mayor a la de inicio.');
+      return;
+    }
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      const created = await createAdminAvailabilityRange({
+        authHeader,
+        payload: {
+          weekday: Number(weeklyRangeDraft.weekday),
+          start_time: `${weeklyRangeDraft.start_time}:00`,
+          end_time: `${weeklyRangeDraft.end_time}:00`,
+          buffer_minutes: Number(weeklyRangeDraft.buffer_minutes || 10),
+          is_active: weeklyRangeDraft.is_active !== false,
+        },
+      });
+      if (created?.id) {
+        setAvailabilityRanges((prev) => [...prev, created].sort((a, b) => (
+          Number(a.weekday) - Number(b.weekday) || String(a.start_time).localeCompare(String(b.start_time))
+        )));
+      }
+      await loadAgendaData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
+      setActionToast('Franja semanal guardada.');
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo guardar la franja semanal.');
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
+
+  const onToggleWeeklyRange = async (range) => {
+    if (!authHeader || !range?.id) return;
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      const updated = await updateAdminAvailabilityRange({
+        authHeader,
+        rangeId: range.id,
+        payload: { is_active: !range.is_active },
+      });
+      if (updated?.id) {
+        setAvailabilityRanges((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      }
+      await loadAgendaData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
+      setActionToast('Franja semanal actualizada.');
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo actualizar la franja semanal.');
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
+
+  const onDeleteWeeklyRange = async (rangeId) => {
+    if (!authHeader || !rangeId) return;
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      await deleteAdminAvailabilityRange({ authHeader, rangeId });
+      setAvailabilityRanges((prev) => prev.filter((item) => item.id !== rangeId));
+      await loadAgendaData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
+      setActionToast('Franja semanal eliminada.');
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo eliminar la franja semanal.');
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
+
+  const onApplyPunctualRange = async () => {
+    if (!authHeader) return;
+    const { date, start_time: startTime, end_time: endTime, status, reason } = punctualRangeDraft;
+    if (!date || !isQuarterHourTime(startTime) || !isQuarterHourTime(endTime)) {
+      setErrorMessage('Completa fecha y horas en formato de 15 minutos.');
+      return;
+    }
+    const startMinutes = timeToMinutes(startTime);
+    const endMinutes = timeToMinutes(endTime);
+    if (startMinutes === null || endMinutes === null || startMinutes >= endMinutes) {
+      setErrorMessage('La hora de fin debe ser mayor a la de inicio.');
+      return;
+    }
+
+    const rangeTimes = [];
+    for (let current = startTime; current && current !== endTime; current = addMinutesToTimeValue(current, 15)) {
+      rangeTimes.push(current);
+      if (rangeTimes.length > 96) break;
+    }
+    if (!rangeTimes.length) return;
+
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      if (status === 'unavailable') {
+        const existingSet = new Set(
+          slotBlocks
+            .filter((block) => block.date === date && block.is_active)
+            .map((block) => toTimeValue(block.time))
+        );
+        const creations = rangeTimes
+          .filter((timeValue) => !existingSet.has(timeValue))
+          .map((timeValue) => createAdminSlotBlock({
+            authHeader,
+            payload: {
+              date,
+              time: `${timeValue}:00`,
+              reason: reason || 'No disponible puntual',
+              is_active: true,
+            },
+          }));
+        if (creations.length) {
+          const created = await Promise.all(creations);
+          setSlotBlocks((prev) => [...prev, ...created.filter((item) => item?.id)]);
+        }
+      } else {
+        const blocksToRemove = slotBlocks.filter((block) => (
+          block.date === date && block.is_active && rangeTimes.includes(toTimeValue(block.time))
+        ));
+        if (blocksToRemove.length) {
+          await Promise.all(blocksToRemove.map((block) => deleteAdminSlotBlock({ authHeader, blockId: block.id })));
+          const removeIds = new Set(blocksToRemove.map((block) => block.id));
+          setSlotBlocks((prev) => prev.filter((block) => !removeIds.has(block.id)));
+        }
+      }
+      await loadAgendaData(authHeader);
+      setActionToast('Franja puntual aplicada.');
+    } catch (error) {
+      setErrorMessage(error?.message || 'No se pudo aplicar la franja puntual.');
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
+
+  const onCreateManualBooking = async () => {
+    if (!authHeader) return;
+    const parsedStudentId = Number.parseInt(String(manualBookingDraft.student_id || ''), 10);
+    const parsedLessonId = Number.parseInt(String(manualBookingDraft.lesson_id || ''), 10);
+
+    if (!manualBookingDraft.student_id || !Number.isFinite(parsedStudentId) || parsedStudentId <= 0) {
+      setBookingModalError('Selecciona un alumno para la reserva.');
+      return;
+    }
+    if (!manualBookingDraft.lesson_id || !Number.isFinite(parsedLessonId) || parsedLessonId <= 0) {
+      setBookingModalError('Selecciona una clase para la reserva.');
+      return;
+    }
+    if (!manualBookingDraft.date) {
+      setBookingModalError('Selecciona una fecha para la reserva.');
+      return;
+    }
+    if (!manualBookingDraft.time) {
+      setBookingModalError('Selecciona una hora para la reserva.');
+      return;
+    }
+    if (!isQuarterHourTime(manualBookingDraft.time)) {
+      setErrorMessage('La hora de reserva debe terminar en 00, 15, 30 o 45.');
+      setBookingModalError('La hora debe terminar en 00, 15, 30 o 45.');
+      return;
+    }
+    setBookingModalError('');
+    const payload = {
+      student_id: parsedStudentId,
+      lesson_id: parsedLessonId,
+      date: manualBookingDraft.date,
+      time: `${manualBookingDraft.time}:00`,
+      status: manualBookingDraft.status,
+      notes: manualBookingDraft.notes,
+    };
+    setIsAgendaSaving(true);
+    setErrorMessage('');
+    try {
+      await createAdminBooking({ authHeader, payload });
+      setManualBookingDraft({
+        student_id: '',
+        lesson_id: '',
+        date: '',
+        time: '',
+        status: 'confirmed',
+        notes: '',
+      });
+      setIsManualBookingModalOpen(false);
+      await loadAgendaData(authHeader);
+      refreshSectionCounts(authHeader, { silent: true });
+      setActionToast('Reserva manual creada.');
+    } catch (error) {
+      const message = error?.message || 'No se pudo crear la reserva manual.';
+      setErrorMessage(message);
+      setBookingModalError(message);
+    } finally {
+      setIsAgendaSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-muted/20">
@@ -1353,8 +2274,14 @@ const EsterDashboard = () => {
                 <button
                   key={section}
                   type="button"
+                  aria-label={sectionMeta[section].label}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors inline-flex items-center gap-2 ${activeSection === section ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-foreground hover:bg-muted/60'}`}
-                  onClick={() => setActiveSection(section)}
+                  onClick={() => {
+                    if (authHeader) {
+                      refreshSectionCounts(authHeader, { silent: true });
+                    }
+                    setActiveSection(section);
+                  }}
                 >
                   <Icon name={sectionMeta[section].icon} size={14} />
                   <span>{sectionMeta[section].label}</span>
@@ -1746,7 +2673,7 @@ const EsterDashboard = () => {
             </div>
 
             <div className="grid xl:grid-cols-12 gap-4">
-              <div className="xl:col-span-8 bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+              <div className="xl:order-2 xl:col-span-4 bg-white border border-border rounded-xl shadow-soft overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[980px]">
                     <thead className="bg-muted/40 text-left">
@@ -1762,9 +2689,33 @@ const EsterDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {students.map((student) => (
-                        <tr key={student.id} className={`border-t border-border align-top ${selectedStudentId === student.id ? 'bg-primary/5' : ''}`}>
-                          <td className="px-4 py-3 text-sm text-foreground">{student.username || '-'}</td>
+                      {students.map((student) => {
+                        const isSelectedStudent = selectedStudentId === student.id;
+                        return (
+                        <tr
+                          key={student.id}
+                          className={`border-t border-border align-top cursor-pointer transition-colors ${
+                            isSelectedStudent ? 'bg-primary/25 border-y-2 border-primary shadow-[inset_0_0_0_1px_rgba(196,98,45,0.35)]' : 'hover:bg-muted/30'
+                          }`}
+                          onClick={() => hydrateStudentDraft(student)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              hydrateStudentDraft(student);
+                            }
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Seleccionar estudiante ${student.username || student.email || student.id}`}
+                        >
+                          <td className="px-4 py-3 text-sm text-foreground">
+                            <div className="flex items-center gap-2">
+                              {isSelectedStudent && (
+                                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-primary" aria-hidden="true" />
+                              )}
+                              <span className={isSelectedStudent ? 'font-semibold' : ''}>{student.username || '-'}</span>
+                            </div>
+                          </td>
                           <td className="px-4 py-3 text-sm text-foreground">{`${student.first_name || ''} ${student.last_name || ''}`.trim() || '-'}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{student.email || '-'}</td>
                           <td className="px-4 py-3 text-sm text-foreground">{student.language_level || '-'}</td>
@@ -1776,12 +2727,20 @@ const EsterDashboard = () => {
                             </span>
                           </td>
                           <td className="px-4 py-3 text-sm text-foreground">
-                            <Button variant="outline" size="sm" onClick={() => hydrateStudentDraft(student)}>
-                              Editar
+                            <Button
+                              variant={isSelectedStudent ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                hydrateStudentDraft(student);
+                              }}
+                            >
+                              {isSelectedStudent ? 'Seleccionado ✓' : 'Seleccionar'}
                             </Button>
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
 
                       {!isStudentsLoading && students.length === 0 && (
                         <tr>
@@ -1803,7 +2762,7 @@ const EsterDashboard = () => {
                 </div>
               </div>
 
-              <aside className="xl:col-span-4 bg-white border border-border rounded-xl p-5 shadow-soft space-y-4">
+              <aside className="xl:order-1 xl:col-span-8 bg-white border border-border rounded-xl p-5 shadow-soft space-y-4">
                 <h3 className="text-sm font-semibold text-foreground">Editor de estudiante</h3>
 
                 {!selectedStudent && (
@@ -1814,8 +2773,8 @@ const EsterDashboard = () => {
                   <>
                     <div className="grid grid-cols-3 gap-2">
                       <div className="rounded-md border border-border p-2">
-                        <p className="text-xs text-muted-foreground">Metas pendientes</p>
-                        <p className="text-base font-semibold text-foreground">{studentEngagementStats.pendingGoals}</p>
+                        <p className="text-xs text-muted-foreground">Clases próximas</p>
+                        <p className="text-base font-semibold text-foreground">{selectedStudentUpcomingBookings.length}</p>
                       </div>
                       <div className="rounded-md border border-border p-2">
                         <p className="text-xs text-muted-foreground">Mensajes sin leer</p>
@@ -1829,10 +2788,9 @@ const EsterDashboard = () => {
 
                     <div className="flex flex-wrap items-center gap-2 rounded-md border border-border p-2 bg-muted/30">
                       {[
+                        { id: 'dashboard', label: 'Vista alumno', icon: 'LayoutDashboard' },
                         { id: 'profile', label: 'Perfil', icon: 'User' },
                         { id: 'materials', label: 'Materiales', icon: 'FileText' },
-                        { id: 'goals', label: 'Metas', icon: 'Target' },
-                        { id: 'messages', label: 'Mensajes', icon: 'MessageCircle' },
                         { id: 'progress', label: 'Progreso', icon: 'TrendingUp' },
                       ].map((tab) => (
                         <Button
@@ -1847,6 +2805,111 @@ const EsterDashboard = () => {
                         </Button>
                       ))}
                     </div>
+
+                    {studentEditorTab === 'dashboard' && (
+                      <div className="space-y-4">
+                        <div className="border-b border-border">
+                          <nav className="-mb-px flex flex-wrap gap-4">
+                            {[
+                              { id: 'overview', label: 'Resumen', icon: 'LayoutDashboard' },
+                              { id: 'lessons', label: 'Clases', icon: 'BookOpen' },
+                              { id: 'progress', label: 'Progreso', icon: 'TrendingUp' },
+                              { id: 'resources', label: 'Recursos', icon: 'FileText' },
+                              { id: 'payments', label: 'Pagos', icon: 'CreditCard' },
+                            ].map((tab) => (
+                              <button
+                                key={`student-preview-${tab.id}`}
+                                type="button"
+                                onClick={() => setStudentPreviewTab(tab.id)}
+                                className={`flex items-center gap-2 py-3 px-1 border-b-2 text-sm font-medium transition-colors ${
+                                  studentPreviewTab === tab.id
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                                }`}
+                              >
+                                <Icon name={tab.icon} size={14} />
+                                <span>{tab.label}</span>
+                              </button>
+                            ))}
+                          </nav>
+                        </div>
+
+                        {studentPreviewTab === 'overview' && (
+                          <div className="space-y-4">
+                            <div className="bg-gradient-cultural rounded-lg p-5 text-white">
+                              <h4 className="text-xl font-headlines font-semibold">
+                                Vista de alumno: {`${selectedStudent.first_name || ''} ${selectedStudent.last_name || ''}`.trim() || selectedStudent.username || '-'}
+                              </h4>
+                              <p className="text-white/90 text-sm mt-1">
+                                Esta sección replica el dashboard de alumno (sin mensajes) con datos en tiempo real.
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                              <div className="bg-white rounded-lg border border-border p-4">
+                                <p className="text-sm text-muted-foreground">Total clases</p>
+                                <p className="text-2xl font-bold text-foreground mt-1">{selectedStudentBookings.length}</p>
+                              </div>
+                              <div className="bg-white rounded-lg border border-border p-4">
+                                <p className="text-sm text-muted-foreground">Horas completadas</p>
+                                <p className="text-2xl font-bold text-foreground mt-1">{selectedStudentPastBookings.length}</p>
+                              </div>
+                              <div className="bg-white rounded-lg border border-border p-4">
+                                <p className="text-sm text-muted-foreground">Nivel</p>
+                                <p className="text-2xl font-bold text-foreground mt-1">{selectedStudent.language_level || '-'}</p>
+                              </div>
+                            </div>
+                            <div className="bg-white rounded-lg border border-border p-4">
+                              <h5 className="text-sm font-semibold text-foreground mb-2">Próxima clase</h5>
+                              {selectedStudentNextBooking ? (
+                                <p className="text-sm text-foreground">
+                                  {selectedStudentNextBooking.lesson?.title || 'Clase'} · {selectedStudentNextBooking.date} {toTimeValue(selectedStudentNextBooking.time)}
+                                </p>
+                              ) : (
+                                <p className="text-sm text-muted-foreground">Sin clases próximas.</p>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {studentPreviewTab === 'lessons' && (
+                          <StudentLessonsPanel
+                            upcomingBookings={selectedStudentUpcomingBookings}
+                            pastBookings={selectedStudentPastBookings}
+                            isLoading={isBookingsLoading}
+                            error={errorMessage}
+                            onCancelBooking={(bookingId) => onUpdateBookingStatus(bookingId, 'cancelled')}
+                            actionLoadingBookingId={null}
+                            language="es"
+                          />
+                        )}
+
+                        {studentPreviewTab === 'progress' && (
+                          <div className="space-y-4">
+                            <ProgressChart language="es" progressRecords={studentProgress} error="" />
+                            <p className="text-sm text-muted-foreground">
+                              Esta es la visión del alumno: solo lectura.
+                            </p>
+                          </div>
+                        )}
+
+                        {studentPreviewTab === 'resources' && (
+                          <StudentResourcesPanel
+                            materials={studentMaterials}
+                            isLoading={isStudentMaterialsLoading}
+                            error={errorMessage}
+                            language="es"
+                            bookings={selectedStudentBookings}
+                            onCreateMaterial={onCreateStudentMaterialFromPanel}
+                            isCreatingMaterial={isMaterialCreating}
+                            createError=""
+                          />
+                        )}
+
+                        {studentPreviewTab === 'payments' && (
+                          <PaymentHistory language="es" bookings={selectedStudentBookings} />
+                        )}
+                      </div>
+                    )}
 
                     {studentEditorTab === 'profile' && (
                       <div className="space-y-3">
@@ -2119,238 +3182,189 @@ const EsterDashboard = () => {
                       </div>
                     )}
 
-                    {studentEditorTab === 'goals' && (
-                      <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-foreground">Metas del estudiante</h4>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Filtro de metas</label>
-                          <select
-                            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={goalStatusFilter}
-                            onChange={(event) => setGoalStatusFilter(event.target.value)}
-                          >
-                            <option value="all">Todas</option>
-                            <option value="pending">Pendientes</option>
-                            <option value="completed">Completadas</option>
-                            <option value="overdue">Vencidas</option>
-                          </select>
-                          <p className="text-xs text-muted-foreground">
-                            Mostrando {filteredStudentMaterials.length} de {studentMaterials.length} materiales
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Mostrando {filteredStudentGoals.length} de {studentGoals.length} metas
-                          </p>
-                        </div>
-                        <Input
-                          label="Titulo de la meta"
-                          value={goalDraft.title}
-                          onChange={(event) => setGoalDraft((prev) => ({ ...prev, title: event.target.value }))}
-                        />
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Descripcion</label>
-                          <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            rows={3}
-                            value={goalDraft.description}
-                            onChange={(event) => setGoalDraft((prev) => ({ ...prev, description: event.target.value }))}
-                          />
-                        </div>
-                        <Input
-                          label="Fecha limite"
-                          type="date"
-                          value={goalDraft.due_date}
-                          onChange={(event) => setGoalDraft((prev) => ({ ...prev, due_date: event.target.value }))}
-                        />
-                        <label className="inline-flex items-center gap-2 text-sm text-foreground">
-                          <input
-                            type="checkbox"
-                            checked={goalDraft.is_completed}
-                            onChange={(event) => setGoalDraft((prev) => ({ ...prev, is_completed: event.target.checked }))}
-                          />
-                          Completada
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <Button onClick={onSaveGoal} disabled={isGoalSaving || goalDraft.title.trim().length < 3}>
-                            {isGoalSaving ? 'Guardando...' : (selectedGoalId ? 'Guardar meta' : 'Crear meta')}
-                          </Button>
-                          <Button variant="outline" onClick={resetGoalDraft} disabled={isGoalSaving}>Limpiar</Button>
-                        </div>
-                        <div className="max-h-40 overflow-y-auto space-y-2 border border-border rounded-md p-2">
-                          {isStudentGoalsLoading && <p className="text-xs text-muted-foreground">Cargando metas...</p>}
-                          {!isStudentGoalsLoading && !filteredStudentGoals.length && <p className="text-xs text-muted-foreground">Sin metas para este filtro.</p>}
-                          {filteredStudentGoals.map((goal) => (
-                            <div key={`goal-${goal.id}`} className="text-xs border border-border rounded-md p-2">
-                              <p className="font-semibold text-foreground">{goal.title}</p>
-                              <div className="mt-1 flex flex-wrap gap-1.5">
-                                <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${goal.is_completed ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning'}`}>
-                                  {goal.is_completed ? 'Completada' : 'Pendiente'}
-                                </span>
-                                {goal.due_date && (
-                                  <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${isPastDate(goal.due_date) && !goal.is_completed ? 'bg-error/15 text-error' : 'bg-muted text-muted-foreground'}`}>
-                                    {isPastDate(goal.due_date) && !goal.is_completed ? 'Vencida' : `Limite: ${goal.due_date}`}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="mt-2 flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => hydrateGoalDraft(goal)}>Editar</Button>
-                                <Button size="sm" variant="destructive" onClick={() => setPendingDeleteGoalId(goal.id)}>Eliminar</Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {studentEditorTab === 'messages' && (
-                      <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-foreground">Mensajes al estudiante</h4>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Filtro de mensajes</label>
-                          <select
-                            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={messageStatusFilter}
-                            onChange={(event) => setMessageStatusFilter(event.target.value)}
-                          >
-                            <option value="all">Todos</option>
-                            <option value="unread">No leidos</option>
-                            <option value="read">Leidos</option>
-                          </select>
-                          <p className="text-xs text-muted-foreground">
-                            Mostrando {filteredStudentMessages.length} de {studentMessages.length} mensajes
-                          </p>
-                        </div>
-                        <Input
-                          label="Asunto"
-                          value={messageDraft.subject}
-                          onChange={(event) => setMessageDraft((prev) => ({ ...prev, subject: event.target.value }))}
-                        />
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Mensaje</label>
-                          <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            rows={4}
-                            value={messageDraft.body}
-                            onChange={(event) => setMessageDraft((prev) => ({ ...prev, body: event.target.value }))}
-                          />
-                        </div>
-                        <label className="inline-flex items-center gap-2 text-sm text-foreground">
-                          <input
-                            type="checkbox"
-                            checked={messageDraft.is_read}
-                            onChange={(event) => setMessageDraft((prev) => ({ ...prev, is_read: event.target.checked }))}
-                          />
-                          Marcar como leido
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <Button onClick={onSaveMessage} disabled={isMessageSaving || messageDraft.subject.trim().length < 3 || messageDraft.body.trim().length < 5}>
-                            {isMessageSaving ? 'Guardando...' : (selectedMessageId ? 'Guardar mensaje' : 'Enviar mensaje')}
-                          </Button>
-                          <Button variant="outline" onClick={resetMessageDraft} disabled={isMessageSaving}>Limpiar</Button>
-                        </div>
-                        <div className="max-h-40 overflow-y-auto space-y-2 border border-border rounded-md p-2">
-                          {isStudentMessagesLoading && <p className="text-xs text-muted-foreground">Cargando mensajes...</p>}
-                          {!isStudentMessagesLoading && !filteredStudentMessages.length && <p className="text-xs text-muted-foreground">Sin mensajes para este filtro.</p>}
-                          {filteredStudentMessages.map((message) => (
-                            <div key={`message-${message.id}`} className="text-xs border border-border rounded-md p-2">
-                              <p className="font-semibold text-foreground">{message.subject}</p>
-                              <span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${message.is_read ? 'bg-muted text-muted-foreground' : 'bg-primary/15 text-primary'}`}>
-                                {message.is_read ? 'Leido' : 'No leido'}
-                              </span>
-                              <div className="mt-2 flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => hydrateMessageDraft(message)}>Editar</Button>
-                                <Button size="sm" variant="destructive" onClick={() => setPendingDeleteMessageId(message.id)}>Eliminar</Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
                     {studentEditorTab === 'progress' && (
-                      <div className="space-y-3">
-                        <h4 className="text-sm font-semibold text-foreground">Progreso del estudiante</h4>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Filtro de progreso</label>
-                          <select
-                            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={progressStatusFilter}
-                            onChange={(event) => setProgressStatusFilter(event.target.value)}
-                          >
-                            <option value="all">Todo</option>
-                            <option value="pending">Pendiente</option>
-                            <option value="completed">Completado</option>
-                          </select>
+                      <div className="space-y-4">
+                        <ProgressChart language="es" progressRecords={studentProgress} error="" />
+                        <div className="bg-white rounded-lg border border-border p-4 space-y-3">
+                          <h5 className="text-sm font-semibold text-foreground">Actualizar progreso (Ester)</h5>
+                          <div className="grid md:grid-cols-3 gap-3">
+                            <Input type="number" label="Speaking" value={progressDraft.speaking_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, speaking_score: event.target.value }))} />
+                            <Input type="number" label="Listening" value={progressDraft.listening_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, listening_score: event.target.value }))} />
+                            <Input type="number" label="Reading" value={progressDraft.reading_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, reading_score: event.target.value }))} />
+                            <Input type="number" label="Writing" value={progressDraft.writing_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, writing_score: event.target.value }))} />
+                            <Input type="number" label="Grammar" value={progressDraft.grammar_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, grammar_score: event.target.value }))} />
+                            <Input type="number" label="Vocabulary" value={progressDraft.vocabulary_score} onChange={(event) => setProgressDraft((prev) => ({ ...prev, vocabulary_score: event.target.value }))} />
+                          </div>
+                          <Input type="number" label="Score general (media automática)" value={computedGeneralProgressScore} disabled />
                           <p className="text-xs text-muted-foreground">
-                            Mostrando {filteredStudentProgress.length} de {studentProgress.length} registros
+                            Se calcula automáticamente como la media de Speaking, Listening, Reading, Writing, Grammar y Vocabulary.
                           </p>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Clase</label>
-                          <select
-                            className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={progressDraft.lesson_id}
-                            onChange={(event) => setProgressDraft((prev) => ({ ...prev, lesson_id: event.target.value }))}
-                          >
-                            <option value="">Selecciona una clase</option>
-                            {lessons.map((lesson) => (
-                              <option key={`progress-lesson-${lesson.id}`} value={lesson.id}>{lesson.title || `Clase ${lesson.id}`}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <Input
-                          label="Puntuacion"
-                          type="number"
-                          value={progressDraft.score}
-                          onChange={(event) => setProgressDraft((prev) => ({ ...prev, score: event.target.value }))}
-                        />
-                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-foreground">Notas</label>
-                          <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            rows={3}
-                            value={progressDraft.notes}
-                            onChange={(event) => setProgressDraft((prev) => ({ ...prev, notes: event.target.value }))}
-                          />
-                        </div>
-                        <label className="inline-flex items-center gap-2 text-sm text-foreground">
-                          <input
-                            type="checkbox"
-                            checked={progressDraft.completed}
-                            onChange={(event) => setProgressDraft((prev) => ({ ...prev, completed: event.target.checked }))}
-                          />
-                          Completada
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <Button onClick={onSaveProgress} disabled={isProgressSaving || !progressDraft.lesson_id}>
-                            {isProgressSaving ? 'Guardando...' : (selectedProgressId ? 'Guardar progreso' : 'Crear progreso')}
-                          </Button>
-                          <Button variant="outline" onClick={resetProgressDraft} disabled={isProgressSaving}>Limpiar</Button>
-                        </div>
-                        <div className="max-h-40 overflow-y-auto space-y-2 border border-border rounded-md p-2">
-                          {isStudentProgressLoading && <p className="text-xs text-muted-foreground">Cargando progreso...</p>}
-                          {!isStudentProgressLoading && !filteredStudentProgress.length && <p className="text-xs text-muted-foreground">Sin registros para este filtro.</p>}
-                          {filteredStudentProgress.map((progress) => (
-                            <div key={`progress-${progress.id}`} className="text-xs border border-border rounded-md p-2">
-                              <p className="font-semibold text-foreground">{progress.lesson?.title || `Clase ${progress.lesson?.id || ''}`}</p>
-                              <div className="mt-1 flex flex-wrap gap-1.5">
-                                <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${progress.completed ? 'bg-success/15 text-success' : 'bg-warning/15 text-warning'}`}>
-                                  {progress.completed ? 'Completada' : 'Pendiente'}
-                                </span>
-                                <span className="inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold bg-muted text-muted-foreground">
-                                  Score: {progress.score ?? '-'}
-                                </span>
-                              </div>
-                              <div className="mt-2 flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => hydrateProgressDraft(progress)}>Editar</Button>
-                                <Button size="sm" variant="destructive" onClick={() => setPendingDeleteProgressId(progress.id)}>Eliminar</Button>
-                              </div>
-                            </div>
-                          ))}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-foreground">Notas</label>
+                            <textarea
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                              rows={3}
+                              value={progressDraft.notes}
+                              onChange={(event) => setProgressDraft((prev) => ({ ...prev, notes: event.target.value }))}
+                            />
+                          </div>
+                          <label className="inline-flex items-center gap-2 text-sm text-foreground">
+                            <input
+                              type="checkbox"
+                              checked={progressDraft.completed}
+                              onChange={(event) => setProgressDraft((prev) => ({ ...prev, completed: event.target.checked }))}
+                            />
+                            Progreso completado
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <Button onClick={onSaveProgress} disabled={isProgressSaving}>
+                              {isProgressSaving ? 'Guardando...' : 'Guardar progreso'}
+                            </Button>
+                            <Button variant="outline" onClick={resetProgressDraft} disabled={isProgressSaving}>
+                              Limpiar
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     )}
                   </>
                 )}
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {authHeader && activeSection === 'messages' && (
+          <section className="space-y-4">
+            <div className="grid xl:grid-cols-12 gap-4">
+              <div className="xl:col-span-8 bg-white border border-border rounded-xl shadow-soft p-5 space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-headlines font-semibold text-foreground">Chat con estudiante</h3>
+                    <p className="text-sm text-muted-foreground">Vista de conversación en tiempo real.</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    No leídos del alumno: {unreadFromSelectedStudent}
+                  </span>
+                </div>
+
+                {!selectedStudent && (
+                  <div className="rounded-md border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+                    Selecciona un alumno en la columna derecha para abrir su conversación.
+                  </div>
+                )}
+
+                {selectedStudent && (
+                  <>
+                    <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm text-foreground">
+                      <p className="font-medium">{`${selectedStudent.first_name || ''} ${selectedStudent.last_name || ''}`.trim() || selectedStudent.username || '-'}</p>
+                      <p className="text-xs text-muted-foreground">{selectedStudent.email || '-'}</p>
+                    </div>
+
+                    <div className="h-[440px] overflow-y-auto rounded-lg border border-border bg-muted/20 p-4 space-y-3">
+                      {isStudentMessagesLoading && (
+                        <p className="text-sm text-muted-foreground">Cargando mensajes...</p>
+                      )}
+                      {!isStudentMessagesLoading && orderedConversationMessages.length === 0 && (
+                        <p className="text-sm text-muted-foreground">Todavía no hay mensajes en esta conversación.</p>
+                      )}
+                      {orderedConversationMessages.map((message) => {
+                        const isFromStudent = Number(message.sender?.id) === Number(selectedStudentId);
+                        return (
+                          <div
+                            key={`thread-message-${message.id}`}
+                            className={`max-w-[85%] rounded-2xl border px-3 py-2 text-sm ${
+                              isFromStudent ? 'mr-auto border-border bg-white' : 'ml-auto border-primary/30 bg-primary/10'
+                            }`}
+                          >
+                            <p className="whitespace-pre-wrap text-foreground">{message.body}</p>
+                            <p className="mt-1 text-[11px] text-muted-foreground">
+                              {message.sender?.username || 'Sistema'} · {formatDate(message.created_at)}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {(messageComposerError || messageComposerSuccess) && (
+                      <div className="space-y-1">
+                        {messageComposerError && <p className="text-sm text-error">{messageComposerError}</p>}
+                        {messageComposerSuccess && <p className="text-sm text-success">{messageComposerSuccess}</p>}
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <textarea
+                        value={messageComposerDraft}
+                        onChange={(event) => setMessageComposerDraft(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' && !event.shiftKey) {
+                            event.preventDefault();
+                            onSendConversationMessage();
+                          }
+                        }}
+                        placeholder="Escribe un mensaje..."
+                        rows={4}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                      />
+                      <div className="flex items-center gap-2">
+                        <Button
+                          iconName="Send"
+                          onClick={onSendConversationMessage}
+                          disabled={!messageComposerDraft.trim() || isComposerSending}
+                        >
+                          {isComposerSending ? 'Enviando...' : 'Enviar'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setMessageComposerDraft('');
+                            setMessageComposerError('');
+                            setMessageComposerSuccess('');
+                          }}
+                          disabled={isComposerSending}
+                        >
+                          Limpiar
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <aside className="xl:col-span-4 bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+                <div className="px-4 py-3 border-b border-border">
+                  <p className="text-sm font-semibold text-foreground">Alumnos</p>
+                </div>
+                <div className="max-h-[700px] overflow-y-auto divide-y divide-border">
+                  {isStudentsLoading && (
+                    <p className="px-4 py-6 text-sm text-muted-foreground">Cargando alumnos...</p>
+                  )}
+                  {!isStudentsLoading && students.length === 0 && (
+                    <p className="px-4 py-6 text-sm text-muted-foreground">No hay alumnos disponibles.</p>
+                  )}
+                  {students.map((student) => {
+                    const isSelected = Number(student.id) === Number(selectedStudentId);
+                    return (
+                      <button
+                        key={`thread-student-${student.id}`}
+                        type="button"
+                        onClick={() => hydrateStudentDraft(student)}
+                        className={`w-full text-left px-4 py-3 transition-colors hover:bg-muted/30 ${
+                          isSelected ? 'bg-primary/10' : 'bg-white'
+                        }`}
+                      >
+                        <p className="text-sm font-semibold text-foreground">
+                          {`${student.first_name || ''} ${student.last_name || ''}`.trim() || student.username || '-'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{student.email || '-'}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Reservas: {student.booking_count ?? 0} · Próximas: {student.upcoming_bookings ?? 0}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
               </aside>
             </div>
           </section>
@@ -2526,7 +3540,671 @@ const EsterDashboard = () => {
             </div>
           </section>
         )}
+
+        {authHeader && activeSection === 'waitlist' && (
+          <section className="space-y-4">
+            <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-3">
+                <Input
+                  label="Buscar en lista de espera"
+                  value={waitlistSearchTerm}
+                  onChange={(event) => setWaitlistSearchTerm(event.target.value)}
+                  placeholder="Nombre, email o teléfono"
+                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Estado</label>
+                  <select
+                    className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={waitlistStageFilter}
+                    onChange={(event) => setWaitlistStageFilter(event.target.value)}
+                  >
+                    <option value="all">Todos</option>
+                    {STAGE_OPTIONS.map((stage) => (
+                      <option key={`waitlist-stage-${stage}`} value={stage}>{cap(stage)}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[980px]">
+                  <thead className="bg-muted/40 text-left">
+                    <tr>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Persona</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contacto</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tipo</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estado</th>
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Creado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredWaitlistLeads.map((lead) => (
+                      <tr key={`waitlist-${lead.id}`} className="border-t border-border align-top">
+                        <td className="px-4 py-3 text-sm text-foreground">{lead.full_name || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-foreground">
+                          <p>{lead.email || '-'}</p>
+                          <p className="text-xs text-muted-foreground">{lead.phone || '-'}</p>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-foreground">
+                          {lead.source === 'waitlist_small_group' ? 'Grupo reducido' : 'Intensivo'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <select
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            value={lead.stage || 'new'}
+                            onChange={(event) => onChangeStage(lead.id, event.target.value)}
+                            disabled={isStageUpdating === String(lead.id)}
+                          >
+                            {STAGE_OPTIONS.map((stage) => (
+                              <option key={`waitlist-row-${lead.id}-${stage}`} value={stage}>{cap(stage)}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-foreground">{formatDate(lead.created_at)}</td>
+                      </tr>
+                    ))}
+
+                    {!isWaitlistLoading && filteredWaitlistLeads.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                          No hay personas en lista de espera para los filtros actuales.
+                        </td>
+                      </tr>
+                    )}
+
+                    {isWaitlistLoading && (
+                      <tr>
+                        <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                          Cargando lista de espera...
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {authHeader && activeSection === 'agenda' && (
+          <section className="space-y-4">
+            <div className="bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+              <div className="px-5 py-4 border-b border-border flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Agenda semanal</p>
+                  <p className="text-xs text-muted-foreground">Vista tipo calendario: solo Disponible, No disponible o Reserva.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={onAgendaPrevWeek}>Semana anterior</Button>
+                  <Button variant="outline" size="sm" onClick={onAgendaJumpToday}>Hoy</Button>
+                  <Button variant="outline" size="sm" onClick={onAgendaNextWeek}>Semana siguiente</Button>
+                </div>
+              </div>
+              <div className="px-5 py-3 border-b border-border bg-muted/20 text-sm font-medium text-foreground">
+                {agendaWeekRangeLabel}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[1050px] border-collapse">
+                  <thead>
+                    <tr className="bg-muted/35">
+                      <th className="w-24 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">Hora</th>
+                      {agendaWeekDays.map((day) => (
+                        <th key={`agenda-head-${day.isoDate}`} className="px-3 py-2 text-left border-b border-border">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{day.label}</p>
+                          <p className="text-sm font-semibold text-foreground">{day.date.getDate()}/{day.date.getMonth() + 1}</p>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {agendaHourRows.map((row) => (
+                      <tr key={`agenda-hour-${row.key}`} className="align-top">
+                        <td className="px-3 py-2 text-xs text-muted-foreground border-b border-border bg-muted/10">{row.key}</td>
+                        {agendaWeeklyGrid.map((column) => {
+                          const cell = column.byHour[row.key] || { booking: null, hasAvailability: false, isBookingStart: false };
+                          const hasBooking = !!cell.booking;
+                          const hasAvailability = !!cell.hasAvailability;
+                          const isSelected = selectedAgendaCell
+                            && selectedAgendaCell.day?.isoDate === column.day.isoDate
+                            && selectedAgendaCell.timeValue === row.key;
+                          const toneClass = hasBooking
+                            ? 'border-primary/30 bg-primary/10'
+                            : hasAvailability
+                              ? 'border-success/30 bg-success/10'
+                              : 'border-border bg-white';
+                          return (
+                            <td key={`agenda-cell-${column.day.isoDate}-${row.key}`} className="px-2 py-2 border-b border-border">
+                              <button
+                                type="button"
+                                className={`w-full min-h-[64px] rounded-md border p-2 text-left transition-colors hover:bg-muted/30 ${toneClass} ${isSelected ? 'ring-2 ring-primary/40' : ''}`}
+                                onClick={() => onAgendaSelectCell({
+                                  day: column.day,
+                                  timeValue: row.key,
+                                  cell,
+                                })}
+                                disabled={isAgendaSaving}
+                              >
+                                {hasBooking && (
+                                  <>
+                                    {cell.isBookingStart ? (
+                                      <>
+                                        <p className="text-[11px] uppercase tracking-wide text-primary font-semibold">Reserva</p>
+                                        <p className="text-xs font-semibold text-foreground">{cell.booking.student?.username || 'Alumno'}</p>
+                                        <p className="text-xs text-muted-foreground truncate">{cell.booking.lesson?.title || 'Clase'}</p>
+                                      </>
+                                    ) : (
+                                      <p className="text-xs font-semibold text-primary">Ocupada (misma reserva)</p>
+                                    )}
+                                  </>
+                                )}
+                                {!hasBooking && hasAvailability && (
+                                  <>
+                                    <p className="text-[11px] uppercase tracking-wide text-success font-semibold">Disponible</p>
+                                    <p className="text-xs text-muted-foreground">Click para elegir estado</p>
+                                  </>
+                                )}
+                                {!hasBooking && !hasAvailability && (
+                                  <>
+                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">No disponible</p>
+                                    <p className="text-xs text-muted-foreground">Click para elegir estado</p>
+                                  </>
+                                )}
+                              </button>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-4 border-t border-border bg-muted/10">
+                <div className="grid md:grid-cols-[1fr_auto_auto] gap-3 items-end">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Franja seleccionada</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {selectedAgendaCell ? `${selectedAgendaCell.day.label} ${selectedAgendaCell.day.isoDate} ${selectedAgendaCell.timeValue}` : 'Selecciona una celda de la agenda'}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">Estado</label>
+                    <select
+                      className="flex h-11 w-full min-w-56 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={selectedAgendaState}
+                      onChange={(event) => setSelectedAgendaState(event.target.value)}
+                      disabled={!selectedAgendaCell}
+                    >
+                      <option value="reserved">Reserva</option>
+                      <option value="available">Disponible</option>
+                      <option value="unavailable">No disponible</option>
+                    </select>
+                  </div>
+                  <Button onClick={onApplyAgendaState} disabled={!selectedAgendaCell || isAgendaSaving}>
+                    Aplicar estado
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-3">
+              <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+                <p className="text-sm text-muted-foreground">Disponibles (semana visible)</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{agendaWeekStats.available}</p>
+              </div>
+              <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+                <p className="text-sm text-muted-foreground">No disponibles (semana visible)</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{agendaWeekStats.unavailable}</p>
+              </div>
+              <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+                <p className="text-sm text-muted-foreground">Reservas (semana visible)</p>
+                <p className="text-3xl font-bold text-foreground mt-2">{agendaWeekStats.reserved}</p>
+              </div>
+            </div>
+
+            <div className="grid xl:grid-cols-12 gap-4">
+              <div className="xl:col-span-5 space-y-4">
+                <div className="bg-white border border-border rounded-xl p-5 shadow-soft space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Horario semanal por franjas</h3>
+                  <p className="text-xs text-muted-foreground">Configura rangos (inicio-fin) que se repiten cada semana.</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Día</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={weeklyRangeDraft.weekday}
+                        onChange={(event) => setWeeklyRangeDraft((prev) => ({ ...prev, weekday: Number(event.target.value) }))}
+                      >
+                        {WEEKDAY_OPTIONS.map((day) => (
+                          <option key={`weekly-day-${day.value}`} value={day.value}>{day.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Inicio</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={weeklyRangeDraft.start_time}
+                        onChange={(event) => setWeeklyRangeDraft((prev) => ({ ...prev, start_time: event.target.value }))}
+                      >
+                        {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                          <option key={`weekly-start-${timeOption}`} value={timeOption}>{timeOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Fin</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={weeklyRangeDraft.end_time}
+                        onChange={(event) => setWeeklyRangeDraft((prev) => ({ ...prev, end_time: event.target.value }))}
+                      >
+                        {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                          <option key={`weekly-end-${timeOption}`} value={timeOption}>{timeOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Buffer (min)</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={weeklyRangeDraft.buffer_minutes}
+                        onChange={(event) => setWeeklyRangeDraft((prev) => ({ ...prev, buffer_minutes: Number(event.target.value) }))}
+                      >
+                        {[0, 5, 10, 15].map((bufferOption) => (
+                          <option key={`weekly-buffer-${bufferOption}`} value={bufferOption}>{bufferOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <Button onClick={onCreateWeeklyRange} disabled={isAgendaSaving || !weeklyRangeDraft.start_time || !weeklyRangeDraft.end_time}>
+                    Guardar franja semanal
+                  </Button>
+
+                  <div className="max-h-80 overflow-y-auto space-y-3 border border-border rounded-md p-3">
+                    {weeklySlotsByDay.map((day) => (
+                      <div key={`weekly-group-${day.value}`}>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{day.label}</p>
+                        <div className="mt-1 flex flex-wrap gap-2">
+                          {availabilityRanges.filter((range) => Number(range.weekday) === Number(day.value)).length === 0 && (
+                            <span className="text-xs text-muted-foreground">Sin franjas</span>
+                          )}
+                          {availabilityRanges
+                            .filter((range) => Number(range.weekday) === Number(day.value))
+                            .map((range) => (
+                              <div key={`weekly-range-${range.id}`} className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold border ${range.is_active ? 'border-success/30 bg-success/10 text-success' : 'border-muted bg-muted text-muted-foreground'}`}>
+                                <button
+                                  type="button"
+                                  onClick={() => onToggleWeeklyRange(range)}
+                                  disabled={isAgendaSaving}
+                                  className="hover:underline"
+                                >
+                                  {toTimeValue(range.start_time)} - {toTimeValue(range.end_time)} ({range.buffer_minutes || 0}m)
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => onDeleteWeeklyRange(range.id)}
+                                  disabled={isAgendaSaving}
+                                  className="text-error hover:underline"
+                                >
+                                  x
+                                </button>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white border border-border rounded-xl p-5 shadow-soft space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Franja puntual por fecha</h3>
+                  <p className="text-xs text-muted-foreground">Aplica disponibilidad/no disponibilidad solo para un día concreto.</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      label="Fecha"
+                      type="date"
+                      value={punctualRangeDraft.date}
+                      onChange={(event) => setPunctualRangeDraft((prev) => ({ ...prev, date: event.target.value }))}
+                    />
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Estado</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={punctualRangeDraft.status}
+                        onChange={(event) => setPunctualRangeDraft((prev) => ({ ...prev, status: event.target.value }))}
+                      >
+                        <option value="unavailable">No disponible</option>
+                        <option value="available">Disponible</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Inicio</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={punctualRangeDraft.start_time}
+                        onChange={(event) => setPunctualRangeDraft((prev) => ({ ...prev, start_time: event.target.value }))}
+                      >
+                        {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                          <option key={`punctual-start-${timeOption}`} value={timeOption}>{timeOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Fin</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={punctualRangeDraft.end_time}
+                        onChange={(event) => setPunctualRangeDraft((prev) => ({ ...prev, end_time: event.target.value }))}
+                      >
+                        {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                          <option key={`punctual-end-${timeOption}`} value={timeOption}>{timeOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <label className="text-sm font-medium text-foreground">Motivo (opcional)</label>
+                      <input
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={punctualRangeDraft.reason}
+                        onChange={(event) => setPunctualRangeDraft((prev) => ({ ...prev, reason: event.target.value }))}
+                        placeholder="Vacaciones, evento, ajuste..."
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={onApplyPunctualRange} disabled={isAgendaSaving || !punctualRangeDraft.date}>
+                    Aplicar franja puntual
+                  </Button>
+                </div>
+
+              </div>
+
+              <div className="xl:col-span-7 space-y-4">
+                <div className="bg-white border border-border rounded-xl p-5 shadow-soft space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Reserva manual</h3>
+                  <p className="text-xs text-muted-foreground">Tip: al pulsar una hora en la agenda, fecha y hora se rellenan automáticamente.</p>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Alumno</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={manualBookingDraft.student_id}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, student_id: event.target.value }))}
+                      >
+                        <option value="">Seleccionar alumno</option>
+                        {students.map((student) => (
+                          <option key={`manual-student-${student.id}`} value={student.id}>
+                            {student.first_name || student.username} {student.last_name || ''} ({student.email})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Clase</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={manualBookingDraft.lesson_id}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, lesson_id: event.target.value }))}
+                      >
+                        <option value="">Seleccionar clase</option>
+                        {lessons.map((lesson) => (
+                          <option key={`manual-lesson-${lesson.id}`} value={lesson.id}>{lesson.title}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Input
+                      label="Fecha"
+                      type="date"
+                      value={manualBookingDraft.date}
+                      onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, date: event.target.value }))}
+                    />
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Hora</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={manualBookingDraft.time}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, time: event.target.value }))}
+                      >
+                        <option value="">Seleccionar hora</option>
+                        {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                          <option key={`manual-time-${timeOption}`} value={timeOption}>{timeOption}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Estado</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={manualBookingDraft.status}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, status: event.target.value }))}
+                      >
+                        {BOOKING_STATUS_OPTIONS.map((statusOption) => (
+                          <option key={`manual-status-${statusOption}`} value={statusOption}>{statusLabel(statusOption)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-sm font-medium text-foreground">Notas</label>
+                      <textarea
+                        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        rows={3}
+                        value={manualBookingDraft.notes}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, notes: event.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  <Button
+                    onClick={onCreateManualBooking}
+                    disabled={isAgendaSaving || !manualBookingDraft.student_id || !manualBookingDraft.lesson_id || !manualBookingDraft.date || !manualBookingDraft.time}
+                  >
+                    Crear reserva manual
+                  </Button>
+                </div>
+
+                <div className="bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+                  <div className="px-5 py-4 border-b border-border">
+                    <h3 className="text-sm font-semibold text-foreground">Próximas reservas (vista agenda)</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[760px]">
+                      <thead className="bg-muted/40 text-left">
+                        <tr>
+                          <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Alumno</th>
+                          <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Clase</th>
+                          <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fecha</th>
+                          <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Hora</th>
+                          <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {upcomingAgendaBookings.map((booking) => (
+                          <tr key={`agenda-booking-${booking.id}`} className="border-t border-border">
+                            <td className="px-4 py-3 text-sm text-foreground">{booking.student?.username || '-'}</td>
+                            <td className="px-4 py-3 text-sm text-foreground">{booking.lesson?.title || '-'}</td>
+                            <td className="px-4 py-3 text-sm text-foreground">{booking.date}</td>
+                            <td className="px-4 py-3 text-sm text-foreground">{toTimeValue(booking.time)}</td>
+                            <td className="px-4 py-3 text-sm text-foreground">{statusLabel(booking.status)}</td>
+                          </tr>
+                        ))}
+                        {!isAgendaLoading && upcomingAgendaBookings.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                              No hay reservas próximas.
+                            </td>
+                          </tr>
+                        )}
+                        {isAgendaLoading && (
+                          <tr>
+                            <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                              Cargando agenda...
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
+
+      {isManualBookingModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white rounded-xl border border-border shadow-cultural p-5 space-y-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-headlines font-semibold text-foreground">Crear reserva desde agenda</h3>
+                <p className="text-sm text-muted-foreground">
+                  Completa los datos y confirma. Fecha y hora vienen precargadas desde la celda seleccionada.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setBookingModalError('');
+                  setIsManualBookingModalOpen(false);
+                }}
+                disabled={isAgendaSaving}
+              >
+                Cerrar
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Alumno</label>
+                <select
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={manualBookingDraft.student_id}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, student_id: event.target.value }))}
+                >
+                  <option value="">Seleccionar alumno</option>
+                  {students.map((student) => (
+                    <option key={`modal-manual-student-${student.id}`} value={student.id}>
+                      {student.first_name || student.username} {student.last_name || ''} ({student.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Clase</label>
+                <select
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={manualBookingDraft.lesson_id}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, lesson_id: event.target.value }))}
+                >
+                  <option value="">Seleccionar clase</option>
+                  {lessons.map((lesson) => (
+                    <option key={`modal-manual-lesson-${lesson.id}`} value={lesson.id}>{lesson.title}</option>
+                  ))}
+                </select>
+              </div>
+              <Input
+                label="Fecha"
+                type="date"
+                value={manualBookingDraft.date}
+                onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, date: event.target.value }))}
+              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Hora</label>
+                <select
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={manualBookingDraft.time}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, time: event.target.value }))}
+                >
+                  <option value="">Seleccionar hora</option>
+                  {QUARTER_HOUR_OPTIONS.map((timeOption) => (
+                    <option key={`modal-manual-time-${timeOption}`} value={timeOption}>{timeOption}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Estado</label>
+                <select
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={manualBookingDraft.status}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, status: event.target.value }))}
+                >
+                  {BOOKING_STATUS_OPTIONS.map((statusOption) => (
+                    <option key={`modal-manual-status-${statusOption}`} value={statusOption}>{statusLabel(statusOption)}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium text-foreground">Notas</label>
+                <textarea
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  rows={3}
+                  value={manualBookingDraft.notes}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, notes: event.target.value }))}
+                />
+              </div>
+            </div>
+
+            {bookingModalError && (
+              <div className="rounded-md border border-error/30 bg-error/10 px-3 py-2 text-sm text-error">
+                {bookingModalError}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setBookingModalError('');
+                  setIsManualBookingModalOpen(false);
+                }}
+                disabled={isAgendaSaving}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={onCreateManualBooking}
+                disabled={isAgendaSaving || !manualBookingDraft.student_id || !manualBookingDraft.lesson_id || !manualBookingDraft.date || !manualBookingDraft.time}
+              >
+                {isAgendaSaving ? 'Guardando...' : 'Confirmar reserva'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isAgendaStateModalOpen && selectedAgendaCell && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white rounded-xl border border-border shadow-cultural p-5 space-y-4">
+            <div>
+              <h3 className="text-lg font-headlines font-semibold text-foreground">Estado de franja</h3>
+              <p className="text-sm text-muted-foreground">
+                {selectedAgendaCell.day.label} {selectedAgendaCell.day.isoDate} {selectedAgendaCell.timeValue}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Selecciona estado</label>
+              <select
+                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={selectedAgendaState}
+                onChange={(event) => setSelectedAgendaState(event.target.value)}
+              >
+                <option value="reserved">Reserva</option>
+                <option value="available">Disponible</option>
+                <option value="unavailable">No disponible</option>
+              </select>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsAgendaStateModalOpen(false)} disabled={isAgendaSaving}>
+                Cancelar
+              </Button>
+              <Button onClick={onApplyAgendaState} disabled={isAgendaSaving}>
+                {isAgendaSaving ? 'Guardando...' : 'Aplicar'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {pendingDeleteMaterial && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
