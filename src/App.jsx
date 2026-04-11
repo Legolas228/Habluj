@@ -3,6 +3,7 @@ import Routes from "./Routes";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Routes />
       </AuthProvider>
       <SpeedInsights />
+      <Analytics />
     </LanguageProvider>
   );
 }
