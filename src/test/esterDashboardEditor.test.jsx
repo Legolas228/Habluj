@@ -86,6 +86,7 @@ vi.mock('../services/adminPortal', () => ({
     },
   ]),
   getAdminGoals: vi.fn().mockResolvedValue([]),
+  getAdminGoogleCalendarEvents: vi.fn().mockResolvedValue([]),
   getAdminLessons: vi.fn().mockResolvedValue([
     { id: 10, title: 'Clase 1:1' },
   ]),

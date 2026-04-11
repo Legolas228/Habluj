@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Icon from '../../../components/AppIcon';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { convertCurrencyAmount, normalizeCurrencyForLanguage } from '../../../utils/currency';
 
 const localeByLanguage = {
   sk: 'sk-SK',
@@ -11,42 +12,33 @@ const localeByLanguage = {
 const PaymentHistory = ({ language = 'sk', bookings = [] }) => {
   const { t } = useTranslation();
   const locale = localeByLanguage[language] || localeByLanguage.sk;
+  const displayCurrency = normalizeCurrencyForLanguage(language);
 
   const rows = useMemo(() => bookings.map((booking) => {
-    const price = Number(booking.lesson?.price || 0);
+    const paymentAmount = Number(booking.payment?.amount);
+    const lessonPrice = Number(booking.lesson?.price || 0);
+    const baseAmount = Number.isFinite(paymentAmount)
+      ? paymentAmount
+      : Number.isFinite(lessonPrice)
+        ? lessonPrice
+        : 0;
+    const baseCurrency = String(booking.payment?.currency || booking.currency || 'EUR').toUpperCase();
     return {
       id: booking.id,
-      lessonTitle: booking.lesson?.title || t('studentPayments.defaultLesson'),
+      lessonTitle: booking.lesson?.title || '-',
       date: booking.date,
       time: booking.time,
-      amount: Number.isFinite(price) ? price : 0,
-      currency: 'EUR',
+      amount: baseAmount,
+      currency: baseCurrency,
       status: booking.status,
       duration: booking.lesson?.duration,
     };
-  }), [bookings, t]);
-
-  const stats = useMemo(() => {
-    const completed = rows.filter((item) => item.status === 'completed');
-    const pending = rows.filter((item) => item.status === 'pending' || item.status === 'confirmed');
-    const cancelled = rows.filter((item) => item.status === 'cancelled');
-
-    const totalPaid = completed.reduce((acc, item) => acc + item.amount, 0);
-    const avg = completed.length ? totalPaid / completed.length : 0;
-
-    return {
-      totalPaid,
-      completedCount: completed.length,
-      pendingCount: pending.length,
-      cancelledCount: cancelled.length,
-      avgPerLesson: avg,
-    };
-  }, [rows]);
+  }), [bookings]);
 
   const formatAmount = (amount, currency = 'EUR') => new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency,
-  }).format(amount);
+    currency: displayCurrency,
+  }).format(convertCurrencyAmount(amount, currency, displayCurrency));
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -74,25 +66,6 @@ const PaymentHistory = ({ language = 'sk', bookings = [] }) => {
       <div className="bg-white rounded-lg shadow-soft border p-6">
         <h2 className="text-2xl font-headlines font-bold text-foreground">{t('studentPayments.title')}</h2>
         <p className="text-muted-foreground">{t('studentPayments.subtitle')}</p>
-
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-primary/5 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">{t('studentPayments.totalSpent')}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{formatAmount(stats.totalPaid)}</p>
-          </div>
-          <div className="bg-secondary/5 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">{t('studentPayments.totalLessons')}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{stats.completedCount}</p>
-          </div>
-          <div className="bg-accent/10 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">{t('studentPayments.avgPerLesson')}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{formatAmount(stats.avgPerLesson)}</p>
-          </div>
-          <div className="bg-muted/60 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">{t('studentPayments.pendingCount')}</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{stats.pendingCount}</p>
-          </div>
-        </div>
       </div>
 
       <div className="bg-white rounded-lg shadow-soft border">

@@ -3,6 +3,7 @@ import re
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Q
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -15,6 +16,9 @@ class UserProfile(models.Model):
         ('C2', 'Mastery'),
     ])
     bio = models.TextField(blank=True)
+    learning_reason = models.TextField(blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    private_notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,31 +38,192 @@ class Lesson(models.Model):
         return self.title
 
 class Booking(models.Model):
+    CURRENCY_CHOICES = [
+        ('EUR', 'Euro'),
+        ('CZK', 'Czech Koruna'),
+    ]
+
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
+    start_time_utc = models.DateTimeField(null=True, blank=True, db_index=True)
+    end_time_utc = models.DateTimeField(null=True, blank=True, db_index=True)
+    student_timezone = models.CharField(max_length=64, default='UTC')
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='EUR')
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
+        ('no_show', 'No Show'),
+        ('consumed', 'Consumed'),
     ], default='pending')
+    google_meet_link = models.URLField(blank=True)
+    google_event_id = models.CharField(max_length=255, blank=True)
+    reschedule_count = models.PositiveSmallIntegerField(default=0)
     notes = models.TextField(blank=True)
+    admin_private_notes = models.TextField(blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ['date', 'time']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['date', 'time'],
+                condition=Q(status__in=['pending', 'confirmed']),
+                name='unique_active_booking_slot',
+            ),
+        ]
 
     def __str__(self):
         return f"{self.student.username} - {self.lesson.title} - {self.date}"
 
+
+class WeeklyAvailabilitySlot(models.Model):
+    WEEKDAY_CHOICES = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    weekday = models.PositiveSmallIntegerField(choices=WEEKDAY_CHOICES)
+    time = models.TimeField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['weekday', 'time']
+        constraints = [
+            models.UniqueConstraint(fields=['weekday', 'time'], name='unique_weekly_availability_slot'),
+        ]
+
+    def __str__(self):
+        return f"Weekday {self.weekday} @ {self.time}"
+
+
+class Availability(models.Model):
+    WEEKDAY_CHOICES = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    weekday = models.PositiveSmallIntegerField(choices=WEEKDAY_CHOICES)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    buffer_minutes = models.PositiveSmallIntegerField(default=10)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['weekday', 'start_time']
+
+    def __str__(self):
+        return f"Availability {self.weekday} {self.start_time}-{self.end_time}"
+
+
+class BookingSlotBlock(models.Model):
+    date = models.DateField()
+    time = models.TimeField()
+    reason = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='created_booking_slot_blocks',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['date', 'time']
+        constraints = [
+            models.UniqueConstraint(fields=['date', 'time'], name='unique_booking_slot_block'),
+        ]
+
+    def __str__(self):
+        return f"Blocked {self.date} {self.time}"
+
+
+class Payment(models.Model):
+    STATUS_CHOICES = [
+        ('pending_user', 'Pending User Payment'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+        ('credited', 'Credited'),
+    ]
+
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, choices=Booking.CURRENCY_CHOICES, default='EUR')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending_user')
+    gopay_payment_id = models.CharField(max_length=255, blank=True)
+    gopay_checkout_url = models.CharField(max_length=255, blank=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Payment<{self.booking_id}:{self.status}:{self.amount} {self.currency}>"
+
+
+class CreditLedger(models.Model):
+    REASON_CHOICES = [
+        ('top_up', 'Top Up'),
+        ('booking_debit', 'Booking Debit'),
+        ('cancellation_refund', 'Cancellation Refund'),
+        ('admin_adjustment', 'Admin Adjustment'),
+    ]
+
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='credit_ledger')
+    booking = models.ForeignKey(
+        Booking,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='credit_movements',
+    )
+    delta = models.IntegerField()
+    reason = models.CharField(max_length=32, choices=REASON_CHOICES)
+    description = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Credit<{self.student.username}:{self.delta}:{self.reason}>"
+
 class Progress(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='progress')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, blank=True)
     completed = models.BooleanField(default=False)
     score = models.IntegerField(null=True, blank=True)
+    speaking_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    listening_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    reading_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    writing_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    grammar_score = models.PositiveSmallIntegerField(null=True, blank=True)
+    vocabulary_score = models.PositiveSmallIntegerField(null=True, blank=True)
     notes = models.TextField(blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,7 +233,8 @@ class Progress(models.Model):
         unique_together = ['student', 'lesson']
 
     def __str__(self):
-        return f"{self.student.username} - {self.lesson.title}"
+        lesson_label = self.lesson.title if self.lesson else 'Sin clase'
+        return f"{self.student.username} - {lesson_label}"
 
 
 class StudentMaterial(models.Model):
@@ -196,9 +362,9 @@ class Lead(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.CharField(max_length=255, blank=True)
 
-    brevo_contact_id = models.CharField(max_length=80, blank=True)
-    brevo_synced_at = models.DateTimeField(null=True, blank=True)
-    brevo_sync_error = models.TextField(blank=True)
+    mailerlite_contact_id = models.CharField(max_length=80, blank=True)
+    mailerlite_synced_at = models.DateTimeField(null=True, blank=True)
+    mailerlite_sync_error = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

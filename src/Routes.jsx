@@ -10,6 +10,7 @@ const ContactPage = lazy(() => import('./pages/contact'));
 const TutoringServices = lazy(() => import('./pages/tutoring-services'));
 const AboutTheTeacher = lazy(() => import('./pages/about-the-teacher'));
 const BookingSystem = lazy(() => import('./pages/booking-system'));
+const LevelQuestionnairePage = lazy(() => import('./pages/level-questionnaire'));
 const Homepage = lazy(() => import('./pages/homepage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/privacy-policy'));
 const TermsAndConditionsPage = lazy(() => import('./pages/terms-and-conditions'));
@@ -51,12 +52,9 @@ const Routes = () => {
             <Route path="/about-the-teacher" element={<AboutTheTeacher />} />
             <Route
               path="/booking-system"
-              element={(
-                <ProtectedRoute>
-                  <BookingSystem />
-                </ProtectedRoute>
-              )}
+              element={<BookingSystem />}
             />
+            <Route path="/level-questionnaire" element={<LevelQuestionnairePage />} />
             <Route path="/homepage" element={<Navigate to="/" replace />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />

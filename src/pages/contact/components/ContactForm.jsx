@@ -7,7 +7,7 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import Textarea from '../../../components/ui/Textarea';
-import LeadMagnetForm from '../../../components/LeadMagnetForm';
+import LevelQuizTeaser from '../../../components/LevelQuizTeaser';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { submitLeadCapture } from '../../../services/leads';
 
@@ -349,7 +349,7 @@ const ContactForm = () => {
           </form>
 
           <div className="mt-10 pt-8 border-t border-border">
-            <LeadMagnetForm source="contact_page" />
+            <LevelQuizTeaser />
           </div>
         </div>
       </div>

@@ -20,9 +20,9 @@ const getErrorMessage = (response, data, fallbackMessage) => {
   if (response.status === 401 || response.status === 403) {
     const detailText = String(detail).toLowerCase();
     if (detailText.includes('invalid username') || detailText.includes('invalid password')) {
-      return 'Credenciales invalidas. Revisa usuario y contrasena.';
+      return 'Credenciales invalidas. Revisa tus datos de acceso.';
     }
-    return 'Solicitud admin no autorizada. Revisa usuario y contrasena.';
+    return 'Solicitud admin no autorizada. Revisa tus datos de acceso.';
   }
   if (detail) return detail;
   return fallbackMessage;
@@ -42,9 +42,50 @@ const getAdminHeaders = (authHeader) => {
 export const createBasicAuthHeader = (username, password) => {
   const user = (username || '').trim();
   if (!user || !password) {
-    throw new Error('Username and password are required.');
+    throw new Error('Access data and password are required.');
   }
-  return `Basic ${btoa(`${user}:${password}`)}`;
+
+  // Support non-ASCII credentials by encoding to UTF-8 before base64.
+  const credentials = `${user}:${password}`;
+  const utf8Bytes = new TextEncoder().encode(credentials);
+  let binary = '';
+  utf8Bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return `Basic ${btoa(binary)}`;
+};
+
+export const loginAdminWithPassword = async ({ identifier, password }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const cleanIdentifier = (identifier || '').trim();
+
+    if (!cleanIdentifier || !password) {
+      throw new Error('Access data and password are required.');
+  }
+
+  const response = await fetch(`${baseUrl}/api/auth/login/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ identifier: cleanIdentifier, password }),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.detail || 'Credenciales invalidas.');
+  }
+
+  if (!data?.user?.is_staff) {
+    throw new Error('La cuenta existe, pero no tiene permisos de admin.');
+  }
+
+  if (!data?.token) {
+    throw new Error('No se pudo obtener el token de acceso admin.');
+  }
+
+  return `Token ${data.token}`;
 };
 
 export const submitLeadCapture = async (leadPayload) => {

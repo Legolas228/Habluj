@@ -1,14 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Carousel from '../../../components/Carousel';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { SETMORE_BOOKING_URL } from '../../../utils/setmore';
 
 const HeroSection = () => {
   const { t } = useTranslation();
+  const trustBadges = [t('hero.trust1'), t('hero.trust2'), t('hero.trust3')];
 
   return (
     <section className="relative min-h-screen bg-gradient-warm flex items-center overflow-hidden">
@@ -23,6 +24,18 @@ const HeroSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-stretch h-full">
           {/* Content */}
           <div className="space-y-8 flex flex-col justify-center">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-soft">
+                <Icon name="MapPin" size={14} className="text-primary" />
+                <span className="text-xs font-semibold text-foreground uppercase tracking-wide">{t('hero.marketBadge')}</span>
+              </div>
+              {trustBadges.map((badge) => (
+                <div key={badge} className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-background/80 px-3 py-1">
+                  <Icon name="CheckCircle" size={14} className="text-success" />
+                  <span className="text-xs font-medium text-foreground">{badge}</span>
+                </div>
+              ))}
+            </div>
 
             {/* Main Headline */}
             <div className="space-y-4">
@@ -57,7 +70,7 @@ const HeroSection = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/booking-system">
+              <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer">
                 <Button
                   variant="default"
                   size="lg"
@@ -67,16 +80,34 @@ const HeroSection = () => {
                 >
                   {t('hero.bookLesson')}
                 </Button>
+              </a>
+              <a href="#method-demo">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-primary text-primary hover:bg-primary hover:text-white"
+                  iconName="Play"
+                  iconPosition="left"
+                >
+                  {t('hero.watchVideo')}
+                </Button>
+              </a>
+              <Link to="/tutoring-services">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="border border-border/80 bg-white/70 text-foreground hover:bg-white"
+                  iconName="ArrowRight"
+                  iconPosition="right"
+                >
+                  {t('hero.directCourseCta')}
+                </Button>
               </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-white"
-                iconName="Play"
-                iconPosition="left"
-              >
-                {t('hero.watchVideo')}
-              </Button>
+            </div>
+
+            <div className="rounded-2xl border border-primary/20 bg-white/80 p-4 shadow-soft">
+              <p className="text-sm font-semibold text-primary">{t('hero.priceBadge')}</p>
+              <p className="text-sm text-muted-foreground">{t('hero.priceNote')}</p>
             </div>
 
             {/* Quick Stats */}

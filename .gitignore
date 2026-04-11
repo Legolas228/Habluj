@@ -20,3 +20,8 @@ backend/env/
 # Local env files
 .env
 backend/.env
+
+# Local secrets and temporary audit artifacts
+habluj-*.json
+backend/.audit-venv/
+.learnings/

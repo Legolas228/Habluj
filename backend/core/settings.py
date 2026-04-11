@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -172,6 +173,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -208,6 +210,8 @@ if not CSRF_TRUSTED_ORIGINS and IS_RUNSERVER:
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -219,7 +223,7 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', True)
     SECURE_HSTS_PRELOAD = env_bool('DJANGO_SECURE_HSTS_PRELOAD', True)
 
-# Email backend configuration (used for lead notifications fallback when Brevo is not available).
+# Email backend configuration for lead notifications and result emails.
 EMAIL_BACKEND = os.environ.get('DJANGO_EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.environ.get('DJANGO_EMAIL_HOST', '')
 EMAIL_PORT = int(os.environ.get('DJANGO_EMAIL_PORT', '587'))
@@ -234,6 +238,31 @@ SERVER_EMAIL = os.environ.get('DJANGO_SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 # Keep lead capture independent from third-party services by default.
 LEAD_EXTERNAL_INTEGRATIONS_ENABLED = env_bool('LEAD_EXTERNAL_INTEGRATIONS_ENABLED', False)
 
+# Payments (GoPay)
+GOPAY_CLIENT_ID = os.environ.get('GOPAY_CLIENT_ID', '').strip()
+GOPAY_CLIENT_SECRET = os.environ.get('GOPAY_CLIENT_SECRET', '').strip()
+GOPAY_GOID = os.environ.get('GOPAY_GOID', '').strip()
+GOPAY_WEBHOOK_SECRET = os.environ.get('GOPAY_WEBHOOK_SECRET', '').strip()
+GOPAY_CHECKOUT_BASE_URL = os.environ.get('GOPAY_CHECKOUT_BASE_URL', 'https://gate.gopay.cz').strip()
+BOOKING_EUR_TO_CZK_RATE = os.environ.get('BOOKING_EUR_TO_CZK_RATE', '25')
+BOOKING_PAYMENT_TTL_MINUTES = int(os.environ.get('BOOKING_PAYMENT_TTL_MINUTES', '15'))
+BOOKING_CLASS_MINUTES = int(os.environ.get('BOOKING_CLASS_MINUTES', '60'))
+BOOKING_LEAD_TIME_HOURS = int(os.environ.get('BOOKING_LEAD_TIME_HOURS', '12'))
+BOOKING_CHANGE_WINDOW_HOURS = int(os.environ.get('BOOKING_CHANGE_WINDOW_HOURS', '24'))
+BOOKING_DEFAULT_BUFFER_MINUTES = int(os.environ.get('BOOKING_DEFAULT_BUFFER_MINUTES', '10'))
+BOOKING_TEACHER_TIMEZONE = os.environ.get('BOOKING_TEACHER_TIMEZONE', 'Europe/Madrid')
+GOOGLE_CALENDAR_ID = os.environ.get('GOOGLE_CALENDAR_ID', '').strip()
+GOOGLE_SERVICE_ACCOUNT_INFO = {}
+_google_sa_raw = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON', '').strip()
+if _google_sa_raw:
+    try:
+        GOOGLE_SERVICE_ACCOUNT_INFO = json.loads(_google_sa_raw)
+    except json.JSONDecodeError:
+        GOOGLE_SERVICE_ACCOUNT_INFO = {}
+
+if not DEBUG and (GOPAY_CLIENT_ID or GOPAY_CLIENT_SECRET or GOPAY_GOID) and not GOPAY_WEBHOOK_SECRET:
+    raise ImproperlyConfigured('GOPAY_WEBHOOK_SECRET must be set when GoPay is configured and DEBUG=False.')
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -247,3 +276,7 @@ REST_FRAMEWORK = {
         'student_register': os.environ.get('DRF_THROTTLE_STUDENT_REGISTER', '5/min'),
     },
 }
+
+# Avoid test flakiness from login throttling across the test suite.
+if 'test' in sys.argv:
+    REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []

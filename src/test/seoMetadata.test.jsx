@@ -68,5 +68,15 @@ describe('SEO guardrails', () => {
 
     expect(sitemap).toContain('hreflang="x-default"');
   });
+
+  it('keeps level questionnaire page as noindex and outside sitemap', () => {
+    const routes = readFile('src/Routes.jsx');
+    const page = readFile('src/pages/level-questionnaire/index.jsx');
+    const sitemap = readFile('public/sitemap.xml');
+
+    expect(routes).toContain('<Route path="/level-questionnaire" element={<LevelQuestionnairePage />} />');
+    expect(page).toContain('name="robots" content="noindex, nofollow"');
+    expect(sitemap).not.toContain('https://habluj.sk/level-questionnaire');
+  });
 });
 

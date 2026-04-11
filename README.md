@@ -32,6 +32,48 @@ npm run build
 npm run serve
 ```
 
+## Ejecutar backend (local)
+
+Desde la raíz del proyecto:
+
+```bash
+cd backend
+```
+
+Activa el entorno virtual (Linux/macOS):
+
+```bash
+source .venv/bin/activate
+```
+
+Si no tienes las dependencias instaladas:
+
+```bash
+pip install -r requirements.txt
+```
+
+Aplica migraciones y levanta el servidor Django:
+
+```bash
+python manage.py migrate
+python manage.py runserver
+```
+
+Backend disponible en:
+
+- `http://127.0.0.1:8000`
+- `http://127.0.0.1:8000/api/`
+
+Opcional (frontend -> backend local):
+
+- En tu `.env` del frontend, usa `VITE_API_BASE_URL=http://127.0.0.1:8000`
+
+Atajo para levantar frontend + backend juntos:
+
+```bash
+bash scripts/dev-up.sh
+```
+
 ## Estructura principal
 
 ```text
@@ -57,6 +99,12 @@ src/
 - Canales públicos: **email + Instagram `@habluj_sk`**
 - Sin teléfono ni WhatsApp en el frontend público
 - Copys de CTA y meta orientados a marca **Habluj-first**
+
+## Politica de reservas (lanzamiento)
+
+- Reserva de alumnos: **solo via Setmore** (`https://habluj.setmore.com/`)
+- El flujo interno de reserva/pago en frontend queda deshabilitado durante lanzamiento
+- Mantener esta regla en nuevos CTAs, enlaces y componentes hasta activar la siguiente fase
 
 ## Deploy (100% gratuito)
 
@@ -88,6 +136,22 @@ Configuracion usada:
 - codigo backend: `/home/Legolas228/Habluj/backend`
 - WSGI file: `/var/www/legolas228_pythonanywhere_com_wsgi.py`
 
+Pasos recomendados despues de crear la web app:
+
+```bash
+source ~/.virtualenvs/habluj/bin/activate
+cd ~/Habluj/backend
+pip install -r requirements.txt
+python manage.py migrate --noinput
+python manage.py collectstatic --noinput
+python manage.py check
+```
+
+En la pestaña **Web > Static files** de PythonAnywhere, mapear:
+
+- URL: `/static/`
+- Directory: `/home/Legolas228/Habluj/backend/staticfiles`
+
 El root (`/`) puede devolver `404 Not Found` y es normal en Django si no hay ruta raiz; el API vive bajo `/api/`.
 
 ### Nota importante sobre repo privado
@@ -109,11 +173,11 @@ Para despliegue, configura estas variables de entorno en backend:
 - `DJANGO_ALLOWED_HOSTS` (CSV, por ejemplo: `habluj.sk,www.habluj.sk`)
 - `DJANGO_CORS_ALLOWED_ORIGINS` (CSV de orígenes permitidos)
 - `DJANGO_CSRF_TRUSTED_ORIGINS` (CSV con esquemas `https://...`)
-- `BREVO_API_KEY`
-- `BREVO_LEAD_LIST_ID` (opcional)
-- `BREVO_SENDER_EMAIL` (requerido para enviar correo a Ester)
-- `BREVO_SENDER_NAME` (opcional, por defecto `Habluj`)
-- `BREVO_NOTIFICATION_TO` (por defecto `habluj.sk@gmail.com`)
+- `MAILERLITE_API_KEY`
+- `MAILERLITE_LEAD_GROUP_ID` (opcional)
+- `MAILERLITE_SENDER_EMAIL` (requerido para enviar correo a Ester)
+- `MAILERLITE_SENDER_NAME` (opcional, por defecto `Habluj`)
+- `MAILERLITE_NOTIFICATION_TO` (por defecto `habluj.sk@gmail.com`)
 - `DJANGO_ADMIN_BASE_URL` (opcional, para enlazar al lead en el email)
 
 Ejemplo minimo para produccion gratuita (PythonAnywhere):
@@ -133,6 +197,12 @@ python manage.py bootstrap_ester_admin --username ester --email habluj.sk@gmail.
 ```
 
 Esta cuenta entra al panel Django en `/admin/` y puede gestionar leads sin ser superuser.
+
+Si necesitas un superuser completo en produccion:
+
+```bash
+python manage.py createsuperuser
+```
 
 ### Dashboard React para Ester
 
@@ -156,7 +226,20 @@ Valor recomendado actual:
 
 - `VITE_API_BASE_URL=https://legolas228.pythonanywhere.com`
 
+Tambien es recomendable declararlo explicitamente en Vercel Project Settings > Environment Variables (Production, Preview y Development) para no depender del fallback de codigo.
+
 ## Mantenimiento rapido
+
+### Verificar rotacion de secretos (pre-deploy)
+
+Antes de desplegar backend, valida que no queden placeholders ni secretos vacios:
+
+```bash
+cd backend
+bash scripts/verify_secret_rotation.sh
+```
+
+Si falla, rota credenciales en proveedores y actualiza variables de entorno en produccion.
 
 ### Actualizar backend en PythonAnywhere
 
@@ -177,6 +260,41 @@ python manage.py check
 Luego, en la pestaña **Web** de PythonAnywhere, pulsa:
 
 - `Reload Legolas228.pythonanywhere.com`
+
+### Monitorizacion minima (checklist semanal)
+
+1. Abrir `https://habluj.vercel.app/` y comprobar carga de home.
+2. Verificar `https://legolas228.pythonanywhere.com/api/` (respuesta 200).
+3. Revisar error log en PythonAnywhere:
+  - `/var/log/legolas228.pythonanywhere.com.error.log`
+4. Probar login alumno y registro de lead en frontend.
+5. Confirmar ultimo deploy `Ready` en Vercel.
+
+Smoke post-deploy automatizado:
+
+```bash
+FRONTEND_URL="https://habluj.vercel.app" API_BASE_URL="https://legolas228.pythonanywhere.com" bash scripts/post_deploy_smoke.sh
+```
+
+### Backup SQLite
+
+Script incluido:
+
+- `backend/scripts/backup_db.sh`
+
+Uso:
+
+```bash
+bash ~/Habluj/backend/scripts/backup_db.sh
+```
+
+Opcional con ruta custom:
+
+```bash
+bash ~/Habluj/backend/scripts/backup_db.sh "$HOME/backups/habluj" "$HOME/Habluj/backend/db.sqlite3"
+```
+
+Se recomienda crear una tarea programada en PythonAnywhere (Tasks) para ejecutarlo diariamente.
 
 ### Mantener la web gratis activa
 

@@ -3,6 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { contactInfo, getContactLinks } from '../../../utils/contactInfo';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { openSetmoreBooking } from '../../../utils/setmore';
 
 const ContactMethods = () => {
   const { language } = useTranslation();
@@ -79,8 +80,7 @@ const ContactMethods = () => {
         window.location.href = `mailto:${method?.contact}`;
         break;
       case "Calendar":
-        // Navigate to booking system
-        window.location.href = '/booking-system';
+        openSetmoreBooking();
         break;
       default:
         break;

@@ -32,13 +32,18 @@
   },
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.10",
+    "@fullcalendar/core": "^6.1.20",
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/interaction": "^6.1.20",
+    "@fullcalendar/react": "^6.1.20",
+    "@fullcalendar/timegrid": "^6.1.20",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/user-event": "^12.8.3",
     "@vercel/speed-insights": "^2.0.0",
-    "axios": "^1.8.4",
+    "axios": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "d3": "^7.9.0",
@@ -47,6 +52,7 @@
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.484.0",
     "react": "^18.2.0",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.71.2",
@@ -64,11 +70,16 @@
     "start": "vite",
     "dev": "vite",
     "dev:full": "bash ./scripts/dev-up.sh",
-    "build": "vite build --sourcemap",
+    "build": "vite build",
     "serve": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "verify:full": "bash ./scripts/verify-dashboard-security.sh"
+  },
+  "overrides": {
+    "axios": "^1.15.0",
+    "lodash": "^4.18.1",
+    "lodash-es": "^4.18.1"
   },
   "eslintConfig": {
     "extends": [

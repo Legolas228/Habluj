@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Header from '../../components/ui/Header';
@@ -10,22 +11,21 @@ import {
   cancelStudentBooking,
   createStudentMaterial,
   getStudentBookings,
-  getStudentGoals,
   getStudentMaterials,
   getStudentMessages,
   getStudentProgress,
   getUserProfile,
   markStudentMessageRead,
-  updateStudentGoal,
+  sendStudentMessage,
   updateUserProfile,
 } from '../../services/studentAuth';
 import StudentLessonsPanel from './components/StudentLessonsPanel';
 import StudentResourcesPanel from './components/StudentResourcesPanel';
 import { Suspense, lazy } from 'react';
+import { openSetmoreBooking } from '../../utils/setmore';
 
 // Lazy loading heavy components, specially those using recharts
 const ProgressChart = lazy(() => import('./components/ProgressChart'));
-const GoalTracker = lazy(() => import('./components/GoalTracker'));
 const PaymentHistory = lazy(() => import('./components/PaymentHistory'));
 const MessagingPortal = lazy(() => import('./components/MessagingPortal'));
 
@@ -45,24 +45,15 @@ const StudentDashboard = () => {
   const { user, token, logout } = useAuth();
   const { t, language } = useTranslation();
   const copy = {
-    defaultStudentName: t('studentDashboard.defaultStudentName'),
-    defaultSessionTitle: t('studentDashboard.defaultSessionTitle'),
     stats: {
       totalLessons: t('studentDashboard.stats.totalLessons'),
-      totalLessonsTrend: t('studentDashboard.stats.totalLessonsTrend'),
       studyHours: t('studentDashboard.stats.studyHours'),
-      studyHoursTrend: t('studentDashboard.stats.studyHoursTrend'),
       currentLevel: t('studentDashboard.stats.currentLevel'),
-      currentLevelTrend: t('studentDashboard.stats.currentLevelTrend'),
-      streak: t('studentDashboard.stats.streak'),
-      streakTrend: t('studentDashboard.stats.streakTrend'),
-      daysSuffix: t('studentDashboard.stats.daysSuffix'),
     },
     tabs: {
       overview: t('studentDashboard.tabs.overview'),
       lessons: t('studentDashboard.tabs.lessons'),
       progress: t('studentDashboard.tabs.progress'),
-      goals: t('studentDashboard.tabs.goals'),
       resources: t('studentDashboard.tabs.resources'),
       payments: t('studentDashboard.tabs.payments'),
       messages: t('studentDashboard.tabs.messages'),
@@ -76,13 +67,13 @@ const StudentDashboard = () => {
     join: t('studentDashboard.join'),
     noLessons: t('studentDashboard.noLessons'),
     loading: t('studentDashboard.loading'),
+    bookLesson: t('dashboard.bookLesson'),
+    bookReschedule: t('studentLessons.bookReschedule'),
     quickActions: t('studentDashboard.quickActions'),
     studyMaterials: t('studentDashboard.studyMaterials'),
     allResources: t('studentDashboard.allResources'),
     contactTeacher: t('studentDashboard.contactTeacher'),
     sendMessage: t('studentDashboard.sendMessage'),
-    setGoals: t('studentDashboard.setGoals'),
-    trackProgress: t('studentDashboard.trackProgress'),
     recentActivity: t('studentDashboard.recentActivity'),
     viewAll: t('studentDashboard.viewAll'),
     upcomingEvents: t('studentDashboard.upcomingEvents'),
@@ -113,12 +104,10 @@ const StudentDashboard = () => {
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState('');
   const [isProfileSaving, setIsProfileSaving] = useState(false);
-  const [goals, setGoals] = useState([]);
-  const [goalsError, setGoalsError] = useState('');
-  const [isGoalUpdating, setIsGoalUpdating] = useState(false);
   const [messages, setMessages] = useState([]);
   const [messagesError, setMessagesError] = useState('');
   const [isMessageUpdating, setIsMessageUpdating] = useState(false);
+  const [isMessageSending, setIsMessageSending] = useState(false);
   const [progressRecords, setProgressRecords] = useState([]);
   const [progressError, setProgressError] = useState('');
 
@@ -142,22 +131,9 @@ const StudentDashboard = () => {
   }, [token]);
 
   useEffect(() => {
-    const loadGoals = async () => {
-      if (!token) return;
-      setGoalsError('');
-      try {
-        const response = await getStudentGoals(token);
-        setGoals(response);
-      } catch (error) {
-        setGoalsError(error?.message || 'No se pudieron cargar las metas.');
-      }
-    };
-    loadGoals();
-  }, [token]);
+    if (!token) return undefined;
 
-  useEffect(() => {
     const loadMessages = async () => {
-      if (!token) return;
       setMessagesError('');
       try {
         const response = await getStudentMessages(token);
@@ -166,8 +142,13 @@ const StudentDashboard = () => {
         setMessagesError(error?.message || 'No se pudieron cargar los mensajes.');
       }
     };
+
     loadMessages();
-  }, [token]);
+    if (activeTab !== 'messages') return undefined;
+
+    const intervalId = window.setInterval(loadMessages, 6000);
+    return () => window.clearInterval(intervalId);
+  }, [token, activeTab]);
 
   useEffect(() => {
     const loadProgress = async () => {
@@ -264,20 +245,6 @@ const StudentDashboard = () => {
     }
   };
 
-  const handleToggleGoal = async (goalId, isCompleted) => {
-    if (!token) return;
-    setIsGoalUpdating(true);
-    setGoalsError('');
-    try {
-      const updated = await updateStudentGoal({ token, goalId, payload: { is_completed: isCompleted } });
-      setGoals((prev) => prev.map((goal) => (goal.id === updated.id ? updated : goal)));
-    } catch (error) {
-      setGoalsError(error?.message || 'No se pudo actualizar la meta.');
-    } finally {
-      setIsGoalUpdating(false);
-    }
-  };
-
   const handleMarkMessageRead = async (messageId) => {
     if (!token) return;
     setIsMessageUpdating(true);
@@ -289,6 +256,22 @@ const StudentDashboard = () => {
       setMessagesError(error?.message || 'No se pudo actualizar el mensaje.');
     } finally {
       setIsMessageUpdating(false);
+    }
+  };
+
+  const handleSendMessage = async ({ body }) => {
+    if (!token) return;
+    setIsMessageSending(true);
+    setMessagesError('');
+    try {
+      const created = await sendStudentMessage({ token, body });
+      setMessages((prev) => [created, ...prev]);
+      return created;
+    } catch (error) {
+      setMessagesError(error?.message || 'No se pudo enviar el mensaje.');
+      throw error;
+    } finally {
+      setIsMessageSending(false);
     }
   };
 
@@ -315,20 +298,19 @@ const StudentDashboard = () => {
   const nextBooking = upcomingBookings[0] || null;
 
   const studentData = useMemo(() => ({
-    name: `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.username || copy.defaultStudentName,
+    name: `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.username || '-',
     email: user?.email || '-',
-    level: userProfile?.language_level || 'A1',
-    joinDate: userProfile?.created_at || new Date().toISOString().split('T')[0],
+    level: userProfile?.language_level || '-',
+    joinDate: userProfile?.created_at || null,
     totalLessons: bookings.length,
     completedHours: pastBookings.length,
-    currentStreak: 0,
     nextLesson: nextBooking ? {
       date: nextBooking.date,
       time: nextBooking.time,
-      type: nextBooking.lesson?.title || copy.defaultSessionTitle,
-      teacher: 'Ester Mesaros',
+      type: nextBooking.lesson?.title || '-',
+      status: nextBooking.status || '',
     } : null,
-  }), [user, userProfile, bookings.length, pastBookings.length, nextBooking, copy.defaultStudentName, copy.defaultSessionTitle]);
+  }), [user, userProfile, bookings.length, pastBookings.length, nextBooking]);
 
   const quickStats = [
     {
@@ -337,7 +319,6 @@ const StudentDashboard = () => {
       value: studentData?.totalLessons,
       icon: "BookOpen",
       color: "text-primary bg-primary/10",
-      trend: copy.stats.totalLessonsTrend
     },
     {
       id: 2,
@@ -345,7 +326,6 @@ const StudentDashboard = () => {
       value: studentData?.completedHours,
       icon: "Clock",
       color: "text-secondary bg-secondary/10",
-      trend: copy.stats.studyHoursTrend
     },
     {
       id: 3,
@@ -353,15 +333,6 @@ const StudentDashboard = () => {
       value: studentData?.level,
       icon: "TrendingUp",
       color: "text-success bg-success/10",
-      trend: copy.stats.currentLevelTrend
-    },
-    {
-      id: 4,
-      title: copy.stats.streak,
-      value: `${studentData?.currentStreak} ${copy.stats.daysSuffix}`,
-      icon: "Flame",
-      color: "text-accent bg-accent/10",
-      trend: copy.stats.streakTrend
     }
   ];
 
@@ -377,7 +348,7 @@ const StudentDashboard = () => {
     const bookingActivities = bookings.slice(0, 3).map((booking) => ({
       id: `booking-${booking.id}`,
       type: 'lesson',
-      title: booking.lesson?.title || copy.defaultSessionTitle,
+      title: booking.lesson?.title || '-',
       description: statusLabelFromBooking(booking.status, t),
       timestamp: `${booking.date} ${booking.time || '00:00:00'}`,
       icon: 'BookOpen',
@@ -397,36 +368,27 @@ const StudentDashboard = () => {
     const merged = [...bookingActivities, ...materialActivities]
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
       .slice(0, 5);
-
-    if (merged.length) return merged;
-    return [
-      {
-        id: 'empty-activity',
-        type: 'system',
-        title: t('studentDashboard.activity.lessonTitle'),
-        description: t('studentDashboard.activity.lessonDescription'),
-        timestamp: new Date().toISOString(),
-        icon: 'Info',
-        color: 'text-muted-foreground',
-      },
-    ];
-  }, [bookings, materials, copy.defaultSessionTitle, t]);
+    return merged;
+  }, [bookings, materials, t]);
 
   const upcomingEvents = upcomingBookings.slice(0, 5).map((booking) => ({
     id: booking.id,
-    title: booking.lesson?.title || copy.defaultSessionTitle,
+    title: booking.lesson?.title || '-',
     date: booking.date,
     time: booking.time,
-    teacher: 'Ester Mesaros',
     type: 'lesson',
-    status: booking.status || 'scheduled',
+    status: booking.status || '',
   }));
+
+  const unreadMessagesCount = useMemo(() => {
+    const currentUserId = user?.id;
+    return messages.filter((item) => !item.is_read && item.sender?.id !== currentUserId).length;
+  }, [messages, user?.id]);
 
   const navigationTabs = [
     { id: 'overview', name: copy.tabs.overview, icon: 'LayoutDashboard' },
     { id: 'lessons', name: copy.tabs.lessons, icon: 'BookOpen' },
     { id: 'progress', name: copy.tabs.progress, icon: 'TrendingUp' },
-    { id: 'goals', name: copy.tabs.goals, icon: 'Target' },
     { id: 'resources', name: copy.tabs.resources, icon: 'FileText' },
     { id: 'payments', name: copy.tabs.payments, icon: 'CreditCard' },
     { id: 'messages', name: copy.tabs.messages, icon: 'MessageCircle' }
@@ -434,6 +396,7 @@ const StudentDashboard = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '-';
     return date?.toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
@@ -469,6 +432,18 @@ const StudentDashboard = () => {
             <p className="text-white/90 mb-4">
               {copy.welcomeMessage}
             </p>
+            <div className="inline-flex mb-4">
+              <Button
+                variant="default"
+                size="sm"
+                iconName="CalendarPlus"
+                iconPosition="left"
+                className="bg-white text-primary hover:bg-white/90 shadow-soft font-semibold"
+                onClick={openSetmoreBooking}
+              >
+                {copy.bookLesson}
+              </Button>
+            </div>
             {bookingsError && (
               <p className="text-sm text-white/90 bg-black/15 rounded-md px-3 py-2 inline-block">
                 {bookingsError}
@@ -477,7 +452,7 @@ const StudentDashboard = () => {
             <div className="flex items-center space-x-4 text-sm text-white/80">
               <div className="flex items-center space-x-1">
                 <Icon name="Calendar" size={16} />
-                <span>{copy.memberSince} {formatDate(studentData?.joinDate)}</span>
+                <span>{copy.memberSince} {studentData?.joinDate ? formatDate(studentData?.joinDate) : '-'}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Icon name="Award" size={16} />
@@ -503,9 +478,9 @@ const StudentDashboard = () => {
               </div>
               <Icon name="TrendingUp" size={16} className="text-success" />
             </div>
-            <h3 className="text-2xl font-bold text-foreground mb-1">{stat?.value}</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-1">{stat?.value ?? '-'}</h3>
             <p className="text-sm text-muted-foreground mb-2">{stat?.title}</p>
-            <p className="text-xs text-success">{stat?.trend}</p>
+            {stat?.trend ? <p className="text-xs text-success">{stat?.trend}</p> : null}
           </div>
         ))}
       </div>
@@ -524,8 +499,8 @@ const StudentDashboard = () => {
               <div className="bg-primary/5 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-foreground">{studentData?.nextLesson?.type}</h4>
-                  <span className="px-2 py-1 bg-success/10 text-success text-xs font-medium rounded-full">
-                    {copy.confirmed}
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${studentData?.nextLesson?.status === 'confirmed' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
+                    {statusLabelFromBooking(studentData?.nextLesson?.status, t)}
                   </span>
                 </div>
                 <div className="space-y-2 text-sm text-muted-foreground">
@@ -536,10 +511,6 @@ const StudentDashboard = () => {
                   <div className="flex items-center space-x-2">
                     <Icon name="Clock" size={14} />
                     <span>{studentData?.nextLesson?.time}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Icon name="User" size={14} />
-                    <span>{studentData?.nextLesson?.teacher}</span>
                   </div>
                 </div>
               </div>
@@ -568,6 +539,21 @@ const StudentDashboard = () => {
 
           <div className="space-y-3">
             <button
+              type="button"
+              onClick={openSetmoreBooking}
+              className="w-full flex items-center space-x-3 p-3 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors group text-left"
+            >
+              <div className="w-10 h-10 bg-primary/15 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <Icon name="CalendarPlus" size={20} className="text-primary" />
+              </div>
+              <div className="flex-1 text-left">
+                <h4 className="font-semibold text-foreground">{copy.bookLesson}</h4>
+                <p className="text-sm text-muted-foreground">{copy.bookReschedule}</p>
+              </div>
+              <Icon name="ChevronRight" size={16} className="text-primary" />
+            </button>
+
+            <button
               onClick={() => setActiveTab('resources')}
               className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group"
             >
@@ -595,19 +581,6 @@ const StudentDashboard = () => {
               <Icon name="ChevronRight" size={16} className="text-muted-foreground" />
             </button>
 
-            <button
-              onClick={() => setActiveTab('goals')}
-              className="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors group"
-            >
-              <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center group-hover:bg-success/20 transition-colors">
-                <Icon name="Target" size={20} className="text-success" />
-              </div>
-              <div className="flex-1 text-left">
-                <h4 className="font-medium text-foreground">{copy.setGoals}</h4>
-                <p className="text-sm text-muted-foreground">{copy.trackProgress}</p>
-              </div>
-              <Icon name="ChevronRight" size={16} className="text-muted-foreground" />
-            </button>
           </div>
         </div>
       </div>
@@ -622,6 +595,9 @@ const StudentDashboard = () => {
           </div>
 
           <div className="space-y-4">
+            {!recentActivities.length && (
+              <p className="text-sm text-muted-foreground">{copy.noEvents}</p>
+            )}
             {recentActivities?.map((activity) => (
               <div key={activity?.id} className="flex items-start space-x-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activity?.color} bg-current/10`}>
@@ -654,12 +630,6 @@ const StudentDashboard = () => {
                     <span>{formatDate(event?.date)}</span>
                     <span>•</span>
                     <span>{event?.time}</span>
-                    {event?.teacher && (
-                      <>
-                        <span>•</span>
-                        <span>{event?.teacher}</span>
-                      </>
-                    )}
                   </div>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${event?.status === 'confirmed' ? 'bg-success/10 text-success' :
@@ -701,25 +671,6 @@ const StudentDashboard = () => {
             <ProgressChart language={language} progressRecords={progressRecords} error={progressError} />
           </Suspense>
         );
-      case 'goals':
-        return (
-          <Suspense fallback={<TabLoader />}>
-            <GoalTracker
-              language={language}
-              currentLevel={userProfile?.language_level || 'A1'}
-              profileBio={userProfile?.bio || ''}
-              onSaveProfile={handleUpdateProfile}
-              isProfileSaving={isProfileSaving}
-              profileError={profileError}
-              bookings={bookings}
-              materials={materials}
-              goals={goals}
-              goalsError={goalsError}
-              onToggleGoal={handleToggleGoal}
-              isGoalUpdating={isGoalUpdating}
-            />
-          </Suspense>
-        );
       case 'resources':
         return (
           <StudentResourcesPanel
@@ -748,7 +699,9 @@ const StudentDashboard = () => {
               nextBooking={nextBooking}
               messages={messages}
               onMarkRead={handleMarkMessageRead}
+              onSendMessage={handleSendMessage}
               isUpdatingMessage={isMessageUpdating}
+              isSendingMessage={isMessageSending}
               messagesError={messagesError}
             />
           </Suspense>
@@ -760,6 +713,9 @@ const StudentDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
@@ -791,6 +747,11 @@ const StudentDashboard = () => {
                 >
                   <Icon name={tab?.icon} size={16} />
                   <span>{tab?.name}</span>
+                  {tab?.id === 'messages' && unreadMessagesCount > 0 && (
+                    <span aria-hidden="true" className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-warning/20 px-1.5 text-[11px] font-semibold text-warning">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
                 </button>
               ))}
             </nav>

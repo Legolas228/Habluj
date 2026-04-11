@@ -88,9 +88,11 @@ const StudentLessonsPanel = ({
             <div key={booking.id} className="border border-border rounded-lg p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-medium text-foreground">{booking.lesson?.title || t('studentLessons.defaultLessonTitle')}</p>
+                  <p className="font-medium text-foreground">{booking.lesson?.title || '-'}</p>
                   <p className="text-sm text-muted-foreground mt-1">{formatDateTime(booking.date, booking.time, language)}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{booking.lesson?.description || t('studentLessons.defaultLessonDescription')}</p>
+                  {booking.lesson?.description && (
+                    <p className="text-xs text-muted-foreground mt-1">{booking.lesson.description}</p>
+                  )}
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass(booking.status)}`}>
                   {statusLabel(booking.status, t)}
@@ -129,7 +131,7 @@ const StudentLessonsPanel = ({
             <div key={booking.id} className="border border-border rounded-lg p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-medium text-foreground">{booking.lesson?.title || t('studentLessons.defaultLessonTitle')}</p>
+                  <p className="font-medium text-foreground">{booking.lesson?.title || '-'}</p>
                   <p className="text-sm text-muted-foreground mt-1">{formatDateTime(booking.date, booking.time, language)}</p>
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClass(booking.status)}`}>

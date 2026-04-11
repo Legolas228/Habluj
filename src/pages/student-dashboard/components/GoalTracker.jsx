@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 const GoalTracker = ({
-  currentLevel = 'A1',
+  currentLevel = '',
   profileBio = '',
   onSaveProfile,
   isProfileSaving = false,
@@ -22,7 +22,7 @@ const GoalTracker = ({
   const [saveSuccess, setSaveSuccess] = useState('');
 
   useEffect(() => {
-    setLanguageLevel(currentLevel || 'A1');
+    setLanguageLevel(currentLevel || '');
   }, [currentLevel]);
 
   useEffect(() => {
@@ -73,6 +73,7 @@ const GoalTracker = ({
               value={languageLevel}
               onChange={(event) => setLanguageLevel(event.target.value)}
             >
+              <option value="">-</option>
               {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((level) => (
                 <option key={level} value={level}>{level}</option>
               ))}

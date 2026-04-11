@@ -199,7 +199,7 @@ Antes de tocar cualquier cosa, leer:
 
 ## Fase 3 — Tareas futuras lejanas (NO tocar ahora)
 
-- [ ] Integración de pagos (Stripe)
+- [ ] Integración de pagos (GoPay)
 - [ ] Mensajería profesor-alumno
 - [ ] Notificaciones por email
 - [ ] PWA

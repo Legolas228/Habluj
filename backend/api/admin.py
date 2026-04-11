@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils import timezone
-from .brevo import BrevoSyncError, send_new_lead_notification, sync_lead_to_brevo
+from .mailerlite import MailerLiteSyncError, send_new_lead_notification, sync_lead_to_mailerlite
 from .models import UserProfile, Lesson, Booking, Progress, Lead, LeadActivity
 
 @admin.register(UserProfile)
@@ -37,27 +37,27 @@ class LeadAdmin(admin.ModelAdmin):
         'stage',
         'follow_up_at',
         'duplicate_confidence',
-        'brevo_status',
+        'mailerlite_status',
         'created_at',
     )
     search_fields = ('full_name', 'email', 'phone')
     list_filter = ('preferred_language', 'source', 'stage', 'duplicate_confidence', 'consent_marketing', 'consent_privacy', 'created_at')
-    readonly_fields = ('created_at', 'updated_at', 'brevo_contact_id', 'brevo_synced_at', 'brevo_sync_error', 'duplicate_of', 'duplicate_confidence')
+    readonly_fields = ('created_at', 'updated_at', 'mailerlite_contact_id', 'mailerlite_synced_at', 'mailerlite_sync_error', 'duplicate_of', 'duplicate_confidence')
     actions = (
         'mark_as_nurturing',
         'mark_as_qualified',
         'mark_as_booked',
         'mark_as_won',
         'mark_as_lost',
-        'resync_with_brevo',
+        'resync_with_mailerlite',
         'resend_notification_email',
     )
 
-    @admin.display(description='Brevo')
-    def brevo_status(self, obj):
-        if obj.brevo_synced_at:
+    @admin.display(description='MailerLite')
+    def mailerlite_status(self, obj):
+        if obj.mailerlite_synced_at:
             return 'Synced'
-        if obj.brevo_sync_error:
+        if obj.mailerlite_sync_error:
             return 'Error'
         return 'Pending'
 
@@ -85,27 +85,27 @@ class LeadAdmin(admin.ModelAdmin):
     def mark_as_lost(self, request, queryset):
         self._bulk_set_stage(request, queryset, 'lost')
 
-    @admin.action(description='Re-sync selected leads to Brevo contacts')
-    def resync_with_brevo(self, request, queryset):
+    @admin.action(description='Re-sync selected leads to MailerLite subscribers')
+    def resync_with_mailerlite(self, request, queryset):
         synced = 0
         failed = 0
         for lead in queryset:
             try:
-                result = sync_lead_to_brevo(lead)
+                result = sync_lead_to_mailerlite(lead)
                 if result.get('status') == 'synced':
-                    lead.brevo_contact_id = result.get('contact_id', '')
-                    lead.brevo_synced_at = timezone.now()
-                    lead.brevo_sync_error = ''
-                    lead.save(update_fields=['brevo_contact_id', 'brevo_synced_at', 'brevo_sync_error', 'updated_at'])
+                    lead.mailerlite_contact_id = result.get('contact_id', '')
+                    lead.mailerlite_synced_at = timezone.now()
+                    lead.mailerlite_sync_error = ''
+                    lead.save(update_fields=['mailerlite_contact_id', 'mailerlite_synced_at', 'mailerlite_sync_error', 'updated_at'])
                     synced += 1
                 else:
                     failed += 1
-                    lead.brevo_sync_error = result.get('reason', 'Brevo sync skipped')
-                    lead.save(update_fields=['brevo_sync_error', 'updated_at'])
-            except BrevoSyncError as exc:
+                    lead.mailerlite_sync_error = result.get('reason', 'MailerLite sync skipped')
+                    lead.save(update_fields=['mailerlite_sync_error', 'updated_at'])
+            except MailerLiteSyncError as exc:
                 failed += 1
-                lead.brevo_sync_error = str(exc)
-                lead.save(update_fields=['brevo_sync_error', 'updated_at'])
+                lead.mailerlite_sync_error = str(exc)
+                lead.save(update_fields=['mailerlite_sync_error', 'updated_at'])
 
         self.message_user(request, f'Re-sync completed. Success: {synced}. Failed/skipped: {failed}.')
 
@@ -120,7 +120,7 @@ class LeadAdmin(admin.ModelAdmin):
                     sent += 1
                 else:
                     failed += 1
-            except BrevoSyncError:
+            except MailerLiteSyncError:
                 failed += 1
 
         self.message_user(request, f'Notification resend completed. Sent: {sent}. Failed/skipped: {failed}.')

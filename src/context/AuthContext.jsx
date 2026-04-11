@@ -59,9 +59,19 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
-  const register = async ({ username, email, password, password_confirm, language_level }) => {
+  const register = async ({ first_name, last_name, username, email, password, password_confirm, language_level, learning_reason, birth_date }) => {
     setAuthError('');
-    const result = await studentRegister({ username, email, password, password_confirm, language_level });
+    const result = await studentRegister({
+      first_name,
+      last_name,
+      username,
+      email,
+      password,
+      password_confirm,
+      language_level,
+      learning_reason,
+      birth_date,
+    });
     setToken(result.token);
     setUser(result.user);
     try {

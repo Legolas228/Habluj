@@ -23,6 +23,9 @@ from api.views import (
     UserProfileViewSet,
     LessonViewSet,
     BookingViewSet,
+    AvailabilityViewSet,
+    WeeklyAvailabilitySlotViewSet,
+    BookingSlotBlockViewSet,
     ProgressViewSet,
     StudentMaterialViewSet,
     StudentGoalViewSet,
@@ -35,12 +38,18 @@ from api.views import (
     StudentProfileView,
     AdminStudentListView,
     AdminStudentDetailView,
+    AdminGoogleCalendarEventsView,
+    GoPayWebhookView,
 )
 
 router = DefaultRouter()
 router.register(r'profiles', UserProfileViewSet)
 router.register(r'lessons', LessonViewSet)
 router.register(r'bookings', BookingViewSet)
+router.register(r'availability/ranges', AvailabilityViewSet, basename='availability-ranges')
+router.register(r'availability/weekly-slots', WeeklyAvailabilitySlotViewSet, basename='availability-weekly-slots')
+router.register(r'availability/slot-blocks', BookingSlotBlockViewSet, basename='availability-slot-blocks')
+
 router.register(r'progress', ProgressViewSet)
 router.register(r'goals', StudentGoalViewSet, basename='goals')
 router.register(r'messages', StudentMessageViewSet, basename='messages')
@@ -55,8 +64,10 @@ urlpatterns = [
     path('api/auth/logout/', StudentLogoutView.as_view(), name='student-logout'),
     path('api/auth/me/', StudentMeView.as_view(), name='student-me'),
     path('api/users/profile/', StudentProfileView.as_view(), name='student-profile'),
+    path('api/payments/gopay/webhook/', GoPayWebhookView.as_view(), name='gopay-webhook'),
     path('api/admin/students/', AdminStudentListView.as_view(), name='admin-students'),
     path('api/admin/students/<int:user_id>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
+    path('api/admin/google-calendar/events/', AdminGoogleCalendarEventsView.as_view(), name='admin-google-calendar-events'),
     path('api-auth/', include('rest_framework.urls')),
 ]
 

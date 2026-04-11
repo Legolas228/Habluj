@@ -63,19 +63,229 @@ export const getAdminStudents = async (authHeader, filters = {}) => {
 
 export const getAdminBookings = async (authHeader, filters = {}) => {
   const baseUrl = resolveApiBaseUrl();
-  const response = await fetch(`${baseUrl}/api/bookings/${buildQueryString(filters)}`, {
+  const url = `${baseUrl}/api/bookings/${buildQueryString(filters)}`;
+  const fetchBookings = async () => {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(authHeader),
+    });
+    const data = await parseResponseData(response);
+    return { response, data };
+  };
+
+  let result = await fetchBookings();
+  if (!result.response.ok && [429, 500, 502, 503, 504].includes(result.response.status)) {
+    await new Promise((resolve) => setTimeout(resolve, 350));
+    result = await fetchBookings();
+  }
+
+  if (!result.response.ok) {
+    throw new Error(getErrorMessage(result.response, result.data, 'No se pudieron cargar las reservas.'));
+  }
+
+  if (Array.isArray(result.data)) return result.data;
+  return result.data?.results || [];
+};
+
+export const getAdminWeeklyAvailability = async (authHeader, filters = {}) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/weekly-slots/${buildQueryString(filters)}`, {
     method: 'GET',
     headers: getAuthHeaders(authHeader),
   });
 
   const data = await parseResponseData(response);
   if (!response.ok) {
-    throw new Error(getErrorMessage(response, data, 'No se pudieron cargar las reservas.'));
+    throw new Error(getErrorMessage(response, data, 'No se pudo cargar la disponibilidad semanal.'));
   }
 
   if (Array.isArray(data)) return data;
   return data?.results || [];
 };
+
+export const getAdminAvailabilityRanges = async (authHeader, filters = {}) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/ranges/${buildQueryString(filters)}`, {
+    method: 'GET',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo cargar la disponibilidad por rangos.'));
+  }
+
+  if (Array.isArray(data)) return data;
+  return data?.results || [];
+};
+
+export const createAdminAvailabilityRange = async ({ authHeader, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/ranges/`, {
+    method: 'POST',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo crear el rango de disponibilidad.'));
+  }
+
+  return data;
+};
+
+export const updateAdminAvailabilityRange = async ({ authHeader, rangeId, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/ranges/${rangeId}/`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo actualizar el rango de disponibilidad.'));
+  }
+
+  return data;
+};
+
+export const deleteAdminAvailabilityRange = async ({ authHeader, rangeId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/ranges/${rangeId}/`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const data = await parseResponseData(response);
+    throw new Error(getErrorMessage(response, data, 'No se pudo eliminar el rango de disponibilidad.'));
+  }
+};
+
+export const createAdminWeeklyAvailability = async ({ authHeader, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/weekly-slots/`, {
+    method: 'POST',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo guardar la franja semanal.'));
+  }
+
+  return data;
+};
+
+export const deleteAdminWeeklyAvailability = async ({ authHeader, slotId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/weekly-slots/${slotId}/`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const data = await parseResponseData(response);
+    throw new Error(getErrorMessage(response, data, 'No se pudo eliminar la franja semanal.'));
+  }
+};
+
+export const updateAdminWeeklyAvailability = async ({ authHeader, slotId, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/weekly-slots/${slotId}/`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo actualizar la franja semanal.'));
+  }
+
+  return data;
+};
+
+export const getAdminSlotBlocks = async (authHeader, filters = {}) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/slot-blocks/${buildQueryString(filters)}`, {
+    method: 'GET',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudieron cargar los bloqueos de agenda.'));
+  }
+
+  if (Array.isArray(data)) return data;
+  return data?.results || [];
+};
+
+export const getAdminGoogleCalendarEvents = async (authHeader, filters = {}) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/admin/google-calendar/events/${buildQueryString(filters)}`, {
+    method: 'GET',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudieron cargar eventos de Google Calendar.'));
+  }
+
+  if (Array.isArray(data)) return data;
+  return data?.results || [];
+};
+
+export const createAdminSlotBlock = async ({ authHeader, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/slot-blocks/`, {
+    method: 'POST',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo crear el bloqueo de agenda.'));
+  }
+
+  return data;
+};
+
+export const updateAdminSlotBlock = async ({ authHeader, blockId, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/slot-blocks/${blockId}/`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo actualizar el bloqueo de agenda.'));
+  }
+
+  return data;
+};
+
+export const deleteAdminSlotBlock = async ({ authHeader, blockId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/availability/slot-blocks/${blockId}/`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const data = await parseResponseData(response);
+    throw new Error(getErrorMessage(response, data, 'No se pudo eliminar el bloqueo de agenda.'));
+  }
+};
+
 
 export const getAdminLessons = async (authHeader) => {
   const baseUrl = resolveApiBaseUrl();
@@ -106,6 +316,20 @@ export const updateAdminBooking = async ({ authHeader, bookingId, patch }) => {
     throw new Error(getErrorMessage(response, data, 'No se pudo actualizar la reserva.'));
   }
 
+  return data;
+};
+
+export const createAdminBooking = async ({ authHeader, payload }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/bookings/`, {
+    method: 'POST',
+    headers: getAuthHeaders(authHeader, true),
+    body: JSON.stringify(payload || {}),
+  });
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(getErrorMessage(response, data, 'No se pudo crear la reserva manual.'));
+  }
   return data;
 };
 

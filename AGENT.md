@@ -652,7 +652,7 @@ REGLA: Nunca commitear .env al repositorio. Usar .env.example como template.
 - [ ] Deploy backend en Railway
 
 ### Fase 3 — Funcionalidades avanzadas (FUTURO LEJANO)
-- [ ] Sistema de pagos (Stripe)
+- [ ] Sistema de pagos (GoPay)
 - [ ] Mensajeria profesor-alumno
 - [ ] Notificaciones por email
 - [ ] PWA (Progressive Web App)

@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
-import LeadMagnetForm from '../../../components/LeadMagnetForm';
+import LevelQuizTeaser from '../../../components/LevelQuizTeaser';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { contactInfo, getContactLinks } from '../../../utils/contactInfo';
 
@@ -11,7 +11,7 @@ const CTASection = () => {
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="max-w-xl mx-auto mb-12">
-          <LeadMagnetForm source="homepage_cta" />
+          <LevelQuizTeaser />
         </div>
 
         {/* Bottom Message */}

@@ -5,7 +5,20 @@ const LanguageContext = createContext();
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
     try {
-      return localStorage.getItem('language') || 'sk';
+      const savedLanguage = localStorage.getItem('language');
+      if (savedLanguage) {
+        return savedLanguage;
+      }
+
+      const browserLanguage = (navigator.language || '').toLowerCase();
+      if (browserLanguage.startsWith('cs')) {
+        return 'cz';
+      }
+      if (browserLanguage.startsWith('es')) {
+        return 'es';
+      }
+
+      return 'sk';
     } catch (error) {
       console.warn('localStorage not available:', error);
       return 'sk';

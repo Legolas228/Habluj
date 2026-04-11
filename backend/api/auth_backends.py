@@ -13,13 +13,23 @@ class UsernameOrEmailBackend(ModelBackend):
             return None
 
         UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(Q(username__iexact=username) | Q(email__iexact=username))
-        except UserModel.DoesNotExist:
+        candidates = list(
+            UserModel.objects.filter(Q(username__iexact=username) | Q(email__iexact=username))
+        )
+        if not candidates:
             # Run default hasher once to reduce timing differences.
             UserModel().set_password(password)
             return None
 
-        if user.check_password(password) and self.user_can_authenticate(user):
-            return user
+        lower_username = str(username).lower()
+        # Prefer exact username matches first, then exact email matches.
+        candidates.sort(key=lambda user: (
+            str(getattr(user, 'username', '')).lower() != lower_username,
+            str(getattr(user, 'email', '')).lower() != lower_username,
+            getattr(user, 'id', 0),
+        ))
+
+        for user in candidates:
+            if user.check_password(password) and self.user_can_authenticate(user):
+                return user
         return None

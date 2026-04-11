@@ -6,20 +6,51 @@ import Button from '../../components/ui/Button';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
 import ServiceFeatures from './components/ServiceFeatures';
-import LeadMagnetForm from '../../components/LeadMagnetForm';
+import LevelQuizTeaser from '../../components/LevelQuizTeaser';
+import WaitlistForm from '../../components/WaitlistForm';
 import { useTranslation } from '../../hooks/useTranslation';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
 import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
+import { openSetmoreBooking } from '../../utils/setmore';
 
-// Setmore booking URL — update this when Setmore is configured
-const SETMORE_BOOKING_URL = 'https://habluj.setmore.com/';
+const WAITLIST_TARGET_ID = 'course-waitlist';
 
 const TutoringServices = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/tutoring-services');
+  const [waitlistCourseType, setWaitlistCourseType] = React.useState('intensive');
+  const localeByLanguage = {
+    sk: 'sk-SK',
+    cz: 'cs-CZ',
+    es: 'es-ES',
+  };
+  const locale = localeByLanguage[language] || 'sk-SK';
+  const isCzech = language === 'cz';
+  const offerCurrency = isCzech ? 'CZK' : 'EUR';
+  const offerPrice = isCzech ? '500' : '20';
+
+  const servicesSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: t('meta.servicesTitle'),
+    description: t('meta.servicesDescription'),
+    provider: {
+      '@type': 'EducationalOrganization',
+      name: 'Habluj',
+      url: getCanonicalUrl('/'),
+    },
+    inLanguage: locale,
+    offers: {
+      '@type': 'Offer',
+      price: offerPrice,
+      priceCurrency: offerCurrency,
+      availability: 'https://schema.org/InStock',
+      url: getCanonicalUrl('/tutoring-services'),
+    },
+  };
 
   const handleBookLesson = () => {
-    window.open(SETMORE_BOOKING_URL, '_blank', 'noopener,noreferrer');
+    openSetmoreBooking();
   };
 
   const scrollToSection = (targetId) => {
@@ -27,6 +58,11 @@ const TutoringServices = () => {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  const openWaitlist = (courseType) => {
+    setWaitlistCourseType(courseType);
+    scrollToSection(WAITLIST_TARGET_ID);
   };
 
   const serviceSections = [
@@ -189,6 +225,7 @@ const TutoringServices = () => {
         <meta property="og:url" content="https://habluj.sk/tutoring-services" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
+        <script type="application/ld+json">{JSON.stringify(servicesSchema)}</script>
       </Helmet>
       <Header />
       <main>
@@ -305,7 +342,7 @@ const TutoringServices = () => {
       <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-xl mx-auto">
-            <LeadMagnetForm source="services_page" />
+            <LevelQuizTeaser />
           </div>
         </div>
       </section>
@@ -334,6 +371,8 @@ const TutoringServices = () => {
                     label: 'text-primary',
                     button: 'border-primary text-primary hover:bg-primary hover:text-white',
                   };
+                  const isWaitlistOnly = section.id === 'group-classes' || section.id === 'intensive-courses';
+                  const waitlistCourseType = section.id === 'group-classes' ? 'small_group' : 'intensive';
 
                   return (
                     <div
@@ -358,9 +397,9 @@ const TutoringServices = () => {
                           size="sm"
                           fullWidth
                           className={accentStyle.button}
-                          onClick={handleBookLesson}
+                          onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType) : handleBookLesson}
                         >
-                          {t('services.hero.ctaBook')}
+                          {isWaitlistOnly ? t('waitlist.ctaJoin') : t('services.hero.ctaBook')}
                         </Button>
                       </div>
                     </div>
@@ -369,6 +408,23 @@ const TutoringServices = () => {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id={WAITLIST_TARGET_ID} className="py-16 lg:py-20 bg-background scroll-mt-28">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto mb-8 text-center">
+            <h2 className="text-3xl lg:text-4xl font-headlines font-bold text-foreground mb-3">
+              {t('waitlist.sectionTitle')}
+            </h2>
+            <p className="text-muted-foreground">
+              {t('waitlist.sectionSubtitle')}
+            </p>
+          </div>
+
+          <div className="max-w-xl mx-auto">
+            <WaitlistForm preferredCourseType={waitlistCourseType} />
+          </div>
         </div>
       </section>
 

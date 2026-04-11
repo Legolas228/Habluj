@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Icon from '../../components/AppIcon';
@@ -7,14 +8,13 @@ import StudentResourcesPanel from '../student-dashboard/components/StudentResour
 import ProgressChart from '../student-dashboard/components/ProgressChart';
 import PaymentHistory from '../student-dashboard/components/PaymentHistory';
 import {
-  createBasicAuthHeader,
   exportLeadsCsv,
   getLeadDetail,
   getLeadMetrics,
   getLeads,
+  loginAdminWithPassword,
   updateLead,
   updateLeadStage,
-  verifyAdminCredentials,
 } from '../../services/leads';
 import {
   createAdminAvailabilityRange,
@@ -38,6 +38,7 @@ import {
   getAdminMaterials,
   getAdminMessages,
   getAdminProgress,
+  getAdminGoogleCalendarEvents,
   getAdminSlotBlocks,
   getAdminStudents,
   getAdminWeeklyAvailability,
@@ -53,9 +54,26 @@ import {
 
 const AUTH_STORAGE_KEY = 'ester_dashboard_auth';
 const STUDENT_TAB_STORAGE_PREFIX = 'ester_student_editor_tab_';
+const GOOGLE_CALENDAR_ID = (import.meta.env.VITE_GOOGLE_CALENDAR_ID || '').trim();
+const GOOGLE_CALENDAR_TIMEZONE = (import.meta.env.VITE_GOOGLE_CALENDAR_TIMEZONE || 'Europe/Madrid').trim();
+const GOOGLE_CALENDAR_LOCALE = (import.meta.env.VITE_GOOGLE_CALENDAR_LOCALE || 'es').trim();
+const GOOGLE_CALENDAR_EMBED_URL_RAW = (import.meta.env.VITE_GOOGLE_CALENDAR_EMBED_URL || '').trim();
+const GOOGLE_CALENDAR_PUBLIC_URL_RAW = (import.meta.env.VITE_GOOGLE_CALENDAR_PUBLIC_URL || '').trim();
+const GOOGLE_CALENDAR_EMBED_URL = GOOGLE_CALENDAR_EMBED_URL_RAW
+  || (
+    GOOGLE_CALENDAR_ID
+      ? `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(GOOGLE_CALENDAR_ID)}&ctz=${encodeURIComponent(GOOGLE_CALENDAR_TIMEZONE)}&hl=${encodeURIComponent(GOOGLE_CALENDAR_LOCALE)}`
+      : ''
+  );
+const GOOGLE_CALENDAR_PUBLIC_URL = GOOGLE_CALENDAR_PUBLIC_URL_RAW
+  || (
+    GOOGLE_CALENDAR_ID
+      ? `https://calendar.google.com/calendar/u/0?cid=${encodeURIComponent(GOOGLE_CALENDAR_ID)}`
+      : ''
+  );
 
 const STAGE_OPTIONS = ['new', 'nurturing', 'qualified', 'booked', 'won', 'lost'];
-const ADMIN_SECTIONS = ['leads', 'students', 'bookings', 'waitlist', 'agenda', 'messages'];
+const ADMIN_SECTIONS = ['leads', 'students', 'bookings', 'waitlist', 'agenda', 'calendar', 'messages'];
 const BOOKING_STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed'];
 const PROFILE_LEVEL_OPTIONS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const WAITLIST_SOURCES = ['waitlist_intensive', 'waitlist_small_group'];
@@ -78,9 +96,9 @@ const statusLabel = (status) => {
 };
 
 const languageLabel = (code) => {
-  if (code === 'sk') return 'Slovak';
-  if (code === 'cz') return 'Czech';
-  if (code === 'es') return 'Spanish';
+  if (code === 'sk') return 'Eslovaco';
+  if (code === 'cz') return 'Checo';
+  if (code === 'es') return 'Espanol';
   return code || '-';
 };
 
@@ -105,12 +123,23 @@ const cap = (value = '') => {
   return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
 };
 
+const stageLabel = (stage) => {
+  if (stage === 'new') return 'Nuevo';
+  if (stage === 'nurturing') return 'Nutricion';
+  if (stage === 'qualified') return 'Calificado';
+  if (stage === 'booked') return 'Reservado';
+  if (stage === 'won') return 'Ganado';
+  if (stage === 'lost') return 'Perdido';
+  return cap(stage);
+};
+
 const sectionMeta = {
   leads: { label: 'Oportunidades', icon: 'BarChart3' },
   students: { label: 'Estudiantes', icon: 'Users' },
   bookings: { label: 'Reservas', icon: 'Calendar' },
   waitlist: { label: 'Lista de espera', icon: 'ListOrdered' },
   agenda: { label: 'Agenda', icon: 'CalendarDays' },
+  calendar: { label: 'Calendario', icon: 'CalendarClock' },
   messages: { label: 'Mensajes', icon: 'MessageCircle' },
 };
 const EMPTY_SECTION_COUNTS = {
@@ -119,6 +148,7 @@ const EMPTY_SECTION_COUNTS = {
   bookings: 0,
   waitlist: 0,
   agenda: 0,
+  calendar: 0,
   messages: 0,
 };
 
@@ -287,6 +317,7 @@ const EsterDashboard = () => {
   const [availabilityRanges, setAvailabilityRanges] = useState([]);
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
   const [slotBlocks, setSlotBlocks] = useState([]);
+  const [googleCalendarEvents, setGoogleCalendarEvents] = useState([]);
   const [studentMaterials, setStudentMaterials] = useState([]);
   const [studentGoals, setStudentGoals] = useState([]);
   const [studentMessages, setStudentMessages] = useState([]);
@@ -400,12 +431,15 @@ const EsterDashboard = () => {
     lesson_id: '',
     date: '',
     time: '',
+    duration_minutes: '60',
     status: 'confirmed',
     notes: '',
   });
   const [agendaWeekStart, setAgendaWeekStart] = useState(() => getWeekStartMonday(new Date()));
   const [selectedAgendaCell, setSelectedAgendaCell] = useState(null);
   const [selectedAgendaState, setSelectedAgendaState] = useState('unavailable');
+  const [isAgendaDragging, setIsAgendaDragging] = useState(false);
+  const [agendaDragAnchor, setAgendaDragAnchor] = useState(null);
   const [isAgendaStateModalOpen, setIsAgendaStateModalOpen] = useState(false);
   const [isManualBookingModalOpen, setIsManualBookingModalOpen] = useState(false);
   const [bookingModalError, setBookingModalError] = useState('');
@@ -447,6 +481,7 @@ const EsterDashboard = () => {
         bookings: allBookings.length,
         waitlist: waitlistGroups.flat().length,
         agenda: activeRanges.length || activeWeeklySlots.filter((slot) => slot?.is_active).length,
+        calendar: GOOGLE_CALENDAR_EMBED_URL ? 1 : 0,
         messages: unreadMessagesCount,
       });
     } catch (error) {
@@ -576,13 +611,14 @@ const EsterDashboard = () => {
       const now = new Date();
       const startDate = toIsoDateValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7));
       const endDate = toIsoDateValue(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 90));
-      const [rangesResult, weeklyResult, blocksResult, bookingsResult, lessonsResult, studentsResult] = await Promise.allSettled([
+      const [rangesResult, weeklyResult, blocksResult, bookingsResult, lessonsResult, studentsResult, googleEventsResult] = await Promise.allSettled([
         getAdminAvailabilityRanges(header, {}),
         getAdminWeeklyAvailability(header, {}),
-        getAdminSlotBlocks(header, { active: 'true', start_date: startDate, end_date: endDate }),
+        getAdminSlotBlocks(header, { start_date: startDate, end_date: endDate }),
         getAdminBookings(header, {}),
         getAdminLessons(header),
         getAdminStudents(header, {}),
+        getAdminGoogleCalendarEvents(header, { start_date: startDate, end_date: endDate }),
       ]);
 
       if (rangesResult.status === 'fulfilled') setAvailabilityRanges(rangesResult.value);
@@ -591,6 +627,7 @@ const EsterDashboard = () => {
       if (bookingsResult.status === 'fulfilled') setBookings(bookingsResult.value);
       if (lessonsResult.status === 'fulfilled') setLessons(lessonsResult.value);
       if (studentsResult.status === 'fulfilled') setStudents(studentsResult.value);
+      if (googleEventsResult.status === 'fulfilled') setGoogleCalendarEvents(googleEventsResult.value);
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo cargar la agenda.');
     } finally {
@@ -1119,6 +1156,24 @@ const EsterDashboard = () => {
   }, [authHeader, activeSection]);
 
   useEffect(() => {
+    if (!authHeader || !['agenda', 'calendar'].includes(activeSection)) return undefined;
+    const intervalId = window.setInterval(() => {
+      loadAgendaData(authHeader);
+    }, 60000);
+    return () => window.clearInterval(intervalId);
+  }, [authHeader, activeSection]);
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (!isAgendaDragging) return;
+      setIsAgendaDragging(false);
+      setAgendaDragAnchor(null);
+    };
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => window.removeEventListener('mouseup', handleMouseUp);
+  }, [isAgendaDragging]);
+
+  useEffect(() => {
     if (authHeader && activeSection === 'students' && bookings.length === 0) {
       loadBookingsData(authHeader);
     }
@@ -1187,19 +1242,13 @@ const EsterDashboard = () => {
     setSuccessMessage('');
 
     try {
-      const header = createBasicAuthHeader(username, password);
-      await verifyAdminCredentials(header);
+      const header = await loginAdminWithPassword({ identifier: username, password });
       sessionStorage.setItem(AUTH_STORAGE_KEY, header);
       setAuthHeader(header);
       setPassword('');
       setSuccessMessage('Sesión iniciada correctamente.');
     } catch (error) {
-      const message = String(error?.message || '');
-      if (message.toLowerCase().includes('invalid username') || message.toLowerCase().includes('unauthorized')) {
-        setErrorMessage('Credenciales inválidas. Revisa usuario y contraseña.');
-        return;
-      }
-      setErrorMessage(error?.message || 'No se pudo iniciar sesión.');
+      setErrorMessage(error?.message || 'Credenciales inválidas. Revisa usuario y contraseña.');
     }
   };
 
@@ -1212,6 +1261,7 @@ const EsterDashboard = () => {
     setStudents([]);
     setBookings([]);
     setLessons([]);
+    setGoogleCalendarEvents([]);
     setStudentMaterials([]);
     setStudentGoals([]);
     setStudentMessages([]);
@@ -1857,8 +1907,11 @@ const EsterDashboard = () => {
       const dayBookings = (bookingsByDay[day.isoDate] || []).slice().sort((a, b) => (
         String(a.time || '').localeCompare(String(b.time || ''))
       ));
+      const dayGoogleEvents = googleCalendarEvents
+        .filter((event) => event.start_date_local === day.isoDate && !event.is_habluj_block)
+        .sort((a, b) => String(a.start_time_local || '').localeCompare(String(b.start_time_local || '')));
       const dayBlocks = slotBlocks
-        .filter((block) => block.date === day.isoDate && block.is_active)
+        .filter((block) => block.date === day.isoDate)
         .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
       const dayRanges = availabilityRanges
         .filter((range) => Number(range.weekday) === Number(day.value) && range.is_active)
@@ -1868,15 +1921,40 @@ const EsterDashboard = () => {
         .sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
 
       const byHour = {};
+      dayGoogleEvents.forEach((event) => {
+        const startKey = toTimeValue(event.start_time_local || '');
+        const endKey = toTimeValue(event.end_time_local || '');
+        if (!startKey || !endKey) return;
+        const rangeTimes = [];
+        for (let current = startKey; current && current !== endKey; current = addMinutesToTimeValue(current, 15)) {
+          rangeTimes.push(current);
+          if (rangeTimes.length > 96) break;
+        }
+        if (!rangeTimes.length) return;
+        rangeTimes.forEach((slotKey, slotIndex) => {
+          byHour[slotKey] = byHour[slotKey] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
+          if (!byHour[slotKey].booking) {
+            byHour[slotKey].externalEvent = event;
+            byHour[slotKey].isExternalStart = slotIndex === 0;
+          }
+        });
+      });
       dayBookings.forEach((booking) => {
         const startKey = toTimeValue(booking.time || '');
         if (!startKey) return;
-        const durationMinutes = Number(booking?.lesson?.duration) || 60;
+        let durationMinutes = Number(booking?.lesson?.duration) || 60;
+        if (booking?.start_time_utc && booking?.end_time_utc) {
+          const startUtc = new Date(booking.start_time_utc);
+          const endUtc = new Date(booking.end_time_utc);
+          if (!Number.isNaN(startUtc.getTime()) && !Number.isNaN(endUtc.getTime()) && endUtc > startUtc) {
+            durationMinutes = Math.round((endUtc.getTime() - startUtc.getTime()) / 60000);
+          }
+        }
         const slotsCount = Math.max(1, Math.ceil(durationMinutes / 15));
         for (let slotIndex = 0; slotIndex < slotsCount; slotIndex += 1) {
           const slotKey = addMinutesToTimeValue(startKey, slotIndex * 15);
           if (!slotKey) continue;
-          byHour[slotKey] = byHour[slotKey] || { booking: null, hasAvailability: false, isBookingStart: false };
+          byHour[slotKey] = byHour[slotKey] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
           byHour[slotKey].booking = booking;
           byHour[slotKey].isBookingStart = slotIndex === 0;
         }
@@ -1884,7 +1962,7 @@ const EsterDashboard = () => {
       weeklySlots.forEach((slot) => {
         const key = toTimeValue(slot.time || '');
         if (!key) return;
-        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
+        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
         byHour[key].hasAvailability = true;
       });
       agendaHourRows.forEach((row) => {
@@ -1893,20 +1971,26 @@ const EsterDashboard = () => {
           isTimeWithinRange(key, toTimeValue(range.start_time), toTimeValue(range.end_time))
         ));
         if (hasRangeAvailability) {
-          byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
+          byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
           byHour[key].hasAvailability = true;
         }
       });
       dayBlocks.forEach((block) => {
         const key = toTimeValue(block.time || '');
         if (!key) return;
-        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false };
-        byHour[key].hasAvailability = false;
+        byHour[key] = byHour[key] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
+        byHour[key].hasAvailability = block.is_active === false ? true : false;
       });
 
-      return { day, byHour, dayBookings, weeklySlots, dayRanges, dayBlocks };
+      return { day, byHour, dayBookings, dayGoogleEvents, weeklySlots, dayRanges, dayBlocks };
     });
-  }, [agendaHourRows, agendaWeekDays, availabilityRanges, bookings, slotBlocks, weeklyAvailability]);
+  }, [agendaHourRows, agendaWeekDays, availabilityRanges, bookings, googleCalendarEvents, slotBlocks, weeklyAvailability]);
+  const agendaGridByDay = useMemo(() => {
+    return agendaWeeklyGrid.reduce((acc, column) => {
+      acc[column.day.isoDate] = column;
+      return acc;
+    }, {});
+  }, [agendaWeeklyGrid]);
 
   const upcomingAgendaBookings = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -1925,7 +2009,7 @@ const EsterDashboard = () => {
     let reserved = 0;
     agendaWeeklyGrid.forEach((column) => {
       Object.values(column.byHour).forEach((cell) => {
-        if (cell?.booking) {
+        if (cell?.booking || cell?.externalEvent) {
           reserved += 1;
           return;
         }
@@ -1950,28 +2034,109 @@ const EsterDashboard = () => {
     target.setDate(target.getDate() + 7);
     setAgendaWeekStart(getWeekStartMonday(target));
   };
-  const onAgendaSelectCell = ({ day, timeValue, cell }) => {
-    const state = cell?.booking ? 'reserved' : (cell?.hasAvailability ? 'available' : 'unavailable');
-    setSelectedAgendaCell({
+  const buildQuarterHourRange = useCallback((startValue, endValueExclusive) => {
+    const rangeTimes = [];
+    for (let current = startValue; current && current !== endValueExclusive; current = addMinutesToTimeValue(current, 15)) {
+      rangeTimes.push(current);
+      if (rangeTimes.length > 96) break;
+    }
+    return rangeTimes;
+  }, []);
+  const buildAgendaSelection = useCallback((day, anchorTime, targetTime) => {
+    const anchorMinutes = timeToMinutes(anchorTime);
+    const targetMinutes = timeToMinutes(targetTime);
+    if (anchorMinutes === null || targetMinutes === null) return null;
+
+    const startTime = anchorMinutes <= targetMinutes ? anchorTime : targetTime;
+    const endCellTime = anchorMinutes <= targetMinutes ? targetTime : anchorTime;
+    const endTimeExclusive = addMinutesToTimeValue(endCellTime, 15);
+    if (!endTimeExclusive) return null;
+
+    const slotTimes = buildQuarterHourRange(startTime, endTimeExclusive);
+    const column = agendaGridByDay[day.isoDate];
+    const slotCells = slotTimes.map((timeValue) => (
+      column?.byHour?.[timeValue] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false }
+    ));
+    const bookingsInRange = slotCells
+      .map((cell) => cell?.booking)
+      .filter(Boolean);
+    const externalEventsInRange = slotCells
+      .map((cell) => cell?.externalEvent)
+      .filter(Boolean);
+    const hasBooking = bookingsInRange.length > 0;
+    const hasExternalEvent = externalEventsInRange.length > 0;
+    const hasUnavailable = slotCells.some((cell) => !cell?.booking && !cell?.hasAvailability);
+    const initialState = (hasBooking || hasExternalEvent) ? 'reserved' : (hasUnavailable ? 'unavailable' : 'available');
+
+    return {
       day,
-      timeValue,
-      hasBooking: !!cell?.booking,
-      booking: cell?.booking || null,
-    });
-    setSelectedAgendaState(state);
+      timeValue: startTime,
+      startTime,
+      endTime: endTimeExclusive,
+      slotTimes,
+      hasBooking,
+      hasExternalEvent,
+      booking: bookingsInRange[0] || null,
+      externalEvent: externalEventsInRange[0] || null,
+      initialState,
+    };
+  }, [agendaGridByDay, buildQuarterHourRange]);
+  const onAgendaStartSelection = (day, timeValue) => {
+    const selection = buildAgendaSelection(day, timeValue, timeValue);
+    if (!selection) return;
+    setAgendaDragAnchor({ dayIso: day.isoDate, timeValue });
+    setIsAgendaDragging(true);
+    setSelectedAgendaCell(selection);
+    setSelectedAgendaState(selection.initialState);
     setPunctualRangeDraft((prev) => ({
       ...prev,
       date: day.isoDate,
-      start_time: timeValue,
-      end_time: addMinutesToTimeValue(timeValue, 15) || prev.end_time,
+      start_time: selection.startTime,
+      end_time: selection.endTime,
+    }));
+    setIsAgendaStateModalOpen(false);
+  };
+  const onAgendaExtendSelection = (day, timeValue) => {
+    if (!isAgendaDragging || !agendaDragAnchor) return;
+    if (agendaDragAnchor.dayIso !== day.isoDate) return;
+    const selection = buildAgendaSelection(day, agendaDragAnchor.timeValue, timeValue);
+    if (!selection) return;
+    setSelectedAgendaCell(selection);
+    setSelectedAgendaState(selection.initialState);
+    setPunctualRangeDraft((prev) => ({
+      ...prev,
+      date: day.isoDate,
+      start_time: selection.startTime,
+      end_time: selection.endTime,
+    }));
+  };
+  const onAgendaFinishSelection = (day, timeValue) => {
+    if (!isAgendaDragging || !agendaDragAnchor) return;
+    if (agendaDragAnchor.dayIso !== day.isoDate) {
+      setIsAgendaDragging(false);
+      setAgendaDragAnchor(null);
+      return;
+    }
+    const selection = buildAgendaSelection(day, agendaDragAnchor.timeValue, timeValue);
+    setIsAgendaDragging(false);
+    setAgendaDragAnchor(null);
+    if (!selection) return;
+    setSelectedAgendaCell(selection);
+    setSelectedAgendaState(selection.initialState);
+    setPunctualRangeDraft((prev) => ({
+      ...prev,
+      date: day.isoDate,
+      start_time: selection.startTime,
+      end_time: selection.endTime,
     }));
     setIsAgendaStateModalOpen(true);
   };
-  const onOpenManualBookingModal = ({ date, time }) => {
+  const onOpenManualBookingModal = ({ date, time, durationMinutes }) => {
     setManualBookingDraft((prev) => ({
       ...prev,
       date: date || prev.date,
       time: time || prev.time,
+      duration_minutes: durationMinutes ? String(durationMinutes) : (prev.duration_minutes || '60'),
       student_id: prev.student_id || (students[0]?.id ? String(students[0].id) : ''),
       lesson_id: prev.lesson_id || (lessons[0]?.id ? String(lessons[0].id) : ''),
     }));
@@ -1980,10 +2145,27 @@ const EsterDashboard = () => {
   };
   const onApplyAgendaState = async () => {
     if (!selectedAgendaCell || !authHeader) return;
-    const { day, timeValue, hasBooking } = selectedAgendaCell;
+    const {
+      day,
+      timeValue,
+      startTime = timeValue,
+      endTime = addMinutesToTimeValue(timeValue, 15),
+      slotTimes = [timeValue],
+      hasBooking,
+      hasExternalEvent,
+    } = selectedAgendaCell;
+
+    if (hasExternalEvent) {
+      setErrorMessage('Esta franja viene de Google Calendar. Modifícala directamente en Google y pulsa "Actualizar" en la agenda.');
+      return;
+    }
 
     if (selectedAgendaState === 'reserved') {
-      onOpenManualBookingModal({ date: day.isoDate, time: timeValue });
+      onOpenManualBookingModal({
+        date: day.isoDate,
+        time: startTime,
+        durationMinutes: Math.max(15, slotTimes.length * 15),
+      });
       setIsAgendaStateModalOpen(false);
       return;
     }
@@ -1994,41 +2176,104 @@ const EsterDashboard = () => {
     }
 
     const shouldBeAvailable = selectedAgendaState === 'available';
-    const slotBlock = slotBlocks.find((block) => (
-      block.date === day.isoDate && toTimeValue(block.time) === timeValue
+    const slotBlocksInRange = slotBlocks.filter((block) => (
+      block.date === day.isoDate && slotTimes.includes(toTimeValue(block.time))
     ));
     setIsAgendaSaving(true);
     setErrorMessage('');
     try {
       if (shouldBeAvailable) {
-        if (slotBlock?.id) {
-          await deleteAdminSlotBlock({ authHeader, blockId: slotBlock.id });
-          setSlotBlocks((prev) => prev.filter((block) => block.id !== slotBlock.id));
+        const byTime = new Map(slotBlocksInRange.map((block) => [toTimeValue(block.time), block]));
+        const updates = [];
+        const creates = [];
+        slotTimes.forEach((slotTime) => {
+          const existing = byTime.get(slotTime);
+          if (existing?.id) {
+            if (existing.is_active !== false) {
+              updates.push(updateAdminSlotBlock({
+                authHeader,
+                blockId: existing.id,
+                payload: { is_active: false, reason: existing.reason || 'Disponible puntual' },
+              }));
+            }
+          } else {
+            creates.push(createAdminSlotBlock({
+              authHeader,
+              payload: {
+                date: day.isoDate,
+                time: `${slotTime}:00`,
+                reason: 'Disponible puntual',
+                is_active: false,
+              },
+            }));
+          }
+        });
+        const [updatedRows, createdRows] = await Promise.all([
+          updates.length ? Promise.all(updates) : Promise.resolve([]),
+          creates.length ? Promise.all(creates) : Promise.resolve([]),
+        ]);
+        if (updatedRows.length || createdRows.length) {
+          const updatedById = new Map(updatedRows.filter((item) => item?.id).map((item) => [item.id, item]));
+          const created = createdRows.filter((item) => item?.id);
+          setSlotBlocks((prev) => {
+            const next = prev.map((item) => (updatedById.has(item.id) ? updatedById.get(item.id) : item));
+            return [...next, ...created.filter((item) => !next.some((existing) => existing.id === item.id))];
+          });
         } else {
           setActionToast('La franja ya estaba disponible para ese día.');
         }
-      } else if (!slotBlock) {
-        const createdBlock = await createAdminSlotBlock({
-          authHeader,
-          payload: {
-            date: day.isoDate,
-            time: `${timeValue}:00`,
-            reason: 'No disponible puntual',
-            is_active: true,
-          },
-        });
-        if (createdBlock?.id) {
-          setSlotBlocks((prev) => [...prev, createdBlock].sort((a, b) => (
-            `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)
-          )));
-        }
       } else {
-        setActionToast('La franja ya estaba no disponible para ese día.');
+        const byTime = new Map(slotBlocksInRange.map((block) => [toTimeValue(block.time), block]));
+        const updates = [];
+        const creates = [];
+        slotTimes.forEach((slotTime) => {
+          const existing = byTime.get(slotTime);
+          if (existing?.id) {
+            if (existing.is_active !== true) {
+              updates.push(updateAdminSlotBlock({
+                authHeader,
+                blockId: existing.id,
+                payload: { is_active: true, reason: existing.reason || 'No disponible puntual' },
+              }));
+            }
+          } else {
+            creates.push(createAdminSlotBlock({
+              authHeader,
+              payload: {
+                date: day.isoDate,
+                time: `${slotTime}:00`,
+                reason: 'No disponible puntual',
+                is_active: true,
+              },
+            }));
+          }
+        });
+        const [updatedRows, createdRows] = await Promise.all([
+          updates.length ? Promise.all(updates) : Promise.resolve([]),
+          creates.length ? Promise.all(creates) : Promise.resolve([]),
+        ]);
+        if (updatedRows.length || createdRows.length) {
+          const updatedById = new Map(updatedRows.filter((item) => item?.id).map((item) => [item.id, item]));
+          const created = createdRows.filter((item) => item?.id);
+          setSlotBlocks((prev) => {
+            const next = prev.map((item) => (updatedById.has(item.id) ? updatedById.get(item.id) : item));
+            return [...next, ...created.filter((item) => !next.some((existing) => existing.id === item.id))]
+              .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+          });
+        } else {
+          setActionToast('La franja ya estaba no disponible para ese día.');
+        }
       }
 
       loadAgendaData(authHeader);
       refreshSectionCounts(authHeader, { silent: true });
       setActionToast('Estado de franja actualizado.');
+      setPunctualRangeDraft((prev) => ({
+        ...prev,
+        date: day.isoDate,
+        start_time: startTime,
+        end_time: endTime || prev.end_time,
+      }));
       setIsAgendaStateModalOpen(false);
     } catch (error) {
       setErrorMessage(error?.message || 'No se pudo actualizar la disponibilidad.');
@@ -2142,34 +2387,88 @@ const EsterDashboard = () => {
     setErrorMessage('');
     try {
       if (status === 'unavailable') {
-        const existingSet = new Set(
+        const byTime = new Map(
           slotBlocks
-            .filter((block) => block.date === date && block.is_active)
-            .map((block) => toTimeValue(block.time))
+            .filter((block) => block.date === date)
+            .map((block) => [toTimeValue(block.time), block])
         );
-        const creations = rangeTimes
-          .filter((timeValue) => !existingSet.has(timeValue))
-          .map((timeValue) => createAdminSlotBlock({
-            authHeader,
-            payload: {
-              date,
-              time: `${timeValue}:00`,
-              reason: reason || 'No disponible puntual',
-              is_active: true,
-            },
-          }));
-        if (creations.length) {
-          const created = await Promise.all(creations);
-          setSlotBlocks((prev) => [...prev, ...created.filter((item) => item?.id)]);
+        const updates = [];
+        const creations = [];
+        rangeTimes.forEach((timeValue) => {
+          const existing = byTime.get(timeValue);
+          if (existing?.id) {
+            if (existing.is_active !== true) {
+              updates.push(updateAdminSlotBlock({
+                authHeader,
+                blockId: existing.id,
+                payload: { is_active: true, reason: reason || existing.reason || 'No disponible puntual' },
+              }));
+            }
+          } else {
+            creations.push(createAdminSlotBlock({
+              authHeader,
+              payload: {
+                date,
+                time: `${timeValue}:00`,
+                reason: reason || 'No disponible puntual',
+                is_active: true,
+              },
+            }));
+          }
+        });
+        const [updatedRows, createdRows] = await Promise.all([
+          updates.length ? Promise.all(updates) : Promise.resolve([]),
+          creations.length ? Promise.all(creations) : Promise.resolve([]),
+        ]);
+        if (updatedRows.length || createdRows.length) {
+          const updatedById = new Map(updatedRows.filter((item) => item?.id).map((item) => [item.id, item]));
+          const created = createdRows.filter((item) => item?.id);
+          setSlotBlocks((prev) => {
+            const next = prev.map((item) => (updatedById.has(item.id) ? updatedById.get(item.id) : item));
+            return [...next, ...created.filter((item) => !next.some((existing) => existing.id === item.id))];
+          });
         }
       } else {
-        const blocksToRemove = slotBlocks.filter((block) => (
-          block.date === date && block.is_active && rangeTimes.includes(toTimeValue(block.time))
-        ));
-        if (blocksToRemove.length) {
-          await Promise.all(blocksToRemove.map((block) => deleteAdminSlotBlock({ authHeader, blockId: block.id })));
-          const removeIds = new Set(blocksToRemove.map((block) => block.id));
-          setSlotBlocks((prev) => prev.filter((block) => !removeIds.has(block.id)));
+        const byTime = new Map(
+          slotBlocks
+            .filter((block) => block.date === date)
+            .map((block) => [toTimeValue(block.time), block])
+        );
+        const updates = [];
+        const creations = [];
+        rangeTimes.forEach((timeValue) => {
+          const existing = byTime.get(timeValue);
+          if (existing?.id) {
+            if (existing.is_active !== false) {
+              updates.push(updateAdminSlotBlock({
+                authHeader,
+                blockId: existing.id,
+                payload: { is_active: false, reason: reason || existing.reason || 'Disponible puntual' },
+              }));
+            }
+          } else {
+            creations.push(createAdminSlotBlock({
+              authHeader,
+              payload: {
+                date,
+                time: `${timeValue}:00`,
+                reason: reason || 'Disponible puntual',
+                is_active: false,
+              },
+            }));
+          }
+        });
+        const [updatedRows, createdRows] = await Promise.all([
+          updates.length ? Promise.all(updates) : Promise.resolve([]),
+          creations.length ? Promise.all(creations) : Promise.resolve([]),
+        ]);
+        if (updatedRows.length || createdRows.length) {
+          const updatedById = new Map(updatedRows.filter((item) => item?.id).map((item) => [item.id, item]));
+          const created = createdRows.filter((item) => item?.id);
+          setSlotBlocks((prev) => {
+            const next = prev.map((item) => (updatedById.has(item.id) ? updatedById.get(item.id) : item));
+            return [...next, ...created.filter((item) => !next.some((existing) => existing.id === item.id))];
+          });
         }
       }
       await loadAgendaData(authHeader);
@@ -2207,12 +2506,18 @@ const EsterDashboard = () => {
       setBookingModalError('La hora debe terminar en 00, 15, 30 o 45.');
       return;
     }
+    const parsedDuration = Number.parseInt(String(manualBookingDraft.duration_minutes || ''), 10);
+    if (!Number.isFinite(parsedDuration) || parsedDuration < 15 || parsedDuration > 240 || parsedDuration % 15 !== 0) {
+      setBookingModalError('La duración debe estar entre 15 y 240 minutos, en tramos de 15.');
+      return;
+    }
     setBookingModalError('');
     const payload = {
       student_id: parsedStudentId,
       lesson_id: parsedLessonId,
       date: manualBookingDraft.date,
       time: `${manualBookingDraft.time}:00`,
+      duration_minutes: parsedDuration,
       status: manualBookingDraft.status,
       notes: manualBookingDraft.notes,
     };
@@ -2225,6 +2530,7 @@ const EsterDashboard = () => {
         lesson_id: '',
         date: '',
         time: '',
+        duration_minutes: '60',
         status: 'confirmed',
         notes: '',
       });
@@ -2243,6 +2549,9 @@ const EsterDashboard = () => {
 
   return (
     <div className="min-h-screen bg-muted/20">
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <main className="mx-auto max-w-[1600px] px-4 lg:px-8 py-8 space-y-6">
         <section className="bg-white border border-border rounded-xl shadow-soft p-5 md:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
@@ -2368,7 +2677,7 @@ const EsterDashboard = () => {
                 <div className="space-y-2 text-sm">
                   {STAGE_OPTIONS.map((stage) => (
                     <div key={stage} className="flex items-center justify-between">
-                      <span className="text-muted-foreground">{cap(stage)}</span>
+                      <span className="text-muted-foreground">{stageLabel(stage)}</span>
                       <span className="font-semibold text-foreground">{stageMap[stage] || 0}</span>
                     </div>
                   ))}
@@ -2495,8 +2804,8 @@ const EsterDashboard = () => {
                         <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Idioma</th>
                         <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estado</th>
                         <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fecha</th>
-                        <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Follow-up</th>
-                        <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Dup</th>
+                        <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Seguimiento</th>
+                        <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Duplicado</th>
                         <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notas</th>
                       </tr>
                     </thead>
@@ -2523,7 +2832,7 @@ const EsterDashboard = () => {
                               disabled={isStageUpdating === String(lead.id)}
                             >
                               {STAGE_OPTIONS.map((stage) => (
-                                <option key={`${lead.id}-${stage}`} value={stage}>{cap(stage)}</option>
+                                <option key={`${lead.id}-${stage}`} value={stage}>{stageLabel(stage)}</option>
                               ))}
                             </select>
                           </td>
@@ -2532,7 +2841,7 @@ const EsterDashboard = () => {
                           <td className="px-4 py-3 text-sm">
                             {lead.duplicate_of ? (
                               <span className="inline-flex items-center rounded-full bg-warning/15 px-2 py-1 text-xs font-semibold text-warning">
-                                {lead.duplicate_confidence || 'possible'}
+                                {lead.duplicate_confidence || 'posible'}
                               </span>
                             ) : (
                               <span className="text-muted-foreground">-</span>
@@ -2547,7 +2856,7 @@ const EsterDashboard = () => {
                       {!filteredLeads.length && (
                         <tr>
                           <td colSpan={8} className="px-4 py-10 text-center text-muted-foreground">
-                            No hay leads para los filtros seleccionados.
+                            No hay oportunidades para los filtros seleccionados.
                           </td>
                         </tr>
                       )}
@@ -2567,7 +2876,7 @@ const EsterDashboard = () => {
                       <p><span className="text-muted-foreground">Teléfono:</span> <span className="font-medium text-foreground">{selectedLeadDetail?.phone || selectedLead.phone || '-'}</span></p>
                       <p><span className="text-muted-foreground">Idioma:</span> <span className="font-medium text-foreground">{languageLabel(selectedLeadDetail?.preferred_language || selectedLead.preferred_language)}</span></p>
                       <p><span className="text-muted-foreground">Origen:</span> <span className="font-medium text-foreground">{selectedLeadDetail?.source || selectedLead.source || '-'}</span></p>
-                      <p><span className="text-muted-foreground">Estado:</span> <span className="font-medium text-foreground">{cap(selectedLeadDetail?.stage || selectedLead.stage)}</span></p>
+                      <p><span className="text-muted-foreground">Estado:</span> <span className="font-medium text-foreground">{stageLabel(selectedLeadDetail?.stage || selectedLead.stage)}</span></p>
                       <p><span className="text-muted-foreground">Creado:</span> <span className="font-medium text-foreground">{formatDate(selectedLeadDetail?.created_at || selectedLead.created_at)}</span></p>
                       <p><span className="text-muted-foreground">Duplicado de:</span> <span className="font-medium text-foreground">{selectedLeadDetail?.duplicate_of_email || '-'}</span></p>
 
@@ -3531,7 +3840,7 @@ const EsterDashboard = () => {
                         {isBookingUpdating ? 'Guardando...' : 'Guardar cambios'}
                       </Button>
                       <Button variant="outline" onClick={() => hydrateBookingDraft(selectedBooking)} disabled={isBookingUpdating}>
-                        Reset
+                            Restablecer
                       </Button>
                     </div>
                   </>
@@ -3560,7 +3869,7 @@ const EsterDashboard = () => {
                   >
                     <option value="all">Todos</option>
                     {STAGE_OPTIONS.map((stage) => (
-                      <option key={`waitlist-stage-${stage}`} value={stage}>{cap(stage)}</option>
+                      <option key={`waitlist-stage-${stage}`} value={stage}>{stageLabel(stage)}</option>
                     ))}
                   </select>
                 </div>
@@ -3598,7 +3907,7 @@ const EsterDashboard = () => {
                             disabled={isStageUpdating === String(lead.id)}
                           >
                             {STAGE_OPTIONS.map((stage) => (
-                              <option key={`waitlist-row-${lead.id}-${stage}`} value={stage}>{cap(stage)}</option>
+                              <option key={`waitlist-row-${lead.id}-${stage}`} value={stage}>{stageLabel(stage)}</option>
                             ))}
                           </select>
                         </td>
@@ -3631,27 +3940,61 @@ const EsterDashboard = () => {
         {authHeader && activeSection === 'agenda' && (
           <section className="space-y-4">
             <div className="bg-white border border-border rounded-xl shadow-soft overflow-hidden">
-              <div className="px-5 py-4 border-b border-border flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="px-5 py-4 border-b border-border bg-gradient-to-r from-slate-50 to-white flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Agenda semanal</p>
-                  <p className="text-xs text-muted-foreground">Vista tipo calendario: solo Disponible, No disponible o Reserva.</p>
+                  <p className="text-base font-semibold text-foreground">Agenda semanal</p>
+                  <p className="text-xs text-muted-foreground">Vista calendario editable: Disponible, No disponible o Reserva.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={onAgendaPrevWeek}>Semana anterior</Button>
-                  <Button variant="outline" size="sm" onClick={onAgendaJumpToday}>Hoy</Button>
-                  <Button variant="outline" size="sm" onClick={onAgendaNextWeek}>Semana siguiente</Button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button variant="outline" size="sm" onClick={onAgendaPrevWeek}>
+                    <span className="inline-flex items-center gap-1"><Icon name="ChevronLeft" size={14} /> Semana anterior</span>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={onAgendaJumpToday}>
+                    <span className="inline-flex items-center gap-1"><Icon name="Calendar" size={14} /> Hoy</span>
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={onAgendaNextWeek}>
+                    <span className="inline-flex items-center gap-1">Semana siguiente <Icon name="ChevronRight" size={14} /></span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (!authHeader) return;
+                      loadAgendaData(authHeader);
+                    }}
+                  >
+                    <span className="inline-flex items-center gap-1"><Icon name="RefreshCw" size={14} /> Sincronizar Google</span>
+                  </Button>
                 </div>
               </div>
-              <div className="px-5 py-3 border-b border-border bg-muted/20 text-sm font-medium text-foreground">
-                {agendaWeekRangeLabel}
+              <div className="px-5 py-3 border-b border-border bg-muted/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <p className="text-sm font-semibold text-foreground">{agendaWeekRangeLabel}</p>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-success/30 bg-success/10 px-2 py-1 font-semibold text-success">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                    Disponible
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-2 py-1 font-semibold text-slate-600">
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-500" />
+                    No disponible
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-red-300 bg-red-50 px-2 py-1 font-semibold text-red-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                    Reserva
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-blue-300 bg-blue-50 px-2 py-1 font-semibold text-blue-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                    Google Calendar
+                  </span>
+                </div>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[1050px] border-collapse">
-                  <thead>
-                    <tr className="bg-muted/35">
-                      <th className="w-24 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border">Hora</th>
+              <div className="overflow-auto max-h-[72vh]">
+                <table className="w-full min-w-[1080px] border-collapse">
+                  <thead className="sticky top-0 z-20">
+                    <tr className="bg-slate-50/95 backdrop-blur">
+                      <th className="sticky left-0 z-30 w-24 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border bg-slate-50/95">Hora</th>
                       {agendaWeekDays.map((day) => (
-                        <th key={`agenda-head-${day.isoDate}`} className="px-3 py-2 text-left border-b border-border">
+                        <th key={`agenda-head-${day.isoDate}`} className="px-3 py-2 text-left border-b border-border min-w-[142px]">
                           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{day.label}</p>
                           <p className="text-sm font-semibold text-foreground">{day.date.getDate()}/{day.date.getMonth() + 1}</p>
                         </th>
@@ -3659,56 +4002,91 @@ const EsterDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {agendaHourRows.map((row) => (
+                    {agendaHourRows.map((row, rowIndex) => (
                       <tr key={`agenda-hour-${row.key}`} className="align-top">
-                        <td className="px-3 py-2 text-xs text-muted-foreground border-b border-border bg-muted/10">{row.key}</td>
+                        <td className="sticky left-0 z-10 px-3 py-2 text-xs text-muted-foreground border-b border-border bg-slate-50">{row.key}</td>
                         {agendaWeeklyGrid.map((column) => {
-                          const cell = column.byHour[row.key] || { booking: null, hasAvailability: false, isBookingStart: false };
+                          const cell = column.byHour[row.key] || { booking: null, hasAvailability: false, isBookingStart: false, externalEvent: null, isExternalStart: false };
                           const hasBooking = !!cell.booking;
+                          const hasExternalEvent = !!cell.externalEvent;
                           const hasAvailability = !!cell.hasAvailability;
+                          const previousRow = rowIndex > 0 ? agendaHourRows[rowIndex - 1] : null;
+                          const nextRow = rowIndex < agendaHourRows.length - 1 ? agendaHourRows[rowIndex + 1] : null;
+                          const previousCell = previousRow ? column.byHour[previousRow.key] : null;
+                          const nextCell = nextRow ? column.byHour[nextRow.key] : null;
+                          const continuesFromPrev = !!(
+                            hasBooking
+                            && previousCell?.booking
+                            && previousCell.booking.id === cell.booking.id
+                          );
+                          const continuesToNext = !!(
+                            hasBooking
+                            && nextCell?.booking
+                            && nextCell.booking.id === cell.booking.id
+                          );
                           const isSelected = selectedAgendaCell
                             && selectedAgendaCell.day?.isoDate === column.day.isoDate
-                            && selectedAgendaCell.timeValue === row.key;
+                            && (
+                              selectedAgendaCell.slotTimes?.includes(row.key)
+                              || selectedAgendaCell.timeValue === row.key
+                            );
                           const toneClass = hasBooking
-                            ? 'border-primary/30 bg-primary/10'
+                            ? `border-l-4 border-red-500 bg-red-50 text-red-700 ${continuesFromPrev ? 'border-t-0 rounded-t-none -mt-px' : 'rounded-t-md'} ${continuesToNext ? 'rounded-b-none' : 'rounded-b-md'}`
+                            : hasExternalEvent
+                              ? 'border-l-4 border-blue-500 bg-blue-50 text-blue-700 rounded-md'
                             : hasAvailability
-                              ? 'border-success/30 bg-success/10'
-                              : 'border-border bg-white';
+                              ? 'border-l-4 border-success bg-success/5'
+                              : 'border-l-4 border-slate-200 bg-white';
                           return (
-                            <td key={`agenda-cell-${column.day.isoDate}-${row.key}`} className="px-2 py-2 border-b border-border">
+                            <td
+                              key={`agenda-cell-${column.day.isoDate}-${row.key}`}
+                              className={`border-b ${hasBooking && continuesToNext ? 'border-b-transparent p-0' : 'border-border p-1'}`}
+                            >
                               <button
                                 type="button"
-                                className={`w-full min-h-[64px] rounded-md border p-2 text-left transition-colors hover:bg-muted/30 ${toneClass} ${isSelected ? 'ring-2 ring-primary/40' : ''}`}
-                                onClick={() => onAgendaSelectCell({
-                                  day: column.day,
-                                  timeValue: row.key,
-                                  cell,
-                                })}
+                                className={`w-full min-h-[58px] rounded-md border border-transparent px-2.5 py-2 text-left transition-all hover:shadow-sm hover:bg-muted/30 ${toneClass} ${isSelected ? 'ring-2 ring-primary/50 border-primary/40' : ''}`}
+                                onMouseDown={() => onAgendaStartSelection(column.day, row.key)}
+                                onMouseEnter={() => onAgendaExtendSelection(column.day, row.key)}
+                                onMouseUp={() => onAgendaFinishSelection(column.day, row.key)}
                                 disabled={isAgendaSaving}
                               >
                                 {hasBooking && (
                                   <>
                                     {cell.isBookingStart ? (
                                       <>
-                                        <p className="text-[11px] uppercase tracking-wide text-primary font-semibold">Reserva</p>
-                                        <p className="text-xs font-semibold text-foreground">{cell.booking.student?.username || 'Alumno'}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{cell.booking.lesson?.title || 'Clase'}</p>
+                                        <p className="text-[10px] uppercase tracking-wide text-red-600 font-semibold">Reserva</p>
+                                        <p className="text-xs font-semibold text-red-700 truncate">{cell.booking.student?.username || 'Alumno'}</p>
+                                        <p className="text-[11px] text-red-600/80 truncate">
+                                          {row.key} - {addMinutesToTimeValue(row.key, 60) || ''}
+                                        </p>
                                       </>
                                     ) : (
-                                      <p className="text-xs font-semibold text-primary">Ocupada (misma reserva)</p>
+                                      <p className="text-[11px] font-semibold text-red-600">Reserva (misma franja)</p>
                                     )}
                                   </>
                                 )}
-                                {!hasBooking && hasAvailability && (
+                                {!hasBooking && hasExternalEvent && (
                                   <>
-                                    <p className="text-[11px] uppercase tracking-wide text-success font-semibold">Disponible</p>
-                                    <p className="text-xs text-muted-foreground">Click para elegir estado</p>
+                                    {cell.isExternalStart ? (
+                                      <>
+                                        <p className="text-[10px] uppercase tracking-wide text-blue-700 font-semibold">Google Calendar</p>
+                                        <p className="text-xs font-semibold text-blue-800 truncate">{cell.externalEvent.summary || 'Evento externo'}</p>
+                                      </>
+                                    ) : (
+                                      <p className="text-[11px] font-semibold text-blue-700">Evento (misma franja)</p>
+                                    )}
                                   </>
                                 )}
-                                {!hasBooking && !hasAvailability && (
+                                {!hasBooking && !hasExternalEvent && hasAvailability && (
                                   <>
-                                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">No disponible</p>
-                                    <p className="text-xs text-muted-foreground">Click para elegir estado</p>
+                                    <p className="text-[10px] uppercase tracking-wide text-success font-semibold">Disponible</p>
+                                    <p className="text-[11px] text-muted-foreground">Click para cambiar estado</p>
+                                  </>
+                                )}
+                                {!hasBooking && !hasExternalEvent && !hasAvailability && (
+                                  <>
+                                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">No disponible</p>
+                                    <p className="text-[11px] text-muted-foreground">Click para cambiar estado</p>
                                   </>
                                 )}
                               </button>
@@ -3725,8 +4103,15 @@ const EsterDashboard = () => {
                   <div>
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">Franja seleccionada</p>
                     <p className="text-sm font-semibold text-foreground">
-                      {selectedAgendaCell ? `${selectedAgendaCell.day.label} ${selectedAgendaCell.day.isoDate} ${selectedAgendaCell.timeValue}` : 'Selecciona una celda de la agenda'}
+                      {selectedAgendaCell
+                        ? `${selectedAgendaCell.day.label} ${selectedAgendaCell.day.isoDate} ${selectedAgendaCell.startTime || selectedAgendaCell.timeValue} - ${selectedAgendaCell.endTime || addMinutesToTimeValue(selectedAgendaCell.timeValue, 15)}`
+                        : 'Selecciona o arrastra una franja de la agenda'}
                     </p>
+                    {selectedAgendaCell?.hasExternalEvent && (
+                      <p className="mt-1 text-xs text-blue-700">
+                        Evento externo detectado. Esta franja se edita directamente en Google Calendar.
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Estado</label>
@@ -3734,16 +4119,34 @@ const EsterDashboard = () => {
                       className="flex h-11 w-full min-w-56 rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={selectedAgendaState}
                       onChange={(event) => setSelectedAgendaState(event.target.value)}
-                      disabled={!selectedAgendaCell}
+                      disabled={!selectedAgendaCell || selectedAgendaCell?.hasExternalEvent}
                     >
                       <option value="reserved">Reserva</option>
                       <option value="available">Disponible</option>
                       <option value="unavailable">No disponible</option>
                     </select>
                   </div>
-                  <Button onClick={onApplyAgendaState} disabled={!selectedAgendaCell || isAgendaSaving}>
-                    Aplicar estado
-                  </Button>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    {selectedAgendaCell?.hasExternalEvent && selectedAgendaCell?.externalEvent?.html_link && (
+                      <Button
+                        variant="outline"
+                        onClick={() => window.open(selectedAgendaCell.externalEvent.html_link, '_blank', 'noopener,noreferrer')}
+                      >
+                        Abrir evento en Google
+                      </Button>
+                    )}
+                    {selectedAgendaCell?.hasExternalEvent && GOOGLE_CALENDAR_PUBLIC_URL && (
+                      <Button
+                        variant="outline"
+                        onClick={() => window.open(GOOGLE_CALENDAR_PUBLIC_URL, '_blank', 'noopener,noreferrer')}
+                      >
+                        Abrir calendario editable
+                      </Button>
+                    )}
+                    <Button onClick={onApplyAgendaState} disabled={!selectedAgendaCell || isAgendaSaving || selectedAgendaCell?.hasExternalEvent}>
+                      Aplicar estado
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -3945,7 +4348,15 @@ const EsterDashboard = () => {
                       <select
                         className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         value={manualBookingDraft.lesson_id}
-                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, lesson_id: event.target.value }))}
+                        onChange={(event) => {
+                          const lessonId = event.target.value;
+                          const lesson = lessons.find((item) => String(item.id) === String(lessonId));
+                          setManualBookingDraft((prev) => ({
+                            ...prev,
+                            lesson_id: lessonId,
+                            duration_minutes: lesson?.duration ? String(lesson.duration) : prev.duration_minutes,
+                          }));
+                        }}
                       >
                         <option value="">Seleccionar clase</option>
                         {lessons.map((lesson) => (
@@ -3970,6 +4381,23 @@ const EsterDashboard = () => {
                         {QUARTER_HOUR_OPTIONS.map((timeOption) => (
                           <option key={`manual-time-${timeOption}`} value={timeOption}>{timeOption}</option>
                         ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-foreground">Duración</label>
+                      <select
+                        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={manualBookingDraft.duration_minutes}
+                        onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, duration_minutes: event.target.value }))}
+                      >
+                        {Array.from({ length: 16 }).map((_, idx) => {
+                          const minutes = (idx + 1) * 15;
+                          return (
+                            <option key={`manual-duration-${minutes}`} value={String(minutes)}>
+                              {minutes} min
+                            </option>
+                          );
+                        })}
                       </select>
                     </div>
                     <div className="space-y-2">
@@ -4049,6 +4477,76 @@ const EsterDashboard = () => {
             </div>
           </section>
         )}
+
+        {authHeader && activeSection === 'calendar' && (
+          <section className="space-y-4">
+            <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">Calendario de Google (comparativa)</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Esta vista te permite comparar el calendario de Google con la agenda interna del sistema.
+                  </p>
+                </div>
+                {GOOGLE_CALENDAR_PUBLIC_URL && (
+                  <Button
+                    variant="outline"
+                    onClick={() => window.open(GOOGLE_CALENDAR_PUBLIC_URL, '_blank', 'noopener,noreferrer')}
+                  >
+                    Abrir calendario editable
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {!GOOGLE_CALENDAR_EMBED_URL && (
+              <div className="bg-white border border-border rounded-xl p-6 shadow-soft">
+                <p className="text-sm text-foreground font-semibold">Falta configurar la URL embebida del calendario de Google.</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Añade `VITE_GOOGLE_CALENDAR_EMBED_URL` en el `.env` del frontend para mostrarlo aquí.
+                </p>
+              </div>
+            )}
+
+            {GOOGLE_CALENDAR_EMBED_URL && (
+              <div className="grid xl:grid-cols-12 gap-4">
+                <div className="xl:col-span-8 bg-white border border-border rounded-xl shadow-soft overflow-hidden">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-semibold text-foreground">Vista del calendario de Google</p>
+                  </div>
+                  <iframe
+                    title="Calendario de Google de Ester"
+                    src={GOOGLE_CALENDAR_EMBED_URL}
+                    className="w-full min-h-[760px] bg-white"
+                    loading="lazy"
+                  />
+                </div>
+
+                <aside className="xl:col-span-4 space-y-4">
+                  <div className="bg-white border border-border rounded-xl p-5 shadow-soft">
+                    <h3 className="text-sm font-semibold text-foreground">Referencia rápida agenda interna</h3>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Próximas reservas registradas en el sistema.
+                    </p>
+                    <div className="mt-3 space-y-2">
+                      {upcomingAgendaBookings.slice(0, 8).map((booking) => (
+                        <div key={`calendar-side-${booking.id}`} className="rounded-md border border-border px-3 py-2">
+                          <p className="text-sm font-semibold text-foreground">{booking.student?.username || 'Alumno'}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {booking.date} · {toTimeValue(booking.time)} · {booking.lesson?.title || 'Clase'}
+                          </p>
+                        </div>
+                      ))}
+                      {!upcomingAgendaBookings.length && (
+                        <p className="text-sm text-muted-foreground">No hay reservas próximas en agenda interna.</p>
+                      )}
+                    </div>
+                  </div>
+                </aside>
+              </div>
+            )}
+          </section>
+        )}
       </main>
 
       {isManualBookingModalOpen && (
@@ -4095,7 +4593,15 @@ const EsterDashboard = () => {
                 <select
                   className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={manualBookingDraft.lesson_id}
-                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, lesson_id: event.target.value }))}
+                  onChange={(event) => {
+                    const lessonId = event.target.value;
+                    const lesson = lessons.find((item) => String(item.id) === String(lessonId));
+                    setManualBookingDraft((prev) => ({
+                      ...prev,
+                      lesson_id: lessonId,
+                      duration_minutes: lesson?.duration ? String(lesson.duration) : prev.duration_minutes,
+                    }));
+                  }}
                 >
                   <option value="">Seleccionar clase</option>
                   {lessons.map((lesson) => (
@@ -4120,6 +4626,23 @@ const EsterDashboard = () => {
                   {QUARTER_HOUR_OPTIONS.map((timeOption) => (
                     <option key={`modal-manual-time-${timeOption}`} value={timeOption}>{timeOption}</option>
                   ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Duración</label>
+                <select
+                  className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={manualBookingDraft.duration_minutes}
+                  onChange={(event) => setManualBookingDraft((prev) => ({ ...prev, duration_minutes: event.target.value }))}
+                >
+                  {Array.from({ length: 16 }).map((_, idx) => {
+                    const minutes = (idx + 1) * 15;
+                    return (
+                      <option key={`modal-manual-duration-${minutes}`} value={String(minutes)}>
+                        {minutes} min
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div className="space-y-2">
@@ -4179,7 +4702,7 @@ const EsterDashboard = () => {
             <div>
               <h3 className="text-lg font-headlines font-semibold text-foreground">Estado de franja</h3>
               <p className="text-sm text-muted-foreground">
-                {selectedAgendaCell.day.label} {selectedAgendaCell.day.isoDate} {selectedAgendaCell.timeValue}
+                {selectedAgendaCell.day.label} {selectedAgendaCell.day.isoDate} {selectedAgendaCell.startTime || selectedAgendaCell.timeValue} - {selectedAgendaCell.endTime || addMinutesToTimeValue(selectedAgendaCell.timeValue, 15)}
               </p>
             </div>
             <div className="space-y-2">
@@ -4188,17 +4711,39 @@ const EsterDashboard = () => {
                 className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={selectedAgendaState}
                 onChange={(event) => setSelectedAgendaState(event.target.value)}
+                disabled={selectedAgendaCell?.hasExternalEvent}
               >
                 <option value="reserved">Reserva</option>
                 <option value="available">Disponible</option>
                 <option value="unavailable">No disponible</option>
               </select>
+              {selectedAgendaCell?.hasExternalEvent && (
+                <p className="text-xs text-blue-700">
+                  Evento externo de Google Calendar. Edita esta franja en Google para que se sincronice automáticamente.
+                </p>
+              )}
             </div>
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-2 flex-wrap">
+              {selectedAgendaCell?.hasExternalEvent && selectedAgendaCell?.externalEvent?.html_link && (
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(selectedAgendaCell.externalEvent.html_link, '_blank', 'noopener,noreferrer')}
+                >
+                  Abrir evento en Google
+                </Button>
+              )}
+              {selectedAgendaCell?.hasExternalEvent && GOOGLE_CALENDAR_PUBLIC_URL && (
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(GOOGLE_CALENDAR_PUBLIC_URL, '_blank', 'noopener,noreferrer')}
+                >
+                  Abrir calendario editable
+                </Button>
+              )}
               <Button variant="outline" onClick={() => setIsAgendaStateModalOpen(false)} disabled={isAgendaSaving}>
                 Cancelar
               </Button>
-              <Button onClick={onApplyAgendaState} disabled={isAgendaSaving}>
+              <Button onClick={onApplyAgendaState} disabled={isAgendaSaving || selectedAgendaCell?.hasExternalEvent}>
                 {isAgendaSaving ? 'Guardando...' : 'Aplicar'}
               </Button>
             </div>

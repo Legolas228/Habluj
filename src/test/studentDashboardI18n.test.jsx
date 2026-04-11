@@ -20,6 +20,7 @@ vi.mock('../services/studentAuth', () => ({
   getStudentMaterials: vi.fn().mockResolvedValue([]),
   getUserProfile: vi.fn().mockResolvedValue({ language_level: 'A1', created_at: '2024-09-15' }),
   cancelStudentBooking: vi.fn().mockResolvedValue({ status: 'booking cancelled' }),
+  sendStudentMessage: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock('../components/ui/Header', () => ({

@@ -34,12 +34,32 @@ export const studentLogin = async ({ identifier, password }) => {
   return data;
 };
 
-export const studentRegister = async ({ username, email, password, password_confirm, language_level }) => {
+export const studentRegister = async ({
+  first_name,
+  last_name,
+  username,
+  email,
+  password,
+  password_confirm,
+  language_level,
+  learning_reason,
+  birth_date,
+}) => {
   const baseUrl = resolveApiBaseUrl();
   const response = await fetch(`${baseUrl}/api/auth/register/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, email, password, password_confirm, language_level }),
+    body: JSON.stringify({
+      first_name,
+      last_name,
+      username,
+      email,
+      password,
+      password_confirm,
+      language_level,
+      learning_reason,
+      birth_date,
+    }),
   });
 
   const data = await parseResponseData(response);
@@ -114,7 +134,16 @@ export const getStudentBookings = async (token) => {
   return data?.results || [];
 };
 
-export const createStudentBooking = async ({ token, lesson_id, date, time, notes = '' }) => {
+export const createStudentBooking = async ({
+  token,
+  lesson_id,
+  date,
+  time,
+  start_time_utc,
+  student_timezone,
+  notes = '',
+  currency = 'EUR',
+}) => {
   const baseUrl = resolveApiBaseUrl();
   const response = await fetch(`${baseUrl}/api/bookings/`, {
     method: 'POST',
@@ -122,13 +151,91 @@ export const createStudentBooking = async ({ token, lesson_id, date, time, notes
       'Content-Type': 'application/json',
       ...getAuthHeader(token),
     },
-    body: JSON.stringify({ lesson_id, date, time, notes }),
+    body: JSON.stringify({
+      lesson_id,
+      date,
+      time,
+      start_time_utc,
+      student_timezone,
+      notes,
+      currency,
+    }),
   });
 
   const data = await parseResponseData(response);
   if (!response.ok) {
     const conflictError = data?.non_field_errors?.[0];
     throw new Error(conflictError || data?.detail || 'No se pudo crear la reserva.');
+  }
+
+  return data;
+};
+
+export const initiateBookingPayment = async ({ token, bookingId, currency }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/bookings/${bookingId}/initiate_payment/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(token),
+    },
+    body: JSON.stringify({ currency }),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'No se pudo iniciar el pago.');
+  }
+
+  return data;
+};
+
+export const confirmBookingPayment = async ({ token, bookingId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/bookings/${bookingId}/confirm_payment/`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader(token),
+    },
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'No se pudo confirmar el pago.');
+  }
+
+  return data;
+};
+
+export const payBookingWithTokens = async ({ token, bookingId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/bookings/${bookingId}/pay_with_tokens/`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader(token),
+    },
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'No se pudo pagar con tokens.');
+  }
+
+  return data;
+};
+
+export const markBookingBankTransfer = async ({ token, bookingId }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/bookings/${bookingId}/pay_bank_transfer/`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader(token),
+    },
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'No se pudo marcar la transferencia.');
   }
 
   return data;
@@ -150,6 +257,25 @@ export const getLessons = async (token) => {
 
   if (Array.isArray(data)) return data;
   return data?.results || [];
+};
+
+export const getAvailableBookingSlots = async (token, { daysAhead = 21, timezone = '' } = {}) => {
+  const baseUrl = resolveApiBaseUrl();
+  const tzQuery = timezone ? `&tz=${encodeURIComponent(timezone)}` : '';
+  const response = await fetch(`${baseUrl}/api/bookings/availability/?days=${daysAhead}${tzQuery}`, {
+    method: 'GET',
+    headers: {
+      ...getAuthHeader(token),
+    },
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.detail || 'No se pudo cargar la disponibilidad de reservas.');
+  }
+
+  if (Array.isArray(data?.days)) return data.days;
+  return [];
 };
 
 export const cancelStudentBooking = async ({ token, bookingId }) => {
@@ -295,6 +421,25 @@ export const markStudentMessageRead = async ({ token, messageId, is_read = true 
   const data = await parseResponseData(response);
   if (!response.ok) {
     throw new Error(data?.detail || 'No se pudo actualizar el mensaje.');
+  }
+
+  return data;
+};
+
+export const sendStudentMessage = async ({ token, body, subject = '' }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/messages/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(token),
+    },
+    body: JSON.stringify({ subject, body }),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.detail || 'No se pudo enviar el mensaje.');
   }
 
   return data;
