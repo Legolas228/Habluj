@@ -1,6 +1,78 @@
 {
   "version": 2,
   "outputDirectory": "build",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/sk",
+      "permanent": true
+    },
+    {
+      "source": "/homepage",
+      "destination": "/sk",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/sk/contact",
+      "permanent": true
+    },
+    {
+      "source": "/tutoring-services",
+      "destination": "/sk/tutoring-services",
+      "permanent": true
+    },
+    {
+      "source": "/about-the-teacher",
+      "destination": "/sk/about-the-teacher",
+      "permanent": true
+    },
+    {
+      "source": "/booking-system",
+      "destination": "/sk/booking-system",
+      "permanent": true
+    },
+    {
+      "source": "/privacy-policy",
+      "destination": "/sk/privacy-policy",
+      "permanent": true
+    },
+    {
+      "source": "/terms-and-conditions",
+      "destination": "/sk/terms-and-conditions",
+      "permanent": true
+    },
+    {
+      "source": "/cookies-policy",
+      "destination": "/sk/cookies-policy",
+      "permanent": true
+    },
+    {
+      "source": "/login",
+      "destination": "/sk/login",
+      "permanent": true
+    },
+    {
+      "source": "/signup",
+      "destination": "/sk/signup",
+      "permanent": true
+    },
+    {
+      "source": "/student-dashboard",
+      "destination": "/sk/student-dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/ester-dashboard",
+      "destination": "/sk/ester-dashboard",
+      "permanent": true
+    },
+    {
+      "source": "/level-questionnaire",
+      "destination": "/sk/level-questionnaire",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",

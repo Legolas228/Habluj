@@ -43,6 +43,11 @@
   - OG/Twitter tags reforzados
   - schema de servicios con `AggregateOffer`
   - `VITE_SITE_URL` para canonical/hreflang consistentes por entorno
+- [x] Smoke checks de producción sin Unlighthouse:
+  - verificación HTTP de rutas canónicas `/sk|/cs|/es` y páginas clave (200)
+  - comprobación de API root y login validation (200/400 esperado)
+- [x] SEO edge preparado:
+  - redirecciones permanentes de rutas legacy a rutas canónicas `/sk/...` en `vercel.json`
 - [x] Higiene de repositorio:
   - eliminados archivos obsoletos versionados (`backend/db.sqlite3`, `backend/env`, PDFs innecesarios)
   - `.gitignore` actualizado para evitar reintroducir artefactos locales
@@ -55,12 +60,13 @@
 ### Prioridad alta
 
 - [ ] Configurar y verificar `VITE_SITE_URL` en Vercel (Production y Preview).
-- [ ] Ejecutar auditoría SEO final (Lighthouse/Unlighthouse) y cerrar warnings de dominio/hreflang.
+- [ ] Ejecutar auditoría SEO final con Lighthouse CLI por rutas críticas (sin Unlighthouse) y cerrar warnings de dominio/hreflang.
+- [ ] Deploy para aplicar redirects 308 de `vercel.json` y verificar respuestas `3xx -> /sk/...`.
 - [ ] Aplicar y verificar migraciones pendientes de Django en el entorno correspondiente.
 
 ### Prioridad media
 
-- [ ] Completar smoke tests post-deploy para rutas clave de frontend (home, services, about, booking).
+- [ ] Re-ejecutar smoke post-deploy tras aplicar redirects de edge y guardar evidencia en docs.
 - [ ] Añadir pruebas específicas de seguridad para límites de subida y scopes de throttling.
 - [ ] Consolidar docs de operación en `README.md` (runbook único de deploy + rollback).
 
