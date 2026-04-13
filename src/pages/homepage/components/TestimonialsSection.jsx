@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 const TestimonialsSection = () => {
@@ -10,55 +9,28 @@ const TestimonialsSection = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Martina Kováčová",
-      role: "Marketing manažérka",
-      location: "Bratislava, Slovensko",
-      rating: 5,
-      content: t('testimonials.testimonial1.content'),
-      achievement: t('testimonials.testimonial1.achievement'),
-      beforeAfter: {
-        before: t('testimonials.testimonial1.before'),
-        after: t('testimonials.testimonial1.after')
-      }
+      name: 'Mariana V.',
+      content: 'Hodiny španielčiny sa mi veľmi páčia ❤️ Okrem toho, že má Ester vždy pripravené niečo nové, tak je to aj sranda. Aspoň ja sa teda dobre bavím 😅 páči sa mi ako vie vždy naviazať na to, čo potrebujem vedieť, že je ochotná vysvetliť mi niektoré veci aj 10x, kým to nedostanem do hlavy. Cením si jej trpezlivosť, že ideme tempom, ktoré mi vyhovuje a že je veľmi všímavá a vidí, kedy sa v tom jazyku už strácam a potrebujem spomaliť. Inokedy ma zas mentálne nakopne a mám pocit, že môžem ísť hablovať s domácimi 😅 Som vďačná za čas, ktorý mi venuje a teším sa na ďalšie hodiny :)'
     },
     {
       id: 2,
-      name: "Tomáš Novák",
-      role: "IT konzultant",
-      location: "Praha, Česko",
-      rating: 5,
-      content: t('testimonials.testimonial2.content'),
-      achievement: t('testimonials.testimonial2.achievement'),
-      beforeAfter: {
-        before: t('testimonials.testimonial2.before'),
-        after: t('testimonials.testimonial2.after')
-      }
+      name: 'Daniela Ď.',
+      content: 'Ahojte, hodiny s Ester určite môžem odporučiť. Odkedy ma doučuje, som viac sebavedomá čo sa týka mojej španielčiny a mala som možnosť pochopiť španielsku literatúru, kultúru, gramatiku a konverzáciu lepšie, vzhľadom k tomu, že učebný systém v škole kam chodím mi nie vždy sadne. Je naozaj trpezlivá a vie vysvetliť učivo rôznymi spôsobmi. Keď som to potrebovala, vždy mi učivo vedela vysvetliť jednoduchým a pochopiteľným spôsobom. Má skúsenosti s rôznymi žiakmi, z bilingválu, z normálnej strednej, alebo proste jednoducho povedané, žiakov rôznych vekových kategórii a tak. Skrátka, je to veľmi milá, ľudská, ochotná a pracovitá osoba, takže som za hodiny s ňou rada, vždy sa na ne teším a určite by som nechcela meniť doučovateľku😊'
     },
     {
       id: 3,
-      name: "Lucia Svobodová",
-      role: "Študentka medicíny",
-      location: "Košice, Slovensko",
-      rating: 5,
-      content: t('testimonials.testimonial3.content'),
-      achievement: t('testimonials.testimonial3.achievement'),
-      beforeAfter: {
-        before: t('testimonials.testimonial3.before'),
-        after: t('testimonials.testimonial3.after')
-      }
+      name: 'Daniel K.',
+      content: 'Ester je super doučovateľka s príjemným ľudským prístupom a zároveň mierou profesionality, ktorá vám pomôže byť sebavedomejším hovorcom Španielčiny. Určite odporúčam :)'
     },
     {
       id: 4,
-      name: "Peter Dvořák",
-      role: "Podnikateľ",
-      location: "Brno, Česko",
-      rating: 5,
-      content: t('testimonials.testimonial4.content'),
-      achievement: t('testimonials.testimonial4.achievement'),
-      beforeAfter: {
-        before: t('testimonials.testimonial4.before'),
-        after: t('testimonials.testimonial4.after')
-      }
+      name: 'Megan J.',
+      content: 'Osobne by som odporúčala. Vie veľmi dobre učiť, vždy má všetko naplánované a vie výborne vysvetľovať. Vždy sa teším na jej hodiny. Mám veľmi rada jej spôsob a postoj k učeniu. Motivuje ma to. Nerobím s ňou dlho ale už na sebe vidím zmeny. Je komunikatívna, priateľská a vie sa prispôsobiť. Mám ju veľmi rada a nikdy by som nechcela niekoho iného 💜'
+    },
+    {
+      id: 5,
+      name: 'Janka E.',
+      content: 'Určite vrelo odporúčam Ester, mladú energicku babu, ktorá je veľmi ľudská a vie sa prispôsobiť podmienkam na mieru žiaka🙂🥰'
     }
   ];
 
@@ -97,74 +69,16 @@ const TestimonialsSection = () => {
             {/* Background Pattern */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-cultural opacity-5 rounded-full blur-3xl"></div>
 
-            <div className="grid lg:grid-cols-3 gap-8 items-center relative z-10">
-              {/* Student Info */}
-              <div className="text-center lg:text-left">
-                <div className="relative inline-block mb-4">
-                  {currentTestimonial?.avatar ? (
-                    <>
-                      <Image
-                        src={currentTestimonial?.avatar}
-                        alt={currentTestimonial?.name}
-                        width="96"
-                        height="96"
-                        className="w-24 h-24 rounded-full object-cover mx-auto lg:mx-0"
-                      />
-                      <div className="absolute -bottom-2 -right-2 bg-success w-8 h-8 rounded-full flex items-center justify-center">
-                        <Icon name="Check" size={16} className="text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto lg:mx-0">
-                      <span className="text-3xl font-bold text-primary">{currentTestimonial?.name?.charAt(0)}</span>
-                    </div>
-                  )}
-                </div>
-
-                <h3 className="text-xl font-headlines font-bold text-foreground mb-1">
+            <div className="relative z-10">
+              <div className="space-y-6">
+                <p className="text-2xl lg:text-3xl font-headlines font-semibold text-primary pl-8">
                   {currentTestimonial?.name}
-                </h3>
-                <p className="text-primary font-medium mb-1">{currentTestimonial?.role}</p>
-                <p className="text-sm text-muted-foreground mb-4">{currentTestimonial?.location}</p>
-
-                {/* Rating */}
-                <div className="flex justify-center lg:justify-start space-x-1 mb-4">
-                  {[...Array(currentTestimonial?.rating)]?.map((_, i) => (
-                    <Icon key={i} name="Star" size={16} className="text-accent fill-current" />
-                  ))}
-                </div>
-
-                {/* Achievement Badge */}
-                <div className="inline-flex items-center space-x-2 bg-success/10 text-success px-3 py-1 rounded-full text-sm font-medium">
-                  <Icon name="Trophy" size={14} />
-                  <span>{currentTestimonial?.achievement}</span>
-                </div>
-              </div>
-
-              {/* Testimonial Content */}
-              <div className="lg:col-span-2 space-y-6">
+                </p>
                 <div className="relative">
-                  <Icon name="Quote" size={40} className="text-primary/20 absolute -top-4 -left-2" />
-                  <p className="text-lg text-foreground leading-relaxed pl-8">
+                  <Icon name="Quote" size={24} className="text-primary/20 absolute -top-2 -left-1" />
+                  <p className="text-lg text-foreground leading-relaxed pl-8 whitespace-pre-line">
                     {currentTestimonial?.content}
                   </p>
-                </div>
-
-                {/* Before/After */}
-                <div className="bg-muted/50 rounded-xl p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground mb-1">{t('testimonials.beforeAfter.before')}</div>
-                      <div className="font-medium text-foreground">{currentTestimonial?.beforeAfter?.before}</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm text-muted-foreground mb-1">{t('testimonials.beforeAfter.after')}</div>
-                      <div className="font-medium text-primary">{currentTestimonial?.beforeAfter?.after}</div>
-                    </div>
-                  </div>
-                  <div className="flex justify-center mt-2">
-                    <Icon name="ArrowRight" size={20} className="text-primary" />
-                  </div>
                 </div>
               </div>
             </div>

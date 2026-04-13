@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
 
 const TestimonialSlider = () => {
@@ -9,36 +8,28 @@ const TestimonialSlider = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Martina Kováčová",
-      role: "Manažérka v medzinárodnej firme",
-      location: "Bratislava",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: `Učenie s Elenou bolo fantastické! Ako Slovenka presne rozumie problémom, ktoré máme s výslovnosťou a gramatikou. Za 6 mesiacov som sa dostala z úplného začiatočníka na úroveň B1.\n\nNajviac sa mi páčilo, že každá lekcia bola prispôsobená mojim potrebám. Ester mi pomohla pripraviť sa na obchodné rokovania v španielčine.`,
-      achievement: "A1 → B1 za 6 mesiacov",
-      course: "Obchodná španielčina"
+      name: 'Mariana V.',
+      text: 'Hodiny španielčiny sa mi veľmi páčia ❤️ Okrem toho, že má Ester vždy pripravené niečo nové, tak je to aj sranda. Aspoň ja sa teda dobre bavím 😅 páči sa mi ako vie vždy naviazať na to, čo potrebujem vedieť, že je ochotná vysvetliť mi niektoré veci aj 10x, kým to nedostanem do hlavy. Cením si jej trpezlivosť, že ideme tempom, ktoré mi vyhovuje a že je veľmi všímavá a vidí, kedy sa v tom jazyku už strácam a potrebujem spomaliť. Inokedy ma zas mentálne nakopne a mám pocit, že môžem ísť hablovať s domácimi 😅 Som vďačná za čas, ktorý mi venuje a teším sa na ďalšie hodiny :)'
     },
     {
       id: 2,
-      name: "Tomáš Novák",
-      role: "Študent medicíny",
-      location: "Praha",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: `Potreboval som sa pripraviť na DELE B2 za 3 mesiace. Ester mi vytvorila intenzívny plán a každý týždeň sme mali 3 lekcie. Skúšku som zvládol na prvý pokus!\n\nEster má skvelé materiály a vie presne, na čo sa zamerať pri príprave na certifikáty. Odporúčam každému, kto sa chce pripraviť na DELE.`,
-      achievement: "DELE B2 úspešne na prvý pokus",
-      course: "Príprava na DELE"
+      name: 'Daniela Ď.',
+      text: 'Ahojte, hodiny s Ester určite môžem odporučiť. Odkedy ma doučuje, som viac sebavedomá čo sa týka mojej španielčiny a mala som možnosť pochopiť španielsku literatúru, kultúru, gramatiku a konverzáciu lepšie, vzhľadom k tomu, že učebný systém v škole kam chodím mi nie vždy sadne. Je naozaj trpezlivá a vie vysvetliť učivo rôznymi spôsobmi. Keď som to potrebovala, vždy mi učivo vedela vysvetliť jednoduchým a pochopiteľným spôsobom. Má skúsenosti s rôznymi žiakmi, z bilingválu, z normálnej strednej, alebo proste jednoducho povedané, žiakov rôznych vekových kategórii a tak. Skrátka, je to veľmi milá, ľudská, ochotná a pracovitá osoba, takže som za hodiny s ňou rada, vždy sa na ne teším a určite by som nechcela meniť doučovateľku😊'
     },
     {
       id: 3,
-      name: "Jana Svobodová",
-      role: "Cestovateľka a blogerka",
-      location: "Brno",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      rating: 5,
-      text: `Chcela som sa naučiť španielčinu pre cestovanie po Južnej Amerike. Ester mi nielen naučila jazyk, ale aj kultúrne zvyklosti jednotlivých krajín.\n\nDnes plynule komunikujem v španielčine a cítim sa sebisto v akejkoľvek situácii. Moja cesta po Argentíne a Chile bola úžasná práve vďaka tomu!`,
-      achievement: "Plynulá komunikácia za 8 mesiacov",
-      course: "Konverzačná španielčina"
+      name: 'Daniel K.',
+      text: 'Ester je super doučovateľka s príjemným ľudským prístupom a zároveň mierou profesionality, ktorá vám pomôže byť sebavedomejším hovorcom Španielčiny. Určite odporúčam :)'
+    },
+    {
+      id: 4,
+      name: 'Megan J.',
+      text: 'Osobne by som odporúčala. Vie veľmi dobre učiť, vždy má všetko naplánované a vie výborne vysvetľovať. Vždy sa teším na jej hodiny. Mám veľmi rada jej spôsob a postoj k učeniu. Motivuje ma to. Nerobím s ňou dlho ale už na sebe vidím zmeny. Je komunikatívna, priateľská a vie sa prispôsobiť. Mám ju veľmi rada a nikdy by som nechcela niekoho iného 💜'
+    },
+    {
+      id: 5,
+      name: 'Janka E.',
+      text: 'Určite vrelo odporúčam Ester, mladú energicku babu, ktorá je veľmi ľudská a vie sa prispôsobiť podmienkam na mieru žiaka🙂🥰'
     }
   ];
 
@@ -95,53 +86,20 @@ const TestimonialSlider = () => {
           </Button>
         </div>
 
-        <div className="text-center mb-6">
-          <div className="relative inline-block mb-4">
-            <Image
-              src={currentTestimonial?.image}
-              alt={currentTestimonial?.name}
-              className="w-20 h-20 rounded-full mx-auto object-cover border-4 border-white shadow-soft"
-            />
-            <div className="absolute -bottom-2 -right-2 bg-primary rounded-full p-1">
-              <Icon name="Quote" size={16} className="text-white" />
-            </div>
-          </div>
-
-          <h4 className="text-xl font-headlines font-bold text-foreground mb-1">
-            {currentTestimonial?.name}
-          </h4>
-          <p className="text-muted-foreground text-sm mb-2">
-            {currentTestimonial?.role}
-          </p>
-          <p className="text-muted-foreground text-xs mb-4">
-            <Icon name="MapPin" size={12} className="inline mr-1" />
-            {currentTestimonial?.location}
-          </p>
-
-          {/* Rating */}
-          <div className="flex justify-center mb-6">
-            {[...Array(currentTestimonial?.rating)]?.map((_, i) => (
-              <Icon key={i} name="Star" size={16} className="text-yellow-400 fill-current" />
-            ))}
-          </div>
-        </div>
-
         {/* Testimonial Text */}
         <div className="bg-muted rounded-lg p-6 mb-6">
+          <p className="text-2xl font-headlines font-semibold text-primary mb-4 text-center">
+            {currentTestimonial?.name}
+          </p>
           <p className="text-foreground leading-relaxed whitespace-pre-line text-center">
-            "{currentTestimonial?.text}"
+            {currentTestimonial?.text}
           </p>
         </div>
 
-        {/* Achievement Badges */}
-        <div className="flex flex-wrap justify-center gap-3">
-          <div className="bg-success/10 text-success px-3 py-1 rounded-full text-sm font-medium">
-            <Icon name="Trophy" size={14} className="inline mr-1" />
-            {currentTestimonial?.achievement}
-          </div>
-          <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-            <Icon name="BookOpen" size={14} className="inline mr-1" />
-            {currentTestimonial?.course}
+        <div className="flex justify-center">
+          <div className="bg-success/10 text-success px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-2">
+            <Icon name="CheckCircle" size={14} />
+            Autentická recenzia
           </div>
         </div>
       </div>

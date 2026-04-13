@@ -20,8 +20,6 @@ const mapWaitlistSource = (courseType) => {
 const INTENSIVE_COURSE_OPTIONS = [
   { value: 'intensive_general', labelKey: 'waitlist.intensiveCourse.general' },
   { value: 'intensive_conversation', labelKey: 'waitlist.intensiveCourse.conversation' },
-  { value: 'intensive_dele', labelKey: 'waitlist.intensiveCourse.dele' },
-  { value: 'intensive_business', labelKey: 'waitlist.intensiveCourse.business' },
 ];
 
 const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {

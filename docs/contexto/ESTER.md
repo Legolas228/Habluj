@@ -3,41 +3,31 @@
 > **LEE ESTE ARCHIVO ANTES DE TOCAR CUALQUIER LOCALE O TEXTO DE LA WEB.**
 > Toda la información aquí es real y verificada. No inventes nada fuera de lo
 > que está escrito aquí. Si un dato no está aquí, pregunta — no lo fabules.
-> Última actualización: 2026-03-14
+> Última actualización: 2026-04-13
 
 ---
 
 ## Quién es Ester
 
-- **Nombre completo:** Ester Mesároš (apellido real a confirmar; en la web se
-  usa solo "Ester" o "Ester Mesároš")
-- **Edad:** 22 años
-- **Origen:** de un pueblo pequeño cerca de **Prešov**, Eslovaquia
-- **Residencia actual:** Praga, República Checa (estudia allí)
-- **Estado civil:** casada con un chico de **Barcelona**
+- **Nombre completo:** Ester Mesároš
+- **Origen:** Eslovaquia (zona este del país)
+- **Residencia académica actual:** Praga, República Checa
+- **Estado civil:** casada; su relación nació en España
 
 ---
 
 ## Formación académica
 
-- Está terminando el grado en **Hispanistika** en la
-  **Univerzita Karlova (Universidad Carolina)** de Praga.
-- Se gradúa **en unos meses** (a la fecha de esta actualización).
-- **NO** tiene ningún título de la Universidad Comenius de Bratislava.
-- **NO** tiene un "Magister de pedagogía". Su título es Hispanistika (filología
-  hispánica).
+- Continúa su formación en español en la **Univerzita Karlova (Universidad Carolina)** de Praga.
+- Mientras estudia, desarrolla su propia metodología de enseñanza.
 
 ---
 
 ## Logros personales clave
 
-- De adolescente se obsesionó con el español.
-- **Ganó 2 Olimpiadas Nacionales de Español en Eslovaquia** — este es su dato
-  diferenciador más fuerte y debe aparecer en la web.
-- Ha viajado a España múltiples veces.
-- Hizo un **semestre Erasmus en España**.
-- Está casada con un chico de Barcelona — conexión real y profunda con el
-  idioma y la cultura.
+- De adolescente ganó **2 veces** la olimpiada nacional de español en Eslovaquia.
+- Actualmente sigue formándose en Karlova Univerzita.
+- El español no es solo su trabajo: también forma parte de su vida personal.
 
 ---
 
@@ -131,15 +121,31 @@
 
 ## Timeline real (para la sección de historia/about)
 
-Usar aproximaciones — no inventar años exactos:
+Usar estos hitos (ya confirmados) en este orden:
 
-1. **De adolescente** — Se obsesiona con el español, gana 2 Olimpiadas
-   Nacionales de Español en Eslovaquia.
-2. **Varios viajes a España** — Contacto directo con la cultura y el idioma.
-3. **Semestre Erasmus en España** — Inmersión total.
-4. **Hace ~4 años** — Empieza a dar clases online.
-5. **Hoy** — Terminando Hispanistika en la Universidad Carolina de Praga,
-   casada con un barcelonés, 30+ estudiantes, escribiendo su propia metodología.
+1. **2021** — Primera victoria en la olimpiada nacional de español en Eslovaquia.
+2. **2022** — Trabajo en España (Menorca), experiencia que marca su vida personal y profesional.
+3. **2023** — Segunda victoria en la olimpiada nacional de español.
+4. **2023** — Inicio de estudios en Karlova Univerzita (Praga).
+5. **2024-2025** — Erasmus con foco en adaptación, disciplina y crecimiento académico.
+
+---
+
+## Texto literal aprobado (SK)
+
+Použiť doslovne (len s opravou pravopisu a základnej koherencie):
+
+Ako tínedžerka som dvakrát vyhrala celoslovenskú olympiádu zo španielčiny a dnes sa v nej ďalej vzdelávam, konkrétne na Karlovej Univerzite v Prahe, zatiaľ čo rozvíjam vlastnú metodológiu učenia. Španielčina nie je len moja práca — je aj súčasťou môjho osobného života, nakoľko manžela som si našla práve v Španielsku.
+
+Ako som sa stala španielskou lektorkou
+Dodnes si pamätám, aké to bolo, keď som prvýkrát sedela na hodine španielčiny. Možno by som mala povedať, že to bolo niečo úžasné a že som nič podobné dovtedy nezažila, no pravda je presný opak. Bola som skeptická, nakoľko angličtina mi robila v škole problémy. Moja láska k španielčine neprišla ako búrka, ale ako vánok. V tichu, pomaly, skôr než som si to stihla vôbec uvedomiť, vyrástla vo mne vášeň, ktorá nebola iba prchavým pocitom, ale niečím, čo ma začalo ťahať celkom nepoznaným smerom. Bola by lož povedať, že za mojimi úspechmi stojím sama. Stoja za mnou rodičia, priatelia a najmä moji učitelia — ľudia, ktorí mi svojím prístupom zmenili život. Preto som sa rozhodla, že aj ja tu chcem byť pre iných a meniť smery v ľudských životoch.
+
+Prečo rozumiem vašim výzvam
+Keď som začínala učiť sa španielčinu, stretla som sa s tými istými problémami ako vy dnes. Strach, že poviem nejaký nezmysel, spolu so školstvom, ktoré nepočíta s tým, že každý z nás je jedinečný, ma prinútili myslieť si, že nemám na to, aby som sa naučila cudzí jazyk. Skutočne som nemohla byť ďalej od pravdy.
+Slovenčina a španielčina majú svoje špecifiká, ktoré môžu byť pre nás Slovákov náročné, no sú si v skutočnosti bližšie, ako by sa nám zdalo.
+Pamätám si, aké chyby som robila, a dbám na to, aby sa im moji študenti vyhli. Sú metódy, ktoré fungujú, a naopak sú praktiky, ktorých by sme sa mali zbaviť. Na základe súhrnu informácií tvorím svoju vlastnú metodológiu.
+Moja metóda nie je len o gramatike, ale ani len o rozprávaní. Nepodporujem nezmyselné nápady, ktoré sú inovatívne, ale nefungujú. Podporujem zhluk metód na základe ich funkcií, a to bez ohľadu na to, či sú nové alebo staré. Jazyk nie je len gramatika, no nie je to ani náhodný zhluk zvukov. Má systém a je rozumnejšie ho pochopiť.
+Jazyk je hlavne o pochopení kultúry, o prekonávaní strachu z hovorenia a o budovaní sebavedomia, no predovšetkým je to o túžbe spoznať svet a prekonávaní samých seba.
 
 ---
 

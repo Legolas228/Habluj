@@ -89,7 +89,7 @@ const AboutHero = () => {
                     <Icon name="Quote" size={24} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground italic">"Učenie jazyka je cesta, nie cieľ."</p>
+                    <p className="text-sm font-medium text-foreground italic">"{t('about.hero.quote')}"</p>
                     <p className="text-xs text-muted-foreground mt-1">- Ester Mesároš</p>
                   </div>
                 </div>

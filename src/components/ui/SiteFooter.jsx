@@ -51,15 +51,7 @@ const SiteFooter = () => {
 
           <div>
             <h3 className="font-headlines font-bold mb-4">{t('footer.contactTitle')}</h3>
-            <div className="space-y-3 text-sm">
-              <a
-                href={getContactLinks.email()}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
-                aria-label={`Send email to ${contactInfo.email}`}
-              >
-                <Icon name="Mail" size={16} />
-                <span className="font-medium">{contactInfo.email}</span>
-              </a>
+            <div className="flex flex-col items-start gap-3 text-sm">
               <a
                 href={getContactLinks.instagram()}
                 target="_blank"
@@ -69,6 +61,14 @@ const SiteFooter = () => {
               >
                 <Icon name="Instagram" size={16} />
                 <span className="font-medium">@{contactInfo.instagram}</span>
+              </a>
+              <a
+                href={getContactLinks.email()}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                aria-label={`Send email to ${contactInfo.email}`}
+              >
+                <Icon name="Mail" size={16} />
+                <span className="font-medium">{contactInfo.email}</span>
               </a>
             </div>
           </div>

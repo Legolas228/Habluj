@@ -98,14 +98,17 @@ const TutoringServices = () => {
         {
           title: t('services.offers.individual.item1'),
           description: t('services.offers.individual.item1desc'),
+          helperDescription: t('services.offers.individual.item1help'),
         },
         {
           title: t('services.offers.individual.item2'),
           description: t('services.offers.individual.item2desc'),
+          helperDescription: t('services.offers.individual.item2help'),
         },
         {
           title: t('services.offers.individual.item3'),
           description: t('services.offers.individual.item3desc'),
+          helperDescription: t('services.offers.individual.item3help'),
         },
       ],
     },
@@ -119,10 +122,12 @@ const TutoringServices = () => {
         {
           title: t('services.offers.group.item1'),
           description: t('services.offers.group.item1desc'),
+          action: 'waitlist',
         },
         {
           title: t('services.offers.group.item2'),
           description: t('services.offers.group.item2desc'),
+          action: 'contact',
         },
       ],
     },
@@ -401,7 +406,8 @@ const TutoringServices = () => {
                     label: 'text-primary',
                     button: 'border-primary text-primary hover:bg-primary hover:text-white',
                   };
-                  const isWaitlistOnly = section.id === 'group-classes' || section.id === 'intensive-courses';
+                  const isWaitlistOnly = item.action === 'waitlist' || (section.id === 'group-classes' || section.id === 'intensive-courses');
+                  const isContactDirect = item.action === 'contact';
                   const waitlistCourseType = section.id === 'group-classes' ? 'small_group' : 'intensive';
 
                   return (
@@ -410,27 +416,59 @@ const TutoringServices = () => {
                       className={`relative bg-white rounded-2xl p-6 shadow-soft border ${accentStyle.cardBorder} hover:shadow-cultural transition-all duration-300 group`}
                       style={{ '--milestone-index': idx }}
                     >
-                      <div className={`w-12 h-12 ${itemStyle.color} rounded-xl ring-1 ring-black/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                        <Icon name={itemStyle.icon} size={24} className={itemStyle.text || 'text-white'} />
-                      </div>
-
                       <div className="space-y-4">
-                        <div>
-                          <h4 className="text-xl font-headlines font-bold text-foreground mb-1 line-clamp-2">{item.title}</h4>
-                          <p className={`text-sm font-medium ${accentStyle.label}`}>{section.title}</p>
-                        </div>
+                        {section.id === 'individual-classes' ? (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-12 h-12 ${itemStyle.color} rounded-xl ring-1 ring-black/5 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                                <Icon name={itemStyle.icon} size={24} className={itemStyle.text || 'text-white'} />
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-headlines font-bold text-foreground line-clamp-2">{item.title}</h4>
+                              </div>
+                            </div>
+                            <div className="space-y-2 text-left">
+                              <p className={`text-sm font-medium ${accentStyle.label}`}>{section.title}</p>
+                              <div className="inline-flex items-center rounded-full bg-green-50 border border-green-200 px-3 py-1.5 text-sm font-semibold text-green-700">
+                                {item.description}
+                              </div>
+                              <p className="text-sm text-muted-foreground leading-relaxed">{item.helperDescription}</p>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className={`w-12 h-12 ${itemStyle.color} rounded-xl ring-1 ring-black/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                              <Icon name={itemStyle.icon} size={24} className={itemStyle.text || 'text-white'} />
+                            </div>
+                            <div>
+                              <h4 className="text-xl font-headlines font-bold text-foreground mb-1 line-clamp-2">{item.title}</h4>
+                              <p className={`text-sm font-medium ${accentStyle.label}`}>{section.title}</p>
+                            </div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                          </>
+                        )}
 
-                        <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          fullWidth
-                          className={accentStyle.button}
-                          onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType) : handleBookLesson}
-                        >
-                          {isWaitlistOnly ? t('waitlist.ctaJoin') : t('services.hero.ctaBook')}
-                        </Button>
+                        {isContactDirect ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            fullWidth
+                            className={accentStyle.button}
+                            asChild
+                          >
+                            <Link to={getLocalizedPath('/contact', language)}>{t('services.hero.ctaContact')}</Link>
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            fullWidth
+                            className={accentStyle.button}
+                            onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType) : handleBookLesson}
+                          >
+                            {isWaitlistOnly ? t('waitlist.ctaJoin') : t('services.hero.ctaBook')}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   );
