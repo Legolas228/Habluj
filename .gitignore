@@ -16,6 +16,8 @@ __pycache__/
 .mypy_cache/
 .venv/
 backend/env/
+backend/env
+backend/db.sqlite3
 
 # Local env files
 .env
