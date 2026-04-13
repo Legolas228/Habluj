@@ -25,3 +25,6 @@ backend/.env
 habluj-*.json
 backend/.audit-venv/
 .learnings/
+.unlighthouse/
+self-improving-agent-*.zip
+self-improving-agent-*/
