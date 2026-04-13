@@ -21,9 +21,9 @@ const Homepage = () => {
   };
   const locale = localeByLanguage[language] || 'sk-SK';
   const offerByLanguage = {
-    sk: { currency: 'EUR', price: '20', label: 'od 20 EUR / lekcia' },
+    sk: { currency: 'EUR', price: '20', label: 'od 20 € / lekcia' },
     cz: { currency: 'CZK', price: '500', label: 'od 500 CZK / lekcia' },
-    es: { currency: 'EUR', price: '20', label: 'desde 20 EUR / clase' },
+    es: { currency: 'EUR', price: '20', label: 'desde 20 € / clase' },
   };
   const activeOffer = offerByLanguage[language] || offerByLanguage.sk;
 
@@ -88,6 +88,14 @@ const Homepage = () => {
         <meta property="og:url" content="https://habluj.sk/" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://habluj.sk/assets/images/og-image.webp" />
+        <meta property="og:locale" content={locale} />
+        <meta property="og:locale:alternate" content="sk-SK" />
+        <meta property="og:locale:alternate" content="cs-CZ" />
+        <meta property="og:locale:alternate" content="es-ES" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={t('meta.homeTitle')} />
+        <meta name="twitter:description" content={t('meta.homeDescription')} />
+        <meta name="twitter:image" content="https://habluj.sk/assets/images/og-image.webp" />
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>

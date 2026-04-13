@@ -173,6 +173,21 @@ Para despliegue, configura estas variables de entorno en backend:
 - `DJANGO_ALLOWED_HOSTS` (CSV, por ejemplo: `habluj.sk,www.habluj.sk`)
 - `DJANGO_CORS_ALLOWED_ORIGINS` (CSV de orígenes permitidos)
 - `DJANGO_CSRF_TRUSTED_ORIGINS` (CSV con esquemas `https://...`)
+- `DRF_THROTTLE_ANON` (por defecto `60/min`)
+- `DRF_THROTTLE_USER` (por defecto `240/min`)
+- `DRF_THROTTLE_STUDENT_LOGIN` (por defecto `10/min`)
+- `DRF_THROTTLE_STUDENT_REGISTER` (por defecto `5/min`)
+- `DRF_THROTTLE_LEAD_CREATE` (por defecto `15/min`)
+- `DRF_THROTTLE_GOPAY_WEBHOOK` (por defecto `120/min`)
+- `AUTH_IP_ATTEMPT_WINDOW_SECONDS` (por defecto `3600`)
+- `AUTH_IP_LOCK_MIN_FAILURES` (por defecto `5`)
+- `AUTH_IP_LOCK_BASE_SECONDS` (por defecto `60`)
+- `AUTH_IP_LOCK_MAX_SECONDS` (por defecto `3600`)
+- `DJANGO_DATA_UPLOAD_MAX_MEMORY_SIZE` (por defecto `2097152` = 2MB)
+- `DJANGO_FILE_UPLOAD_MAX_MEMORY_SIZE` (por defecto `5242880` = 5MB)
+- `DJANGO_DATA_UPLOAD_MAX_NUMBER_FIELDS` (por defecto `2000`)
+- `STUDENT_MATERIAL_MAX_UPLOAD_BYTES` (por defecto `10485760` = 10MB)
+- `STUDENT_MATERIAL_ALLOWED_EXTENSIONS` (CSV de extensiones permitidas)
 - `MAILERLITE_API_KEY`
 - `MAILERLITE_LEAD_GROUP_ID` (opcional)
 - `MAILERLITE_SENDER_EMAIL` (requerido para enviar correo a Ester)
@@ -187,6 +202,21 @@ Ejemplo minimo para produccion gratuita (PythonAnywhere):
 - `DJANGO_ALLOWED_HOSTS=legolas228.pythonanywhere.com,localhost,127.0.0.1`
 - `DJANGO_CORS_ALLOWED_ORIGINS=https://habluj.vercel.app`
 - `DJANGO_CSRF_TRUSTED_ORIGINS=https://habluj.vercel.app`
+- `DRF_THROTTLE_ANON=40/min`
+- `DRF_THROTTLE_USER=180/min`
+- `DRF_THROTTLE_STUDENT_LOGIN=8/min`
+- `DRF_THROTTLE_STUDENT_REGISTER=4/min`
+- `DRF_THROTTLE_LEAD_CREATE=8/min`
+- `DRF_THROTTLE_GOPAY_WEBHOOK=90/min`
+- `AUTH_IP_ATTEMPT_WINDOW_SECONDS=3600`
+- `AUTH_IP_LOCK_MIN_FAILURES=5`
+- `AUTH_IP_LOCK_BASE_SECONDS=60`
+- `AUTH_IP_LOCK_MAX_SECONDS=3600`
+- `DJANGO_DATA_UPLOAD_MAX_MEMORY_SIZE=2097152`
+- `DJANGO_FILE_UPLOAD_MAX_MEMORY_SIZE=5242880`
+- `DJANGO_DATA_UPLOAD_MAX_NUMBER_FIELDS=2000`
+- `STUDENT_MATERIAL_MAX_UPLOAD_BYTES=10485760`
+- `STUDENT_MATERIAL_ALLOWED_EXTENSIONS=pdf,txt,doc,docx,png,jpg,jpeg,webp,mp3,wav,m4a,mp4,mov`
 
 ### Crear cuenta de Ester (admin de leads)
 
@@ -225,6 +255,10 @@ Si falta en producción, el formulario mostrará error y no enviará el lead.
 Valor recomendado actual:
 
 - `VITE_API_BASE_URL=https://legolas228.pythonanywhere.com`
+
+Ademas, para SEO consistente (canonical, hreflang y Open Graph), configura tambien:
+
+- `VITE_SITE_URL=https://habluj.sk`
 
 Tambien es recomendable declararlo explicitamente en Vercel Project Settings > Environment Variables (Production, Preview y Development) para no depender del fallback de codigo.
 

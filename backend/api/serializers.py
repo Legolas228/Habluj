@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from pathlib import Path
 from datetime import datetime, timedelta, timezone as dt_timezone
 from decimal import Decimal, ROUND_HALF_UP
 from django.conf import settings
@@ -909,6 +910,45 @@ class StudentMaterialSerializer(serializers.ModelSerializer):
 
         if not external_url and not uploaded_file:
             raise serializers.ValidationError('Provide at least one URL or upload a file.')
+
+        if uploaded_file:
+            max_upload_bytes = int(getattr(settings, 'STUDENT_MATERIAL_MAX_UPLOAD_BYTES', 10 * 1024 * 1024))
+            if getattr(uploaded_file, 'size', 0) > max_upload_bytes:
+                raise serializers.ValidationError({
+                    'uploaded_file': f'File too large. Maximum size is {max_upload_bytes // (1024 * 1024)}MB.'
+                })
+
+            allowed_exts = {
+                ext.lower().lstrip('.')
+                for ext in getattr(settings, 'STUDENT_MATERIAL_ALLOWED_EXTENSIONS', [])
+                if ext
+            }
+            file_ext = Path(getattr(uploaded_file, 'name', '')).suffix.lower().lstrip('.')
+            if allowed_exts and file_ext not in allowed_exts:
+                raise serializers.ValidationError({
+                    'uploaded_file': f'File extension not allowed. Allowed: {", ".join(sorted(allowed_exts))}.'
+                })
+
+            # Content type can be absent depending on clients, so enforce only when provided.
+            allowed_content_types = {
+                'application/pdf',
+                'text/plain',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/png',
+                'image/jpeg',
+                'image/webp',
+                'audio/mpeg',
+                'audio/mp3',
+                'audio/wav',
+                'audio/x-wav',
+                'audio/mp4',
+                'video/mp4',
+                'video/quicktime',
+            }
+            content_type = str(getattr(uploaded_file, 'content_type', '') or '').lower().strip()
+            if content_type and content_type not in allowed_content_types:
+                raise serializers.ValidationError({'uploaded_file': 'Unsupported file content type.'})
 
         request = self.context.get('request')
         if request is None:

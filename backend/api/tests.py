@@ -1,11 +1,12 @@
 from unittest.mock import patch
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.test import override_settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
-from .models import Availability, Booking, CreditLedger, Lead, LeadActivity, Lesson, Progress, StudentGoal, StudentMaterial, StudentMessage, UserProfile
+from .models import Availability, Booking, CreditLedger, Lead, LeadActivity, Lesson, Payment, Progress, StudentGoal, StudentMaterial, StudentMessage, UserProfile
 from .models import WeeklyAvailabilitySlot, BookingSlotBlock
 
 
@@ -141,6 +142,7 @@ class LeadApiTests(APITestCase):
 @override_settings(SECURE_SSL_REDIRECT=False)
 class StudentAuthApiTests(APITestCase):
 	def setUp(self):
+		cache.clear()
 		self.password = 'Pass12345!'
 		self.user = User.objects.create_user(
 			username='student1',
@@ -233,6 +235,59 @@ class StudentAuthApiTests(APITestCase):
 		}, format='json')
 		self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
 		self.assertEqual(patch_response.data['language_level'], 'B1')
+
+	@override_settings(
+		AUTH_IP_LOCK_MIN_FAILURES=3,
+		AUTH_IP_LOCK_BASE_SECONDS=60,
+		AUTH_IP_LOCK_MAX_SECONDS=300,
+		AUTH_IP_ATTEMPT_WINDOW_SECONDS=600,
+	)
+	def test_login_progressive_lock_by_ip(self):
+		for _ in range(3):
+			response = self.client.post('/api/auth/login/', {
+				'identifier': 'student1',
+				'password': 'bad-password',
+			}, format='json', REMOTE_ADDR='203.0.113.10')
+
+		self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+		self.assertIn('retry_after_seconds', response.data)
+
+		blocked_response = self.client.post('/api/auth/login/', {
+			'identifier': 'student1',
+			'password': self.password,
+		}, format='json', REMOTE_ADDR='203.0.113.10')
+		self.assertEqual(blocked_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+	@override_settings(
+		AUTH_IP_LOCK_MIN_FAILURES=2,
+		AUTH_IP_LOCK_BASE_SECONDS=60,
+		AUTH_IP_LOCK_MAX_SECONDS=120,
+		AUTH_IP_ATTEMPT_WINDOW_SECONDS=600,
+	)
+	def test_register_progressive_lock_by_ip(self):
+		invalid_payload = {
+			'username': 'new_student_2',
+			'email': 'new_student_2@example.com',
+			'password': 'short',
+		}
+
+		first_response = self.client.post('/api/auth/register/', invalid_payload, format='json', REMOTE_ADDR='203.0.113.11')
+		self.assertEqual(first_response.status_code, status.HTTP_400_BAD_REQUEST)
+
+		second_response = self.client.post('/api/auth/register/', invalid_payload, format='json', REMOTE_ADDR='203.0.113.11')
+		self.assertEqual(second_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+		valid_payload = {
+			'username': 'new_student_3',
+			'email': 'new_student_3@example.com',
+			'password': 'Pass12345!',
+			'password_confirm': 'Pass12345!',
+			'language_level': 'A2',
+			'learning_reason': 'Practicar conversacion en clases.',
+			'birth_date': '1994-07-21',
+		}
+		blocked_valid_response = self.client.post('/api/auth/register/', valid_payload, format='json', REMOTE_ADDR='203.0.113.11')
+		self.assertEqual(blocked_valid_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -525,6 +580,60 @@ class StudentPortalDataApiTests(APITestCase):
 		booking_2 = Booking.objects.get(id=booking_id_2)
 		self.assertEqual(booking_2.status, 'pending')
 		self.assertEqual(booking_2.payment.status, 'processing')
+
+	@override_settings(BOOKING_LEAD_TIME_HOURS=0, BOOKING_DEFAULT_BUFFER_MINUTES=0, BOOKING_CLASS_MINUTES=60)
+	def test_confirm_payment_does_not_complete_from_client_side(self):
+		from datetime import timedelta
+		from django.utils import timezone
+
+		self._auth()
+		WeeklyAvailabilitySlot.objects.all().delete()
+		target_date = timezone.localdate() + timedelta(days=1)
+		WeeklyAvailabilitySlot.objects.create(weekday=target_date.weekday(), time='12:00:00', is_active=True)
+
+		create_response = self.client.post('/api/bookings/', {
+			'lesson_id': self.lesson.id,
+			'date': target_date.isoformat(),
+			'time': '12:00:00',
+			'student_timezone': 'Europe/Madrid',
+		}, format='json')
+		self.assertEqual(create_response.status_code, status.HTTP_201_CREATED)
+
+		booking = Booking.objects.get(id=create_response.data['id'])
+		payment = booking.payment
+		payment.status = 'processing'
+		payment.gopay_payment_id = 'gopay-test-confirm'
+		payment.save(update_fields=['status', 'gopay_payment_id', 'updated_at'])
+
+		confirm_response = self.client.post(f'/api/bookings/{booking.id}/confirm_payment/')
+		self.assertEqual(confirm_response.status_code, status.HTTP_202_ACCEPTED)
+		self.assertEqual(confirm_response.data['status'], 'processing')
+
+		booking.refresh_from_db()
+		payment.refresh_from_db()
+		self.assertEqual(booking.status, 'pending')
+		self.assertEqual(payment.status, 'processing')
+
+	def test_confirm_payment_returns_confirmed_when_already_completed(self):
+		self._auth()
+		booking = Booking.objects.create(
+			student=self.student,
+			lesson=self.lesson,
+			date='2026-07-01',
+			time='09:00:00',
+			status='confirmed',
+		)
+		Payment.objects.create(
+			booking=booking,
+			amount='20.00',
+			currency='EUR',
+			status='completed',
+			gopay_payment_id='gopay-test-completed',
+		)
+
+		response = self.client.post(f'/api/bookings/{booking.id}/confirm_payment/')
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+		self.assertEqual(response.data['status'], 'confirmed')
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

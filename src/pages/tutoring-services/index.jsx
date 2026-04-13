@@ -27,7 +27,9 @@ const TutoringServices = () => {
   const locale = localeByLanguage[language] || 'sk-SK';
   const isCzech = language === 'cz';
   const offerCurrency = isCzech ? 'CZK' : 'EUR';
-  const offerPrice = isCzech ? '500' : '20';
+  const individualFromPrice = isCzech ? '500' : '20';
+  const groupFromPrice = isCzech ? '3750' : '150';
+  const highPrice = isCzech ? '3750' : '150';
 
   const servicesSchema = {
     '@context': 'https://schema.org',
@@ -41,11 +43,31 @@ const TutoringServices = () => {
     },
     inLanguage: locale,
     offers: {
-      '@type': 'Offer',
-      price: offerPrice,
+      '@type': 'AggregateOffer',
       priceCurrency: offerCurrency,
+      lowPrice: individualFromPrice,
+      highPrice,
+      offerCount: 2,
       availability: 'https://schema.org/InStock',
       url: getCanonicalUrl('/tutoring-services'),
+      offers: [
+        {
+          '@type': 'Offer',
+          name: t('services.offers.individual.title'),
+          price: individualFromPrice,
+          priceCurrency: offerCurrency,
+          availability: 'https://schema.org/InStock',
+          url: getCanonicalUrl('/tutoring-services#individual-classes'),
+        },
+        {
+          '@type': 'Offer',
+          name: t('services.offers.group.title'),
+          price: groupFromPrice,
+          priceCurrency: offerCurrency,
+          availability: 'https://schema.org/InStock',
+          url: getCanonicalUrl('/tutoring-services#group-classes'),
+        },
+      ],
     },
   };
 
@@ -225,6 +247,14 @@ const TutoringServices = () => {
         <meta property="og:url" content="https://habluj.sk/tutoring-services" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
+        <meta property="og:locale" content={locale} />
+        <meta property="og:locale:alternate" content="sk-SK" />
+        <meta property="og:locale:alternate" content="cs-CZ" />
+        <meta property="og:locale:alternate" content="es-ES" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={t('meta.servicesTitle')} />
+        <meta name="twitter:description" content={t('meta.servicesDescription')} />
+        <meta name="twitter:image" content={DEFAULT_OG_IMAGE} />
         <script type="application/ld+json">{JSON.stringify(servicesSchema)}</script>
       </Helmet>
       <Header />

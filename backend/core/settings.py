@@ -269,14 +269,38 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
         'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
+        'anon': os.environ.get('DRF_THROTTLE_ANON', '60/min'),
+        'user': os.environ.get('DRF_THROTTLE_USER', '240/min'),
         'student_login': os.environ.get('DRF_THROTTLE_STUDENT_LOGIN', '10/min'),
         'student_register': os.environ.get('DRF_THROTTLE_STUDENT_REGISTER', '5/min'),
+        'lead_create': os.environ.get('DRF_THROTTLE_LEAD_CREATE', '15/min'),
+        'gopay_webhook': os.environ.get('DRF_THROTTLE_GOPAY_WEBHOOK', '120/min'),
     },
 }
 
 # Avoid test flakiness from login throttling across the test suite.
 if 'test' in sys.argv:
     REST_FRAMEWORK['DEFAULT_THROTTLE_CLASSES'] = []
+
+# Request and upload hard limits to reduce abuse/cost impact.
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.environ.get('DJANGO_DATA_UPLOAD_MAX_MEMORY_SIZE', str(2 * 1024 * 1024)))
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(os.environ.get('DJANGO_FILE_UPLOAD_MAX_MEMORY_SIZE', str(5 * 1024 * 1024)))
+DATA_UPLOAD_MAX_NUMBER_FIELDS = int(os.environ.get('DJANGO_DATA_UPLOAD_MAX_NUMBER_FIELDS', '2000'))
+
+# Student material upload policy.
+STUDENT_MATERIAL_MAX_UPLOAD_BYTES = int(os.environ.get('STUDENT_MATERIAL_MAX_UPLOAD_BYTES', str(10 * 1024 * 1024)))
+STUDENT_MATERIAL_ALLOWED_EXTENSIONS = [ext.lower().lstrip('.') for ext in env_list(
+    'STUDENT_MATERIAL_ALLOWED_EXTENSIONS',
+    'pdf,txt,doc,docx,png,jpg,jpeg,webp,mp3,wav,m4a,mp4,mov'
+)]
+
+# Progressive auth lock by IP (login/register).
+AUTH_IP_ATTEMPT_WINDOW_SECONDS = int(os.environ.get('AUTH_IP_ATTEMPT_WINDOW_SECONDS', '3600'))
+AUTH_IP_LOCK_MIN_FAILURES = int(os.environ.get('AUTH_IP_LOCK_MIN_FAILURES', '5'))
+AUTH_IP_LOCK_BASE_SECONDS = int(os.environ.get('AUTH_IP_LOCK_BASE_SECONDS', '60'))
+AUTH_IP_LOCK_MAX_SECONDS = int(os.environ.get('AUTH_IP_LOCK_MAX_SECONDS', '3600'))
