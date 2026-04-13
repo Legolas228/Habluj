@@ -105,11 +105,6 @@ const HeroSection = () => {
               </Link>
             </div>
 
-            <div className="rounded-2xl border border-primary/20 bg-white/80 p-4 shadow-soft">
-              <p className="text-sm font-semibold text-primary">{t('hero.priceBadge')}</p>
-              <p className="text-sm text-muted-foreground">{t('hero.priceNote')}</p>
-            </div>
-
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-border/50">
               <div className="text-center">

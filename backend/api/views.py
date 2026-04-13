@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 from django.db.models import Count, Q, Sum
 from django.db import transaction
@@ -116,16 +117,73 @@ def remove_google_block_event(block):
         return
 
 
+def _get_client_ip(request):
+    forwarded = (request.META.get('HTTP_X_FORWARDED_FOR') or '').split(',')[0].strip()
+    return forwarded or request.META.get('REMOTE_ADDR') or 'unknown'
+
+
+def _auth_fail_key(scope, ip):
+    return f'auth_fail:{scope}:{ip}'
+
+
+def _auth_lock_key(scope, ip):
+    return f'auth_lock:{scope}:{ip}'
+
+
+def _auth_lock_remaining_seconds(scope, ip):
+    lock_until = cache.get(_auth_lock_key(scope, ip))
+    if not lock_until:
+        return 0
+    remaining = int((lock_until - timezone.now()).total_seconds())
+    if remaining <= 0:
+        cache.delete(_auth_lock_key(scope, ip))
+        return 0
+    return remaining
+
+
+def _register_auth_failure(scope, ip):
+    min_failures = int(getattr(settings, 'AUTH_IP_LOCK_MIN_FAILURES', 5))
+    base_seconds = int(getattr(settings, 'AUTH_IP_LOCK_BASE_SECONDS', 60))
+    max_seconds = int(getattr(settings, 'AUTH_IP_LOCK_MAX_SECONDS', 3600))
+    window_seconds = int(getattr(settings, 'AUTH_IP_ATTEMPT_WINDOW_SECONDS', 3600))
+
+    key = _auth_fail_key(scope, ip)
+    failures = int(cache.get(key, 0)) + 1
+    cache.set(key, failures, window_seconds)
+
+    if failures < min_failures:
+        return 0
+
+    exponent = failures - min_failures
+    lock_seconds = min(max_seconds, base_seconds * (2 ** exponent))
+    cache.set(_auth_lock_key(scope, ip), timezone.now() + timedelta(seconds=lock_seconds), lock_seconds)
+    return lock_seconds
+
+
+def _clear_auth_failures(scope, ip):
+    cache.delete(_auth_fail_key(scope, ip))
+    cache.delete(_auth_lock_key(scope, ip))
+
+
 class StudentLoginView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [ScopedRateThrottle]
     throttle_scope = 'student_login'
 
     def post(self, request):
+        ip = _get_client_ip(request)
+        lock_remaining = _auth_lock_remaining_seconds('login', ip)
+        if lock_remaining > 0:
+            return Response({
+                'detail': 'Too many failed login attempts. Try again later.',
+                'retry_after_seconds': lock_remaining,
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
         identifier = (request.data.get('identifier') or request.data.get('username') or '').strip()
         password = request.data.get('password') or ''
 
         if not identifier or not password:
+            _register_auth_failure('login', ip)
             return Response({'detail': 'Identifier and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -142,8 +200,15 @@ class StudentLoginView(APIView):
                     user = user_candidate
                     break
         if not user or not user.is_active:
+            lock_seconds = _register_auth_failure('login', ip)
+            if lock_seconds > 0:
+                return Response({
+                    'detail': 'Too many failed login attempts. Try again later.',
+                    'retry_after_seconds': lock_seconds,
+                }, status=status.HTTP_429_TOO_MANY_REQUESTS)
             return Response({'detail': 'Invalid username or password.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+        _clear_auth_failures('login', ip)
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
@@ -164,11 +229,26 @@ class StudentRegisterView(APIView):
     throttle_scope = 'student_register'
 
     def post(self, request):
+        ip = _get_client_ip(request)
+        lock_remaining = _auth_lock_remaining_seconds('register', ip)
+        if lock_remaining > 0:
+            return Response({
+                'detail': 'Too many failed register attempts. Try again later.',
+                'retry_after_seconds': lock_remaining,
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
         serializer = UserRegisterSerializer(data=request.data)
         if not serializer.is_valid():
+            lock_seconds = _register_auth_failure('register', ip)
+            if lock_seconds > 0:
+                return Response({
+                    'detail': 'Too many failed register attempts. Try again later.',
+                    'retry_after_seconds': lock_seconds,
+                }, status=status.HTTP_429_TOO_MANY_REQUESTS)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         user = serializer.save()
+        _clear_auth_failures('register', ip)
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
@@ -641,34 +721,33 @@ class BookingViewSet(viewsets.ModelViewSet):
         if not payment or not payment.gopay_payment_id:
             return Response({'error': 'GoPay payment is not initialized.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        with transaction.atomic():
-            booking = Booking.objects.select_for_update().get(pk=booking.pk)
-            payment = Payment.objects.select_for_update().get(pk=payment.pk)
+        payment.refresh_from_db()
+        booking.refresh_from_db()
 
-            if booking.status != 'pending':
-                payment.status = 'credited'
-                payment.completed_at = timezone.now()
-                payment.metadata = {**(payment.metadata or {}), 'credited_reason': 'slot_unavailable_after_payment'}
-                payment.save(update_fields=['status', 'completed_at', 'metadata', 'updated_at'])
-                return Response({
-                    'status': 'credited',
-                    'message': 'Payment converted to student credit because slot is unavailable.',
-                })
+        if payment.status == 'completed' and booking.status == 'confirmed':
+            return Response({'status': 'confirmed', 'booking_id': booking.id})
 
-            payment.status = 'completed'
-            payment.completed_at = timezone.now()
-            payment.metadata = {**(payment.metadata or {}), 'gopay_status': 'PAID'}
-            payment.save(update_fields=['status', 'completed_at', 'metadata', 'updated_at'])
+        if payment.status == 'credited':
+            return Response({
+                'status': 'credited',
+                'message': 'Payment converted to student credit because slot is unavailable.',
+            })
 
-            booking.status = 'confirmed'
-            booking.save(update_fields=['status', 'updated_at'])
+        if payment.status in {'failed', 'refunded'}:
+            return Response({'status': payment.status}, status=status.HTTP_400_BAD_REQUEST)
 
-        ensure_meet_for_confirmed_booking(booking)
-        return Response({'status': 'confirmed', 'booking_id': booking.id})
+        # Do not trust client-triggered confirmation for payment completion.
+        # Final status is set by signed GoPay webhook events only.
+        return Response({
+            'status': 'processing',
+            'message': 'Waiting for GoPay webhook confirmation.',
+        }, status=status.HTTP_202_ACCEPTED)
 
 
 class GoPayWebhookView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'gopay_webhook'
 
     def post(self, request):
         webhook_secret = getattr(settings, 'GOPAY_WEBHOOK_SECRET', '')
@@ -893,6 +972,7 @@ class LeadViewSet(viewsets.ModelViewSet):
     queryset = Lead.objects.all().select_related('duplicate_of').prefetch_related('activities')
     serializer_class = LeadSerializer
     authentication_classes = [TokenAuthentication, SessionAuthentication]
+    throttle_classes = [ScopedRateThrottle]
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -904,6 +984,11 @@ class LeadViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+
+    def get_throttles(self):
+        if self.action == 'create':
+            self.throttle_scope = 'lead_create'
+        return super().get_throttles()
 
     def get_queryset(self):
         queryset = super().get_queryset()
