@@ -23,6 +23,7 @@ import StudentLessonsPanel from './components/StudentLessonsPanel';
 import StudentResourcesPanel from './components/StudentResourcesPanel';
 import { Suspense, lazy } from 'react';
 import { openSetmoreBooking } from '../../utils/setmore';
+import { getLocalizedPath } from '../../utils/seo';
 
 // Lazy loading heavy components, specially those using recharts
 const ProgressChart = lazy(() => import('./components/ProgressChart'));
@@ -722,7 +723,7 @@ const StudentDashboard = () => {
         <div className="mb-8">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Link to="/homepage" className="hover:text-primary transition-colors">{copy.home}</Link>
+              <Link to={getLocalizedPath('/', language)} className="hover:text-primary transition-colors">{copy.home}</Link>
               <Icon name="ChevronRight" size={16} />
               <span>{copy.dashboardTitle}</span>
             </div>

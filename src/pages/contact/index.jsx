@@ -10,7 +10,7 @@ import FAQ from './components/FAQ';
 import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
 
 const ContactPage = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/contact');
 
   return (
@@ -18,13 +18,13 @@ const ContactPage = () => {
       <Helmet>
         <title>{t('meta.contactTitle')}</title>
         <meta name="description" content={t('meta.contactDescription')} />
-        <link rel="canonical" href={getCanonicalUrl('/contact')} />
+        <link rel="canonical" href={getCanonicalUrl('/contact', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={t('meta.contactTitle')} />
         <meta property="og:description" content={t('meta.contactDescription')} />
-        <meta property="og:url" content="https://habluj.sk/contact" />
+        <meta property="og:url" content={getCanonicalUrl('/contact', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>

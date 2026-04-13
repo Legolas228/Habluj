@@ -10,7 +10,7 @@ import LevelQuizTeaser from '../../components/LevelQuizTeaser';
 import WaitlistForm from '../../components/WaitlistForm';
 import { useTranslation } from '../../hooks/useTranslation';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
-import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
+import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks, getLocalizedPath } from '../../utils/seo';
 import { openSetmoreBooking } from '../../utils/setmore';
 
 const WAITLIST_TARGET_ID = 'course-waitlist';
@@ -39,7 +39,7 @@ const TutoringServices = () => {
     provider: {
       '@type': 'EducationalOrganization',
       name: 'Habluj',
-      url: getCanonicalUrl('/'),
+      url: getCanonicalUrl('/', language),
     },
     inLanguage: locale,
     offers: {
@@ -49,7 +49,7 @@ const TutoringServices = () => {
       highPrice,
       offerCount: 2,
       availability: 'https://schema.org/InStock',
-      url: getCanonicalUrl('/tutoring-services'),
+      url: getCanonicalUrl('/tutoring-services', language),
       offers: [
         {
           '@type': 'Offer',
@@ -57,7 +57,7 @@ const TutoringServices = () => {
           price: individualFromPrice,
           priceCurrency: offerCurrency,
           availability: 'https://schema.org/InStock',
-          url: getCanonicalUrl('/tutoring-services#individual-classes'),
+          url: getCanonicalUrl('/tutoring-services#individual-classes', language),
         },
         {
           '@type': 'Offer',
@@ -65,7 +65,7 @@ const TutoringServices = () => {
           price: groupFromPrice,
           priceCurrency: offerCurrency,
           availability: 'https://schema.org/InStock',
-          url: getCanonicalUrl('/tutoring-services#group-classes'),
+          url: getCanonicalUrl('/tutoring-services#group-classes', language),
         },
       ],
     },
@@ -238,13 +238,13 @@ const TutoringServices = () => {
       <Helmet>
         <title>{t('meta.servicesTitle')}</title>
         <meta name="description" content={t('meta.servicesDescription')} />
-        <link rel="canonical" href={getCanonicalUrl('/tutoring-services')} />
+        <link rel="canonical" href={getCanonicalUrl('/tutoring-services', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={t('meta.servicesTitle')} />
         <meta property="og:description" content={t('meta.servicesDescription')} />
-        <meta property="og:url" content="https://habluj.sk/tutoring-services" />
+        <meta property="og:url" content={getCanonicalUrl('/tutoring-services', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
         <meta property="og:locale" content={locale} />
@@ -352,7 +352,7 @@ const TutoringServices = () => {
                 iconPosition="left"
                 asChild
               >
-                <Link to="/contact">{t('services.hero.ctaContact')}</Link>
+                <Link to={getLocalizedPath('/contact', language)}>{t('services.hero.ctaContact')}</Link>
               </Button>
               <Button
                 variant="outline"
@@ -502,7 +502,7 @@ const TutoringServices = () => {
                 className="border-white text-white hover:bg-white hover:text-primary"
                 asChild
               >
-                <Link to="/contact">{t('services.cta.callButton')}</Link>
+                <Link to={getLocalizedPath('/contact', language)}>{t('services.cta.callButton')}</Link>
               </Button>
             </div>
 

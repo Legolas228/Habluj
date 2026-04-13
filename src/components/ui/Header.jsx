@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useAuth } from '../../context/AuthContext';
 import { SETMORE_BOOKING_URL } from '../../utils/setmore';
+import { getLocalizedPath, stripLanguagePrefix } from '../../utils/seo';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { changeLanguage, language } = useLanguage();
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
-  const authTarget = isAuthenticated ? '/student-dashboard' : '/login';
+  const authBaseTarget = isAuthenticated ? '/student-dashboard' : '/login';
+  const authTarget = getLocalizedPath(authBaseTarget, language);
   const authLabel = isAuthenticated ? t('header.dashboard') : t('header.login');
 
   useEffect(() => {
@@ -32,13 +35,13 @@ const Header = () => {
   }, [location?.pathname]);
 
   const navigationItems = [
-    { path: '/', label: t('header.home'), icon: 'Home' },
-    { path: '/about-the-teacher', label: t('header.about'), icon: 'User' },
-    { path: '/tutoring-services', label: t('header.services'), icon: 'BookOpen' }
+    { path: getLocalizedPath('/', language), label: t('header.home'), icon: 'Home' },
+    { path: getLocalizedPath('/about-the-teacher', language), label: t('header.about'), icon: 'User' },
+    { path: getLocalizedPath('/tutoring-services', language), label: t('header.services'), icon: 'BookOpen' }
   ];
 
   const secondaryItems = [
-    { path: '/contact', label: t('header.contact'), icon: 'Mail' }
+    { path: getLocalizedPath('/contact', language), label: t('header.contact'), icon: 'Mail' }
   ];
 
   const isActivePath = (path) => {
@@ -49,6 +52,13 @@ const Header = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleLanguageChange = (targetLanguage) => {
+    changeLanguage(targetLanguage);
+    const pathWithoutLanguage = stripLanguagePrefix(location.pathname || '/');
+    const nextPath = getLocalizedPath(pathWithoutLanguage, targetLanguage);
+    navigate(nextPath, { replace: false });
+  };
+
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -57,7 +67,7 @@ const Header = () => {
         <div className="w-full">
           <div className="flex items-center justify-between h-16 px-4 lg:px-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 group">
+            <Link to={getLocalizedPath('/', language)} className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="w-10 h-10 bg-gradient-cultural rounded-lg flex items-center justify-center shadow-warm group-hover:shadow-cultural transition-all duration-300">
                   <span className="text-white font-headlines font-bold text-lg">H</span>
@@ -94,7 +104,7 @@ const Header = () => {
             {/* Desktop Language Flags */}
             <div className="hidden lg:flex items-center space-x-2">
               <button
-                onClick={() => changeLanguage('sk')}
+                onClick={() => handleLanguageChange('sk')}
                 className={`text-2xl hover:scale-110 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm ${language === 'sk' ? 'opacity-100 ring-2 ring-primary/30' : 'opacity-75'}`}
                 title="Slovenčina"
                 aria-label="Prepnúť do slovenčiny"
@@ -103,7 +113,7 @@ const Header = () => {
                 🇸🇰
               </button>
               <button
-                onClick={() => changeLanguage('cz')}
+                onClick={() => handleLanguageChange('cz')}
                 className={`text-2xl hover:scale-110 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm ${language === 'cz' ? 'opacity-100 ring-2 ring-primary/30' : 'opacity-75'}`}
                 title="Čeština"
                 aria-label="Přepnout do češtiny"
@@ -112,7 +122,7 @@ const Header = () => {
                 🇨🇿
               </button>
               <button
-                onClick={() => changeLanguage('es')}
+                onClick={() => handleLanguageChange('es')}
                 className={`text-2xl hover:scale-110 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm ${language === 'es' ? 'opacity-100 ring-2 ring-primary/30' : 'opacity-75'}`}
                 title="Español"
                 aria-label="Cambiar a español"
@@ -183,7 +193,7 @@ const Header = () => {
               <div className="pt-4 border-t border-border space-y-2">
                 <div className="grid grid-cols-3 gap-2">
                   <button
-                    onClick={() => changeLanguage('sk')}
+                    onClick={() => handleLanguageChange('sk')}
                     className={`text-xl p-2 rounded-md transition-colors ${language === 'sk' ? 'bg-primary/10 ring-1 ring-primary/20' : 'bg-muted/60'}`}
                     title="Slovenčina"
                     aria-label="Prepnúť do slovenčiny"
@@ -192,7 +202,7 @@ const Header = () => {
                     🇸🇰
                   </button>
                   <button
-                    onClick={() => changeLanguage('cz')}
+                    onClick={() => handleLanguageChange('cz')}
                     className={`text-xl p-2 rounded-md transition-colors ${language === 'cz' ? 'bg-primary/10 ring-1 ring-primary/20' : 'bg-muted/60'}`}
                     title="Čeština"
                     aria-label="Přepnout do češtiny"
@@ -201,7 +211,7 @@ const Header = () => {
                     🇨🇿
                   </button>
                   <button
-                    onClick={() => changeLanguage('es')}
+                    onClick={() => handleLanguageChange('es')}
                     className={`text-xl p-2 rounded-md transition-colors ${language === 'es' ? 'bg-primary/10 ring-1 ring-primary/20' : 'bg-muted/60'}`}
                     title="Español"
                     aria-label="Cambiar a español"

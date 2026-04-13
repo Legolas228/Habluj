@@ -6,9 +6,10 @@ import Button from '../../../components/ui/Button';
 import Carousel from '../../../components/Carousel';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { SETMORE_BOOKING_URL } from '../../../utils/setmore';
+import { getLocalizedPath } from '../../../utils/seo';
 
 const HeroSection = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const trustBadges = [t('hero.trust1'), t('hero.trust2'), t('hero.trust3')];
 
   return (
@@ -92,7 +93,7 @@ const HeroSection = () => {
                   {t('hero.watchVideo')}
                 </Button>
               </a>
-              <Link to="/tutoring-services">
+              <Link to={getLocalizedPath('/tutoring-services', language)}>
                 <Button
                   variant="ghost"
                   size="lg"

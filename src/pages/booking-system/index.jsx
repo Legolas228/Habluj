@@ -9,7 +9,7 @@ import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils
 import { openSetmoreBooking } from '../../utils/setmore';
 
 const BookingSystem = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/booking-system');
 
   return (
@@ -17,13 +17,13 @@ const BookingSystem = () => {
       <Helmet>
         <title>{t('bookingSystem.meta.title')}</title>
         <meta name="description" content={t('bookingSystem.meta.description')} />
-        <link rel="canonical" href={getCanonicalUrl('/booking-system')} />
+        <link rel="canonical" href={getCanonicalUrl('/booking-system', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={t('bookingSystem.meta.ogTitle')} />
         <meta property="og:description" content={t('bookingSystem.meta.ogDescription')} />
-        <meta property="og:url" content={getCanonicalUrl('/booking-system')} />
+        <meta property="og:url" content={getCanonicalUrl('/booking-system', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>

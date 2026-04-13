@@ -4,6 +4,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import Icon from '../AppIcon';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
 import { SETMORE_BOOKING_URL } from '../../utils/setmore';
+import { getLocalizedPath } from '../../utils/seo';
 
 const SiteFooter = () => {
   const { t, language } = useTranslation();
@@ -31,20 +32,20 @@ const SiteFooter = () => {
           <div>
             <h3 className="font-headlines font-bold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/" className="text-gray-300 hover:text-white transition-colors">{t('header.home')}</Link></li>
-              <li><Link to="/about-the-teacher" className="text-gray-300 hover:text-white transition-colors">{t('footer.aboutTeacher')}</Link></li>
-              <li><Link to="/tutoring-services" className="text-gray-300 hover:text-white transition-colors">{t('footer.services')}</Link></li>
+              <li><Link to={getLocalizedPath('/', language)} className="text-gray-300 hover:text-white transition-colors">{t('header.home')}</Link></li>
+              <li><Link to={getLocalizedPath('/about-the-teacher', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.aboutTeacher')}</Link></li>
+              <li><Link to={getLocalizedPath('/tutoring-services', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.services')}</Link></li>
               <li><a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">{t('footer.booking')}</a></li>
-              <li><Link to="/contact" className="text-gray-300 hover:text-white transition-colors">{t('header.contact')}</Link></li>
+              <li><Link to={getLocalizedPath('/contact', language)} className="text-gray-300 hover:text-white transition-colors">{t('header.contact')}</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-headlines font-bold mb-4">{legalTitle}</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">{t('footer.privacy')}</Link></li>
-              <li><Link to="/terms-and-conditions" className="text-gray-300 hover:text-white transition-colors">{t('footer.terms')}</Link></li>
-              <li><Link to="/cookies-policy" className="text-gray-300 hover:text-white transition-colors">{t('footer.cookies')}</Link></li>
+              <li><Link to={getLocalizedPath('/privacy-policy', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.privacy')}</Link></li>
+              <li><Link to={getLocalizedPath('/terms-and-conditions', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.terms')}</Link></li>
+              <li><Link to={getLocalizedPath('/cookies-policy', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.cookies')}</Link></li>
             </ul>
           </div>
 

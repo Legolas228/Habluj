@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import Button from './ui/Button';
 import Icon from './AppIcon';
 import { useTranslation } from '../hooks/useTranslation';
+import { getLocalizedPath } from '../utils/seo';
 
 const LevelQuizTeaser = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
@@ -22,7 +23,7 @@ const LevelQuizTeaser = () => {
             {t('levelQuiz.teaser.subtitle')}
           </p>
           <Button asChild iconName="ArrowRight" iconPosition="right">
-            <Link to="/level-questionnaire">{t('levelQuiz.teaser.cta')}</Link>
+            <Link to={getLocalizedPath('/level-questionnaire', language)}>{t('levelQuiz.teaser.cta')}</Link>
           </Button>
         </div>
       </div>

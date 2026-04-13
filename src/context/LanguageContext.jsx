@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { detectLanguageFromPath } from '../utils/seo';
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
   const [language, setLanguage] = useState(() => {
     try {
+      const languageFromPath = detectLanguageFromPath(window.location.pathname);
+      if (languageFromPath) {
+        return languageFromPath;
+      }
+
       const savedLanguage = localStorage.getItem('language');
       if (savedLanguage) {
         return savedLanguage;
