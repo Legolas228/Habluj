@@ -8,9 +8,9 @@ const readFile = (relativePath) =>
   fs.readFileSync(path.join(projectRoot, relativePath), 'utf-8');
 
 describe('SEO guardrails', () => {
-  it('keeps /homepage redirected to / and preserves NotFound route', () => {
+  it('keeps /homepage redirected to localized home and preserves NotFound route', () => {
     const routes = readFile('src/Routes.jsx');
-    expect(routes).toContain('<Route path="/homepage" element={<Navigate to="/" replace />} />');
+    expect(routes).toContain('<Route path="/homepage" element={<Navigate to={redirectToLocalized(\'/\')} replace />} />');
     expect(routes).toContain('<Route path="*" element={<NotFound />} />');
   });
 
@@ -54,14 +54,14 @@ describe('SEO guardrails', () => {
   it('keeps sitemap entries and x-default alternates for public routes', () => {
     const sitemap = readFile('public/sitemap.xml');
     [
-      'https://habluj.sk/',
-      'https://habluj.sk/about-the-teacher',
-      'https://habluj.sk/tutoring-services',
-      'https://habluj.sk/contact',
-      'https://habluj.sk/booking-system',
-      'https://habluj.sk/privacy-policy',
-      'https://habluj.sk/terms-and-conditions',
-      'https://habluj.sk/cookies-policy',
+      'https://habluj.sk/sk',
+      'https://habluj.sk/sk/about-the-teacher',
+      'https://habluj.sk/sk/tutoring-services',
+      'https://habluj.sk/sk/contact',
+      'https://habluj.sk/sk/booking-system',
+      'https://habluj.sk/sk/privacy-policy',
+      'https://habluj.sk/sk/terms-and-conditions',
+      'https://habluj.sk/sk/cookies-policy',
     ].forEach((url) => {
       expect(sitemap).toContain(`<loc>${url}</loc>`);
     });
@@ -74,9 +74,10 @@ describe('SEO guardrails', () => {
     const page = readFile('src/pages/level-questionnaire/index.jsx');
     const sitemap = readFile('public/sitemap.xml');
 
-    expect(routes).toContain('<Route path="/level-questionnaire" element={<LevelQuestionnairePage />} />');
+    expect(routes).toContain('<Route path="/level-questionnaire" element={<Navigate to={redirectToLocalized(\'/level-questionnaire\')} replace />} />');
+    expect(routes).toContain('<Route path="level-questionnaire" element={<LevelQuestionnairePage />} />');
     expect(page).toContain('name="robots" content="noindex, nofollow"');
-    expect(sitemap).not.toContain('https://habluj.sk/level-questionnaire');
+    expect(sitemap).not.toContain('https://habluj.sk/sk/level-questionnaire');
   });
 });
 

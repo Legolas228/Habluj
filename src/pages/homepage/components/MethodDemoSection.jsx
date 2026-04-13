@@ -5,9 +5,10 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { trackImpact } from '../../../utils/analytics';
+import { getLocalizedPath } from '../../../utils/seo';
 
 const MethodDemoSection = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const steps = [
     {
@@ -74,7 +75,7 @@ const MethodDemoSection = () => {
 
             <div className="space-y-3">
               <Link
-                to="/level-questionnaire"
+                to={getLocalizedPath('/level-questionnaire', language)}
                 className="block"
                 onClick={() => trackImpact('method_demo_questionnaire_click', { location: 'homepage_method_demo' })}
               >
@@ -83,7 +84,7 @@ const MethodDemoSection = () => {
                 </Button>
               </Link>
               <Link
-                to="/tutoring-services"
+                to={getLocalizedPath('/tutoring-services', language)}
                 className="block"
                 onClick={() => trackImpact('method_demo_services_click', { location: 'homepage_method_demo' })}
               >

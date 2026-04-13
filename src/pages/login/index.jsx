@@ -6,6 +6,7 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Icon from '../../components/AppIcon';
 import { useAuth } from '../../context/AuthContext';
+import { detectLanguageFromPath, getLocalizedPath } from '../../utils/seo';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const redirectTo = location.state?.from || '/student-dashboard';
+  const language = detectLanguageFromPath(location.pathname) || 'sk';
+  const redirectTo = location.state?.from || getLocalizedPath('/student-dashboard', language);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -81,13 +83,13 @@ const LoginPage = () => {
           <div className="mt-6 pt-5 border-t border-border text-sm text-muted-foreground text-center">
             <p>
               ¿No puedes acceder?{' '}
-              <Link to="/contact" className="text-primary hover:underline">
+              <Link to={getLocalizedPath('/contact', language)} className="text-primary hover:underline">
                 Contacta con Ester
               </Link>
             </p>
             <p className="mt-3">
               ¿Primera vez?{' '}
-              <Link to="/signup" className="text-primary hover:underline">
+              <Link to={getLocalizedPath('/signup', language)} className="text-primary hover:underline">
                 Crear cuenta
               </Link>
             </p>

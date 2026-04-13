@@ -3,6 +3,15 @@ User-agent: *
 Allow: /
 Disallow: /student-dashboard
 Disallow: /login
-Disallow: /register
+Disallow: /signup
+Disallow: /sk/student-dashboard
+Disallow: /cs/student-dashboard
+Disallow: /es/student-dashboard
+Disallow: /sk/login
+Disallow: /cs/login
+Disallow: /es/login
+Disallow: /sk/signup
+Disallow: /cs/signup
+Disallow: /es/signup
 
 Sitemap: https://habluj.sk/sitemap.xml

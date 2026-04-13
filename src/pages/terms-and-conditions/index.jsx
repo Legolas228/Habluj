@@ -135,13 +135,13 @@ const TermsAndConditionsPage = () => {
       <Helmet>
         <title>{content.title} - Habluj</title>
         <meta name="description" content={content.intro} />
-        <link rel="canonical" href={getCanonicalUrl('/terms-and-conditions')} />
+        <link rel="canonical" href={getCanonicalUrl('/terms-and-conditions', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={`${content.title} - Habluj`} />
         <meta property="og:description" content={content.intro} />
-        <meta property="og:url" content={getCanonicalUrl('/terms-and-conditions')} />
+        <meta property="og:url" content={getCanonicalUrl('/terms-and-conditions', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>

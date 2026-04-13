@@ -8,7 +8,7 @@ import { useTranslation } from '../../hooks/useTranslation';
 import { getCanonicalUrl, getHreflangLinks, DEFAULT_OG_IMAGE } from '../../utils/seo';
 
 const LevelQuestionnairePage = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/level-questionnaire');
 
   return (
@@ -17,13 +17,13 @@ const LevelQuestionnairePage = () => {
         <title>{t('levelQuiz.page.title')}</title>
         <meta name="description" content={t('levelQuiz.page.description')} />
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href={getCanonicalUrl('/level-questionnaire')} />
+        <link rel="canonical" href={getCanonicalUrl('/level-questionnaire', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={t('levelQuiz.page.title')} />
         <meta property="og:description" content={t('levelQuiz.page.description')} />
-        <meta property="og:url" content={getCanonicalUrl('/level-questionnaire')} />
+        <meta property="og:url" content={getCanonicalUrl('/level-questionnaire', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>

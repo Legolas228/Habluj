@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { detectLanguageFromPath, getLocalizedPath } from '../utils/seo';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -15,7 +16,8 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    const language = detectLanguageFromPath(location.pathname) || 'sk';
+    return <Navigate to={getLocalizedPath('/login', language)} replace state={{ from: location.pathname }} />;
   }
 
   return children;

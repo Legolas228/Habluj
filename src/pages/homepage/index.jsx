@@ -31,7 +31,7 @@ const Homepage = () => {
     '@context': 'https://schema.org',
     '@type': 'EducationalOrganization',
     name: 'Habluj',
-    url: getCanonicalUrl('/'),
+    url: getCanonicalUrl('/', language),
     logo: 'https://habluj.sk/assets/images/og-image.webp',
     sameAs: ['https://www.instagram.com/habluj_sk/'],
     areaServed: ['SK', 'CZ'],
@@ -43,7 +43,7 @@ const Homepage = () => {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Habluj',
-    url: getCanonicalUrl('/'),
+    url: getCanonicalUrl('/', language),
     inLanguage: locale,
   };
 
@@ -54,7 +54,7 @@ const Homepage = () => {
     provider: {
       '@type': 'EducationalOrganization',
       name: 'Habluj',
-      url: getCanonicalUrl('/'),
+      url: getCanonicalUrl('/', language),
     },
     areaServed: ['SK', 'CZ'],
     availableLanguage: ['es', 'sk', 'cs'],
@@ -64,7 +64,7 @@ const Homepage = () => {
       price: activeOffer.price,
       description: activeOffer.label,
       availability: 'https://schema.org/InStock',
-      url: getCanonicalUrl('/tutoring-services'),
+      url: getCanonicalUrl('/tutoring-services', language),
     },
   };
 
@@ -78,14 +78,14 @@ const Homepage = () => {
         <title>{t('meta.homeTitle')}</title>
         <meta name="description" content={t('meta.homeDescription')} />
         <meta name="keywords" content={t('meta.homeKeywords')} />
-        <link rel="canonical" href={getCanonicalUrl('/')} />
+        <link rel="canonical" href={getCanonicalUrl('/', language)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         {/* Open Graph */}
         <meta property="og:title" content={t('meta.homeTitle')} />
         <meta property="og:description" content={t('meta.homeDescription')} />
-        <meta property="og:url" content="https://habluj.sk/" />
+        <meta property="og:url" content={getCanonicalUrl('/', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://habluj.sk/assets/images/og-image.webp" />
         <meta property="og:locale" content={locale} />

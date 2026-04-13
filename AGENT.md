@@ -12,13 +12,13 @@ Todo agente de IA que trabaje en este proyecto DEBE leer estos tres archivos
 en orden antes de tocar cualquier codigo o contenido:
 
 1. **`AGENT.md`** (este archivo) — Stack, estructura, convenciones de codigo
-2. **`ESTER.md`** — Informacion real sobre Ester: bio, stats correctas,
+2. **`docs/contexto/ESTER.md`** — Informacion real sobre Ester: bio, stats correctas,
    precios, lo que NO debe aparecer en la web, tono y voz
-3. **`PLAN.md`** — Estado actual del proyecto, tareas completadas y
+3. **`docs/contexto/PLAN.md`** — Estado actual del proyecto, tareas completadas y
    proximos pasos priorizados
 
-Si no has leido ESTER.md, no toques ningun locale ni ningun texto visible
-al usuario. Si no has leido PLAN.md, no empieces a trabajar sin saber
+Si no has leido docs/contexto/ESTER.md, no toques ningun locale ni ningun texto visible
+al usuario. Si no has leido docs/contexto/PLAN.md, no empieces a trabajar sin saber
 en que punto esta el proyecto.
 
 ---

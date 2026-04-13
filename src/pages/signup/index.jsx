@@ -7,11 +7,12 @@ import Button from '../../components/ui/Button';
 import Icon from '../../components/AppIcon';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from '../../hooks/useTranslation';
+import { getLocalizedPath } from '../../utils/seo';
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const tr = (key, fallback) => {
     const value = t(key);
     return value === key ? fallback : value;
@@ -115,7 +116,7 @@ const SignupPage = () => {
         password_confirm: formData.password_confirm,
         language_level: formData.language_level,
       });
-      navigate('/student-dashboard', { replace: true });
+      navigate(getLocalizedPath('/student-dashboard', language), { replace: true });
     } catch (submitError) {
       setErrors({
         submit: submitError?.message || tr('signup.errors.submitFailed', 'No se pudo crear la cuenta.'),
@@ -264,7 +265,7 @@ const SignupPage = () => {
           <div className="mt-6 pt-5 border-t border-border text-sm text-muted-foreground text-center">
             <p>
               {tr('signup.loginPrompt', 'Ya tienes cuenta?')}{' '}
-              <Link to="/login" className="text-primary hover:underline">
+              <Link to={getLocalizedPath('/login', language)} className="text-primary hover:underline">
                 {tr('signup.loginLink', 'Inicia sesion')}
               </Link>
             </p>

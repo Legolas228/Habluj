@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useTranslation } from '../../../hooks/useTranslation';
+import { getLocalizedPath } from '../../../utils/seo';
 
 const LearningPathsSection = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const learningPaths = [
     {
@@ -135,7 +136,7 @@ const LearningPathsSection = () => {
 
                 {/* CTA */}
                 <div className="mt-auto pt-2">
-                  <Link to={`/tutoring-services#${path?.targetId}`}>
+                  <Link to={getLocalizedPath(`/tutoring-services#${path?.targetId}`, language)}>
                     <Button
                       variant={path?.popular ? "default" : "outline"}
                       size="sm"
@@ -166,7 +167,7 @@ const LearningPathsSection = () => {
             >
               {t('features.ctaButton1')}
             </Button>
-            <Link to="/tutoring-services">
+            <Link to={getLocalizedPath('/tutoring-services', language)}>
               <Button
                 variant="outline"
                 size="lg"
