@@ -7,28 +7,34 @@ const PersonalStory = () => {
 
   const storyMilestones = [
     {
-      year: '2016',
+      year: t('about.story.timeline.2016.year'),
       title: t('about.story.timeline.2016.title'),
       description: t('about.story.timeline.2016.desc'),
       icon: 'BookOpen'
     },
     {
-      year: '2018',
+      year: t('about.story.timeline.2018.year'),
       title: t('about.story.timeline.2018.title'),
       description: t('about.story.timeline.2018.desc'),
       icon: 'Globe'
     },
     {
-      year: '2020',
+      year: t('about.story.timeline.2020.year'),
       title: t('about.story.timeline.2020.title'),
       description: t('about.story.timeline.2020.desc'),
       icon: 'Award'
     },
     {
-      year: '2022',
+      year: t('about.story.timeline.2022.year'),
       title: t('about.story.timeline.2022.title'),
       description: t('about.story.timeline.2022.desc'),
       icon: 'Rocket'
+    },
+    {
+      year: t('about.story.timeline.2024.year'),
+      title: t('about.story.timeline.2024.title'),
+      description: t('about.story.timeline.2024.desc'),
+      icon: 'Plane'
     }
   ];
 

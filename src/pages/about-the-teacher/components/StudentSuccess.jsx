@@ -4,7 +4,7 @@ import Image from '../../../components/AppImage';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 const StudentSuccess = () => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   const testimonials = [
@@ -18,7 +18,11 @@ const StudentSuccess = () => {
       level: "A1 → B2",
       duration: "8 mesiacov",
       achievement: "Získala prácu v medzinárodnej firme",
-      quote: `Ester mi úplne zmenila pohľad na učenie španielčiny. Jej metóda je nielen efektívna, ale aj zábavná. Vďaka nej som si našla prácu v medzinárodnej firme, kde denne používam španielčinu. Nikdy by som si nepomyslela, že za 8 mesiacov budem schopná viesť obchodné rokovania v španielčine!`,
+      quote: {
+        sk: `Ester mi úplne zmenila pohľad na učenie španielčiny. Jej metóda je nielen efektívna, ale aj zábavná. Vďaka nej som si našla prácu v medzinárodnej firme, kde denne používam španielčinu. Nikdy by som si nepomyslela, že za 8 mesiacov budem schopná viesť obchodné rokovania v španielčine!`,
+        es: `Ester me cambió completamente la forma de aprender español. Su método no solo es efectivo, también es dinámico. Gracias a ella conseguí trabajo en una empresa internacional donde uso el español cada día. Nunca habría pensado que en 8 meses podría llevar reuniones de trabajo en español.`,
+        cz: `Ester mi úplně změnila pohled na učení španělštiny. Její metoda je nejen efektivní, ale i zábavná. Díky ní jsem získala práci v mezinárodní firmě, kde španělštinu používám každý den. Nikdy bych nevěřila, že za 8 měsíců zvládnu vést pracovní jednání ve španělštině.`
+      },
       rating: 5,
       tags: ["Obchodná španielčina", "Konverzácia", "Gramatika"]
     },
@@ -32,7 +36,11 @@ const StudentSuccess = () => {
       level: "A2 → C1",
       duration: "12 mesiacov",
       achievement: "Presťahoval sa do Španielska",
-      quote: `Ako IT konzultant som potreboval španielčinu pre prácu v Barcelone. Ester mi pomohla nielen s jazykom, ale aj s kultúrnymi rozdielmi. Jej lekcie boli vždy praktické a zamerané na reálne situácie. Dnes žijem v Španielsku a cítim sa tam ako doma!`,
+      quote: {
+        sk: `Ako IT konzultant som potreboval španielčinu pre prácu v Barcelone. Ester mi pomohla nielen s jazykom, ale aj s kultúrnymi rozdielmi. Jej lekcie boli vždy praktické a zamerané na reálne situácie. Dnes žijem v Španielsku a cítim sa tam ako doma!`,
+        es: `Como consultor IT necesitaba español para trabajar en Barcelona. Ester me ayudó no solo con el idioma, también con las diferencias culturales. Sus clases siempre fueron prácticas y enfocadas en situaciones reales. Hoy vivo en España y me siento como en casa.`,
+        cz: `Jako IT konzultant jsem potřeboval španělštinu pro práci v Barceloně. Ester mi pomohla nejen s jazykem, ale i s kulturními rozdíly. Její lekce byly vždy praktické a zaměřené na reálné situace. Dnes žiju ve Španělsku a cítím se tam jako doma.`
+      },
       rating: 5,
       tags: ["Technická španielčina", "Kultúra", "Presťahovanie"]
     },
@@ -41,7 +49,11 @@ const StudentSuccess = () => {
       name: "Lucia Svobodová",
       age: 22,
       image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
-      quote: "Ester má neuveriteľný dar vysvetliť gramatiku jednoducho a logicky. Po 6 mesiacoch som sa dokázala plynule dohovoriť na dovolenke v Španielsku.",
+      quote: {
+        sk: "Ester má neuveriteľný dar vysvetliť gramatiku jednoducho a logicky. Po 6 mesiacoch som sa dokázala plynule dohovoriť na dovolenke v Španielsku.",
+        es: "Ester tiene un talento increíble para explicar la gramática de forma simple y lógica. Después de 6 meses pude comunicarme con soltura en mis vacaciones en España.",
+        cz: "Ester má neuvěřitelný dar vysvětlit gramatiku jednoduše a logicky. Po 6 měsících jsem se dokázala plynule domluvit na dovolené ve Španělsku."
+      },
       level: "A2 → B2",
       duration: "6 mesiacov",
       achievement: "Získala prácu v španielskej firme",
@@ -53,7 +65,11 @@ const StudentSuccess = () => {
       profession: "IT Špecialista",
       location: "Košice",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      quote: "Oceňujem flexibilitu a online formu výučby. Hodiny sú vždy zábavné a plné energie. Nikdy som sa nenudil.",
+      quote: {
+        sk: "Oceňujem flexibilitu a online formu výučby. Hodiny sú vždy zábavné a plné energie. Nikdy som sa nenudil.",
+        es: "Valoro mucho la flexibilidad y el formato online. Las clases son dinámicas y llenas de energía. Nunca me aburrí.",
+        cz: "Oceňuji flexibilitu a online formu výuky. Hodiny jsou vždy zábavné a plné energie. Nikdy jsem se nenudil."
+      },
       level: "B1 → C1",
       duration: "1 rok",
       achievement: "Úspešne zložil DELE C1",
@@ -65,7 +81,11 @@ const StudentSuccess = () => {
       profession: "Študentka",
       location: "Trnava",
       image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      quote: "Vďaka Ester som sa prestala báť rozprávať. Vytvorila bezpečné prostredie, kde som mohla robiť chyby a učiť sa z nich.",
+      quote: {
+        sk: "Vďaka Ester som sa prestala báť rozprávať. Vytvorila bezpečné prostredie, kde som mohla robiť chyby a učiť sa z nich.",
+        es: "Gracias a Ester dejé de tener miedo a hablar. Creó un entorno seguro donde podía equivocarme y aprender de esos errores.",
+        cz: "Díky Ester jsem se přestala bát mluvit. Vytvořila bezpečné prostředí, kde jsem mohla dělat chyby a učit se z nich."
+      },
       level: "A1 → B1",
       duration: "8 mesiacov",
       achievement: "Erasmus pobyt v Valencii",
@@ -82,6 +102,7 @@ const StudentSuccess = () => {
   };
 
   const currentTestimonial = testimonials[activeTestimonial];
+  const currentQuote = currentTestimonial?.quote?.[language] || currentTestimonial?.quote?.sk || '';
 
   return (
     <section className="py-20 lg:py-32 bg-secondary/5 overflow-hidden" id="student-success">
@@ -171,7 +192,7 @@ const StudentSuccess = () => {
                     ))}
                   </div>
                   <blockquote className="text-foreground leading-relaxed mb-6 font-accent text-lg italic">
-                    "{currentTestimonial.quote}"
+                    "{currentQuote}"
                   </blockquote>
                 </div>
 
