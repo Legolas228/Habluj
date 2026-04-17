@@ -108,20 +108,20 @@ const PersonalStory = () => {
 
           {/* Timeline */}
           <div className="lg:w-1/2 relative">
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
+            <div className="hidden md:block absolute left-8 top-0 bottom-0 w-0.5 bg-border"></div>
 
             <div className="space-y-12 relative">
-              <h3 className="font-headlines text-2xl font-bold text-foreground mb-8 pl-20">
+              <h3 className="font-headlines text-2xl font-bold text-foreground mb-8 md:pl-20">
                 {t('about.story.timelineTitle')}
               </h3>
 
               {storyMilestones.map((milestone, index) => (
                 <div key={index} className="relative flex items-start group">
-                  <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-background border-2 border-primary z-10 group-hover:scale-125 transition-transform duration-300"></div>
+                  <div className="hidden md:block absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-background border-2 border-primary z-10 group-hover:scale-125 transition-transform duration-300"></div>
 
-                  <div className="ml-20 bg-white p-6 rounded-xl shadow-sm border border-border hover:shadow-md transition-shadow duration-300 w-full">
+                  <div className="w-full md:ml-20 bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-border hover:shadow-md transition-shadow duration-300">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-bold text-lg text-foreground">{milestone.year}</div>
+                      <div className="font-bold text-base sm:text-lg text-foreground">{milestone.year}</div>
                       <Icon name={milestone.icon} size={20} className="text-primary/60" />
                     </div>
                     <h4 className="font-semibold text-foreground mb-2">{milestone.title}</h4>
