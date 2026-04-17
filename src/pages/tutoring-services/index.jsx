@@ -5,6 +5,7 @@ import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
+import CurrencyDisplay from '../../components/CurrencyDisplay';
 import ServiceFeatures from './components/ServiceFeatures';
 import LevelQuizTeaser from '../../components/LevelQuizTeaser';
 import WaitlistForm from '../../components/WaitlistForm';
@@ -208,7 +209,8 @@ const TutoringServices = () => {
       features: t('learning.path1.features').split(','),
       duration: t('learning.path1.duration'),
       lessons: t('learning.path1.lessons'),
-      price: t('learning.path1.price'),
+      priceEUR: 20,
+      priceSuffix: t('learning.path1.priceSuffix'),
     },
     {
       id: 'program-group',
@@ -221,7 +223,8 @@ const TutoringServices = () => {
       features: t('learning.path2.features').split(','),
       duration: t('learning.path2.duration'),
       lessons: t('learning.path2.lessons'),
-      price: t('learning.path2.price'),
+      priceEUR: 149,
+      priceSuffix: t('learning.path2.priceSuffix'),
     },
     {
       id: 'program-intensive',
@@ -234,7 +237,8 @@ const TutoringServices = () => {
       features: t('learning.path3.features').split(','),
       duration: t('learning.path3.duration'),
       lessons: t('learning.path3.lessons'),
-      price: t('learning.path3.price'),
+      priceEUR: 79,
+      priceSuffix: t('learning.path3.priceSuffix'),
     },
   ];
 
@@ -326,7 +330,12 @@ const TutoringServices = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('learning.labels.price')}</span>
-                      <span className="font-bold text-primary">{program.price}</span>
+                      <span className="font-bold text-primary text-right">
+                        <CurrencyDisplay priceEUR={program.priceEUR} className="font-bold text-primary" />
+                        {program.priceSuffix ? (
+                          <span className="block text-xs font-medium text-muted-foreground">{program.priceSuffix}</span>
+                        ) : null}
+                      </span>
                     </div>
                   </div>
 

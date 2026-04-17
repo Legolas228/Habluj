@@ -144,47 +144,113 @@ def send_new_lead_notification(lead):
 def send_level_test_results_email(*, lead, score, band):
     sender_email = os.environ.get('MAILERLITE_SENDER_EMAIL') or getattr(settings, 'DEFAULT_FROM_EMAIL', '')
     booking_url = os.environ.get('BOOKING_PUBLIC_URL', 'https://habluj.setmore.com/')
-    services_url = os.environ.get('SERVICES_PUBLIC_URL', 'https://habluj.sk/tutoring-services')
+    services_base_url = os.environ.get('PUBLIC_SITE_URL', 'https://habluj.sk').rstrip('/')
+    services_url_env = os.environ.get('SERVICES_PUBLIC_URL', '').strip()
+    language = (lead.preferred_language or 'sk').lower()
+    services_path_by_language = {
+        'es': '/es/tutoring-services',
+        'cz': '/cz/tutoring-services',
+        'sk': '/sk/tutoring-services',
+    }
+    services_url = services_url_env or f"{services_base_url}{services_path_by_language.get(language, '/sk/tutoring-services')}"
+
     if not sender_email:
         return {'status': 'skipped', 'reason': 'MAILERLITE_SENDER_EMAIL or DJANGO_DEFAULT_FROM_EMAIL is not configured'}
 
-    individual_recommendation = (
-        'Te recomendamos empezar con clases individuales para reforzar base, '
-        'ganar confianza y corregir errores clave rapidamente.'
-    )
-    group_recommendation = (
-        'Tambien puedes combinar con clases grupales para practicar conversacion, '
-        'escucha activa y fluidez en contexto real.'
-    )
+    if language == 'es':
+        subject = 'Resultado de tu test de espanol - Habluj'
+        greeting = f'Hola {lead.full_name},'
+        intro = 'Gracias por completar el test avanzado de espanol.'
+        result_label = 'Resultado'
+        level_label = 'Nivel estimado'
+        recommendations_title = 'Recomendacion personalizada'
+        individual_recommendation = (
+            'Te recomendamos empezar con clases individuales para reforzar base, '
+            'ganar confianza y corregir errores clave rapidamente.'
+        )
+        group_recommendation = (
+            'Tambien puedes combinar con clases grupales para practicar conversacion, '
+            'escucha activa y fluidez en contexto real.'
+        )
+        booking_title = 'Reservar clases'
+        booking_link_label = 'Reserva directa'
+        services_link_label = 'Informacion de servicios'
+        closing = 'Si quieres, responde a este correo y te ayudamos a elegir el mejor plan.'
+        team = 'Equipo Habluj'
+        individual_label = 'Clases individuales'
+        group_label = 'Clases grupales'
+    elif language == 'cz':
+        subject = 'Vysledek tvého testu spanelstiny - Habluj'
+        greeting = f'Ahoj {lead.full_name},'
+        intro = 'dekujeme, ze jsi dokoncil(a) pokrocily test spanelstiny.'
+        result_label = 'Vysledek'
+        level_label = 'Odhadovana uroven'
+        recommendations_title = 'Personalizovane doporuceni'
+        individual_recommendation = (
+            'Doporucujeme zacit individualnimi lekcemi pro upevneni zakladu, '
+            'ziskani jistoty a odstraneni klicovych chyb.'
+        )
+        group_recommendation = (
+            'Muzes to doplnit skupinovymi lekcemi pro konverzaci, '
+            'aktivni poslech a vyssi plynulost v realnych situacich.'
+        )
+        booking_title = 'Rezervace lekci'
+        booking_link_label = 'Priama rezervace'
+        services_link_label = 'Prehled sluzeb'
+        closing = 'Pokud chces, odpovez na tento email a pomuzeme ti vybrat nejlepsi plan.'
+        team = 'Tym Habluj'
+        individual_label = 'Individualni lekce'
+        group_label = 'Skupinove lekce'
+    else:
+        subject = 'Vysledok tvojho testu spanielciny - Habluj'
+        greeting = f'Ahoj {lead.full_name},'
+        intro = 'dakujeme, ze si vyplnil(a) pokrocily test spanielciny.'
+        result_label = 'Vysledok'
+        level_label = 'Odhadovana uroven'
+        recommendations_title = 'Personalizovane odporucanie'
+        individual_recommendation = (
+            'Odporucame zacat individualnymi lekciami na posilnenie zakladov, '
+            'ziskanie istoty a odstranenie klucovych chyb.'
+        )
+        group_recommendation = (
+            'Mozes to doplnit skupinovymi lekciami pre konverzaciu, '
+            'aktivny posluch a plynulost v realnych situaciach.'
+        )
+        booking_title = 'Rezervacia lekcii'
+        booking_link_label = 'Priama rezervacia'
+        services_link_label = 'Prehlad sluzieb'
+        closing = 'Ak chces, odpis na tento email a pomozeme ti vybrat najlepsi plan.'
+        team = 'Tim Habluj'
+        individual_label = 'Individualne lekcie'
+        group_label = 'Skupinove lekcie'
 
-    subject = 'Resultado de tu test de espanol - Habluj'
     text_content = (
-        f'Hola {lead.full_name},\n\n'
-        'Gracias por completar el test avanzado de espanol.\n\n'
-        f'Resultado: {score}/15\n'
-        f'Nivel estimado: {band}\n\n'
-        'Recomendacion personalizada:\n'
-        f'- Individuales: {individual_recommendation}\n'
-        f'- Grupales: {group_recommendation}\n\n'
-        'Reservar clases:\n'
-        f'- Reserva directa: {booking_url}\n'
-        f'- Informacion de servicios: {services_url}\n\n'
-        'Si quieres, responde a este correo y te ayudamos a elegir el mejor plan.\n\n'
-        'Equipo Habluj\n'
+        f'{greeting}\n\n'
+        f'{intro}\n\n'
+        f'{result_label}: {score}/15\n'
+        f'{level_label}: {band}\n\n'
+        f'{recommendations_title}:\n'
+        f'- {individual_label}: {individual_recommendation}\n'
+        f'- {group_label}: {group_recommendation}\n\n'
+        f'{booking_title}:\n'
+        f'- {booking_link_label}: {booking_url}\n'
+        f'- {services_link_label}: {services_url}\n\n'
+        f'{closing}\n\n'
+        f'{team}\n'
     )
     html_content = (
-        f'<h3>Hola {lead.full_name},</h3>'
-        '<p>Gracias por completar el test avanzado de espanol.</p>'
-        f'<p><strong>Resultado:</strong> {score}/15<br>'
-        f'<strong>Nivel estimado:</strong> {band}</p>'
-        '<h4>Recomendacion personalizada</h4>'
-        f'<p><strong>Clases individuales:</strong> {individual_recommendation}</p>'
-        f'<p><strong>Clases grupales:</strong> {group_recommendation}</p>'
-        '<h4>Reservar clases</h4>'
-        f'<p><a href="{booking_url}">Reserva directa</a></p>'
-        f'<p><a href="{services_url}">Informacion de servicios</a></p>'
-        '<p>Si quieres, responde a este correo y te ayudamos a elegir el mejor plan.</p>'
-        '<p>Equipo Habluj</p>'
+        f'<h3>{greeting}</h3>'
+        f'<p>{intro}</p>'
+        f'<p><strong>{result_label}:</strong> {score}/15<br>'
+        f'<strong>{level_label}:</strong> {band}</p>'
+        f'<h4>{recommendations_title}</h4>'
+        f'<p><strong>{individual_label}:</strong> {individual_recommendation}</p>'
+        f'<p><strong>{group_label}:</strong> {group_recommendation}</p>'
+        f'<h4>{booking_title}</h4>'
+        f'<p><a href="{booking_url}">{booking_link_label}</a></p>'
+        f'<p><a href="{services_url}">{services_link_label}</a></p>'
+        f'<p>{closing}</p>'
+        f'<p>{team}</p>'
     )
 
     if _smtp_notifications_available():

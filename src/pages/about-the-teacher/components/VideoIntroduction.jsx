@@ -36,7 +36,7 @@ const VideoIntroduction = () => {
                 <div className="absolute inset-0">
                   <Image
                     src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=800&fit=crop"
-                    alt="Video predstavenie"
+                    alt={t('about.video.preview.alt')}
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-70 transition-opacity duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
@@ -54,15 +54,15 @@ const VideoIntroduction = () => {
                 <div className="absolute bottom-8 left-8 right-8 text-white">
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-                      2:30
+                      {t('about.video.preview.duration')}
                     </div>
                     <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-                      Slovensky / Español
+                      {t('about.video.preview.language')}
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">Prečo učiť so mnou?</h3>
+                  <h3 className="text-2xl font-bold mb-2">{t('about.video.preview.heading')}</h3>
                   <p className="text-white/80 max-w-xl">
-                    Krátka ukážka mojej výučby a prístupu k študentom.
+                    {t('about.video.preview.description')}
                   </p>
                 </div>
               </>
@@ -70,7 +70,7 @@ const VideoIntroduction = () => {
               <iframe
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-                title="Video predstavenie"
+                title={t('about.video.preview.alt')}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
@@ -84,7 +84,7 @@ const VideoIntroduction = () => {
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">{t('about.video.features.1')}</h4>
-                <p className="text-sm text-muted-foreground">Autentická výslovnosť a prirodzená komunikácia</p>
+                <p className="text-sm text-muted-foreground">{t('about.video.features.1.detail')}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
@@ -93,7 +93,7 @@ const VideoIntroduction = () => {
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">{t('about.video.features.2')}</h4>
-                <p className="text-sm text-muted-foreground">Uvoľnená atmosféra bez stresu z chýb</p>
+                <p className="text-sm text-muted-foreground">{t('about.video.features.2.detail')}</p>
               </div>
             </div>
             <div className="flex items-start space-x-4">
@@ -102,7 +102,7 @@ const VideoIntroduction = () => {
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">{t('about.video.features.3')}</h4>
-                <p className="text-sm text-muted-foreground">Okamžitá spätná väzba a motivácia</p>
+                <p className="text-sm text-muted-foreground">{t('about.video.features.3.detail')}</p>
               </div>
             </div>
           </div>

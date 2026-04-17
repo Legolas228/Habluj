@@ -201,6 +201,7 @@ const AdvancedSpanishTestForm = () => {
   const [answers, setAnswers] = useState({});
   const [testError, setTestError] = useState('');
   const [contactError, setContactError] = useState('');
+  const [contactWarning, setContactWarning] = useState('');
   const [status, setStatus] = useState('idle');
   const [step, setStep] = useState('quiz');
   const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -271,12 +272,14 @@ const AdvancedSpanishTestForm = () => {
     setAnswers({});
     setTestError('');
     setContactError('');
+    setContactWarning('');
     setStatus('idle');
   };
 
   const onSubmitContact = async (event) => {
     event.preventDefault();
     setContactError('');
+    setContactWarning('');
 
     const normalizedEmail = email.trim().toLowerCase();
     if (!EMAIL_PATTERN.test(normalizedEmail)) {
@@ -303,7 +306,7 @@ const AdvancedSpanishTestForm = () => {
         answersText,
       ].join(' | ');
 
-      await submitLeadCapture({
+      const leadResponse = await submitLeadCapture({
         full_name: fullName.trim(),
         email: normalizedEmail,
         phone: phone.trim(),
@@ -314,6 +317,10 @@ const AdvancedSpanishTestForm = () => {
         consent_marketing: consentMarketing,
         consent_version: 'v1',
       });
+
+      if (leadResponse?.warning) {
+        setContactWarning('Hemos recibido tu test, pero el envio automatico del correo puede retrasarse. Si no lo recibes pronto, escribenos y te ayudamos manualmente.');
+      }
 
       trackImpact('advanced_test_lead_submitted', {
         location: 'level_questionnaire',
@@ -495,6 +502,11 @@ const AdvancedSpanishTestForm = () => {
           <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-success text-sm">
             Gracias. Hemos recibido tu test y te enviaremos por correo resultados, recomendaciones y enlaces para continuar.
           </div>
+          {contactWarning ? (
+            <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 text-sm">
+              {contactWarning}
+            </div>
+          ) : null}
           <div className="flex flex-wrap gap-2 justify-end">
             <Button asChild variant="outline">
               <Link to={contactPath}>Hablar con Habluj</Link>

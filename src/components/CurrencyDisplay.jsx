@@ -1,6 +1,6 @@
 import React from 'react';
-import { convertEURtoCZK, formatCurrency } from '../../utils/currencyConverter';
-import { useTranslation } from '../../hooks/useTranslation';
+import { convertEURtoCZK, formatCurrency } from '../utils/currencyConverter';
+import { useTranslation } from '../hooks/useTranslation';
 
 /**
  * CurrencyDisplay Component
