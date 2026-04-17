@@ -67,28 +67,17 @@ const HeroSection = () => {
               </p>
             </div>
 
-            {/* CTA principal unico */}
+            {/* CTA principal único: Test de Nivel */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <Link to={getLocalizedPath('/booking-system', language)}>
+              <Link to={getLocalizedPath('/level-questionnaire', language)}>
                 <Button
                   variant="default"
                   size="lg"
                   className="bg-cta hover:bg-cta/90 text-white shadow-warm hover:shadow-cultural transition-all duration-300 hover:scale-105"
-                  iconName="Calendar"
-                  iconPosition="left"
-                >
-                  {t('hero.bookLesson')}
-                </Button>
-              </Link>
-              <Link to={getLocalizedPath('/intensive-courses', language)}>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-primary text-primary hover:bg-primary hover:text-white transition-all"
                   iconName="Zap"
                   iconPosition="left"
                 >
-                  {t('hero.intensiveCourses')}
+                  {t('hero.bookLesson')}
                 </Button>
               </Link>
               <a href="#method-demo" className="text-sm text-primary hover:text-primary/80 underline underline-offset-4">

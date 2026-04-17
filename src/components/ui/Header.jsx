@@ -134,7 +134,7 @@ const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer">
+              <Link to={getLocalizedPath('/level-questionnaire', language)}>
                 <Button 
                   variant="default" 
                   size="sm"
@@ -142,7 +142,7 @@ const Header = () => {
                 >
                   {t('header.book')}
                 </Button>
-              </a>
+              </Link>
               <Link to={authTarget}>
                 <Button
                   variant="outline"
@@ -220,7 +220,7 @@ const Header = () => {
                     🇪🇸
                   </button>
                 </div>
-                <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link to={getLocalizedPath('/level-questionnaire', language)} onClick={() => setIsMobileMenuOpen(false)}>
                   <Button 
                     variant="default" 
                     fullWidth
@@ -228,7 +228,7 @@ const Header = () => {
                   >
                     {t('header.book')}
                   </Button>
-                </a>
+                </Link>
                 <Link to={authTarget} onClick={() => setIsMobileMenuOpen(false)}>
                   <Button
                     variant="outline"
