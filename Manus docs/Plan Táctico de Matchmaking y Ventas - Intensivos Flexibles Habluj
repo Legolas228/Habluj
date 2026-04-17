@@ -1,0 +1,201 @@
+# Plan Táctico de Matchmaking y Ventas - Intensivos Flexibles Habluj
+
+**Autor:** Manus AI
+**Fecha:** 15 de abril de 2026
+
+## 1. Optimización del Google Forms como "Filtro de Compromiso"
+
+El Google Form será la herramienta clave para recopilar las preferencias de los alumnos y permitir a Ester organizar los grupos de manera eficiente. Las preguntas deben ser claras, concisas y orientadas a la acción, actuando como un filtro de compromiso.
+
+### Preguntas de Segmentación Horaria y Prioridad
+
+Se proponen las siguientes preguntas para el Google Form:
+
+1.  **Nivel de Español:**
+    *   `¿Cuál es tu nivel actual de español? (Selecciona uno)`
+        *   `A0 (Principiante absoluto)`
+        *   `A1 (Básico)`
+        *   `A2 (Pre-intermedio)`
+        *   `B1 (Intermedio)`
+
+2.  **Disponibilidad de Quincena (Octubre):**
+    *   `¿En qué quincena de Octubre te gustaría realizar el intensivo? (Selecciona una o varias opciones)`
+        *   `Primera quincena (1-15 Octubre)`
+        *   `Segunda quincena (16-31 Octubre)`
+        *   `Ambas quincenas (flexibilidad total)`
+
+3.  **Disponibilidad Horaria Diaria (4 días/semana durante 2 semanas):**
+    *   `Indica tus franjas horarias preferidas para las clases (100 minutos, 4 veces/semana). Puedes seleccionar varias.`
+        *   `Mañanas (08:00 - 12:00)`
+        *   `Mediodía (12:00 - 16:00)`
+        *   `Tardes (16:00 - 20:00)`
+        *   `Noches (20:00 - 22:00)`
+
+4.  **Prioridad del Alumno:**
+    *   `¿Qué es más importante para ti al formar el grupo? (Selecciona uno)`
+        *   `A. Empezar en la quincena exacta que he elegido, aunque el nivel del grupo sea ligeramente diferente al mío.`
+        *   `B. Estar en un grupo con mi nivel exacto, aunque la quincena de inicio pueda variar ligeramente.`
+        *   `C. Ambas son igual de importantes.`
+
+5.  **Información de Contacto:**
+    *   `Nombre completo:`
+    *   `Email:`
+    *   `Número de teléfono (opcional, para comunicación rápida):`
+
+### Texto de Cierre para el Formulario
+
+Una vez que el alumno envíe el formulario, el texto de cierre debe gestionar las expectativas y reforzar el compromiso:
+
+**Texto de Cierre (SK):**
+
+> "Ďakujeme za vyplnenie formulára! Tvoje preferencie sú pre nás kľúčové. Hneď ako nájdeme 4 študentov s podobným rozvrhom a úrovňou, skontaktujeme ťa s podrobnosťami o platbe a potvrdíme začiatok tvojho intenzívneho kurzu. Priprav sa na to, že španielčinu odomkneš už za 14 dní!"
+
+**Texto de Cierre (CZ):**
+
+> "Děkujeme za vyplnění formuláře! Tvé preference jsou pro nás klíčové. Jakmile najdeme 4 studenty s podobným rozvrhem a úrovní, kontaktujeme tě s podrobnostmi o platbě a potvrdíme začátek tvého intenzivního kurzu. Připrav se na to, že španělštinu odemkneš už za 14 dní!"
+
+## 2. Psicología de la "Reserva de Plaza" y Urgencia
+
+Para generar urgencia y asegurar el llenado de los grupos, la comunicación en redes sociales debe ser directa y apelar al FOMO (Fear Of Missing Out).
+
+### Copy para Redes Sociales (Instagram/TikTok)
+
+**Copy (SK):**
+
+> "🚀 **OTVÁRAME LETNÚ AGENDU INTENZÍVNYCH KURZOV!** Chceš ovládať španielčinu už za 14 dní? Máme pre teba riešenie! Prvé 4 skupiny, ktoré sa naplnia, začínajú! Nenechaj si ujsť šancu mať skupinu na tvojej úrovni a v tvojom čase. Miesta sú obmedzené! Klikni na link v BIO a vyplň formulár preferencií. **Začni dnes, rozprávaj zajtra!** #HablujIntenzívny #ŠpanielčinaSK #UčSaŠpanielsky"
+
+**Copy (CZ):**
+
+> "🚀 **OTVÍRÁME LETNÍ AGENDU INTENZIVNÍCH KURZŮ!** Chceš ovládat španělštinu už za 14 dní? Máme pro tebe řešení! První 4 skupiny, které se naplní, začínají! Nenech si ujít šanci mít skupinu na tvé úrovni a v tvém čase. Místa jsou omezená! Klikni na odkaz v BIO a vyplň formulář preferencí. **Začni dnes, mluv zítra!** #HablujIntenzivní #ŠpanělštinaCZ #UčSeŠpanělsky"
+
+**Elementos clave:**
+*   **Urgencia:** "Prvé 4 skupiny, ktoré sa naplnia, začínajú!" / "První 4 skupiny, které se naplní, začínají!"
+*   **Escasez:** "Miesta sú obmedzené!" / "Místa jsou omezená!"
+*   **Beneficio:** "Ovládať španielčinu už za 14 dní?" / "Ovládat španělštinu už za 14 dní?"
+*   **CTA claro:** "Klikni na link v BIO a vyplň formulár preferencií."
+
+## 3. Protocolo de "Cierre de Grupo"
+
+Una vez que Ester haya identificado a los 4 alumnos que encajan en un grupo, se enviará un email de confirmación que debe ser profesional, transmitir éxito y, crucialmente, generar urgencia para el pago.
+
+### Email de Confirmación de Grupo (SK/CZ)
+
+**Asunto (SK):** `Gratulujeme! Tvoj intenzívny kurz španielčiny Habluj je potvrdený! 🚀`
+
+**Cuerpo (SK):**
+
+> `Ahoj [Nombre del Alumno],`
+>
+> `Máme skvelé správy! Tvoj intenzívny kurz španielčiny Habluj bol úspešne potvrdený! Podarilo sa nám zostaviť skupinu presne podľa tvojich preferencií úrovne a rozvrhu. Gratulujeme, si o krok bližšie k plynulej španielčine!`
+>
+> `**Detaily tvojho kurzu:**`
+> `*   **Nivel:** [Nivel del Grupo]`
+> `*   **Fechas de Inicio:** [Fecha de Inicio del Curso]`
+> `*   **Horario:** [Días y Horas de las Clases]`
+> `*   **Profesora:** Ester (Habluj)`
+> `*   **Precio:** 149€`
+>
+> `Aby sme ti zabezpečili miesto v tejto exkluzívnej skupine, prosím, **vykonaj platbu vo výške 149€ prevodom na náš účet do 24 hodín** od prijatia tohto emailu. Po uplynutí tejto doby nemôžeme garantovať tvoju rezerváciu, pretože máme ďalších záujemcov.`
+>
+> `**Údaje pre platbu:**`
+> `*   **Názov účtu:** [Nombre de la Cuenta Bancaria de Habluj]`
+> `*   **IBAN:** [Número IBAN]`
+> `*   **SWIFT/BIC:** [Código SWIFT/BIC]`
+> `*   **Referencia platby:** Tvoje Meno + Intenzívny Október`
+>
+> `Po prijatí platby ti obratom pošleme všetky detaily k prístupu na platformu a materiály. Ak máš akékoľvek otázky, neváhaj nás kontaktovať.`
+>
+> `Tešíme sa na teba v skupine!`
+>
+> `S pozdravom,`
+> `Tím Habluj`
+
+**Asunto (CZ):** `Gratulujeme! Tvůj intenzivní kurz španělštiny Habluj je potvrzen! 🚀`
+
+**Cuerpo (CZ):**
+
+> `Ahoj [Jméno studenta],`
+>
+> `Máme skvělé zprávy! Tvůj intenzivní kurz španělštiny Habluj byl úspěšně potvrzen! Podařilo se nám sestavit skupinu přesně podle tvých preferencí úrovně a rozvrhu. Gratulujeme, jsi o krok blíže k plynulé španělštině!`
+>
+> `**Detaily tvého kurzu:**`
+> `*   **Úroveň:** [Nivel del Grupo]`
+> `*   **Datum zahájení:** [Fecha de Inicio del Curso]`
+> `*   **Rozvrh:** [Días y Horas de las Clases]`
+> `*   **Lektorka:** Ester (Habluj)`
+> `*   **Cena:** 149€`
+>
+> `Abys si zajistil/a místo v této exkluzivní skupině, prosím, **proveď platbu ve výši 149€ převodem na náš účet do 24 hodin** od obdržení tohoto e-mailu. Po uplynutí této doby nemůžeme garantovat tvou rezervaci, protože máme další zájemce.`
+>
+> `**Platební údaje:**`
+> `*   **Název účtu:** [Název bankovního účtu Habluj]`
+> `*   **IBAN:** [Číslo IBAN]`
+> `*   **SWIFT/BIC:** [Kód SWIFT/BIC]`
+> `*   **Referenční číslo platby:** Tvé Jméno + Intenzivní Říjen`
+>
+> `Po obdržení platby ti obratem zašleme všechny detaily k přístupu na platformu a materiály. Pokud máš jakékoli dotazy, neváhej nás kontaktovat.`
+>
+> `Těšíme se na tebe ve skupině!`
+>
+> `S pozdravem,`
+> `Tým Habluj`
+
+## 4. Ganchos de Venta Localizados (CZ/SK)
+
+Para el formato intensivo de 100 minutos, es crucial destacar los beneficios frente a las aplicaciones de aprendizaje de idiomas, enfocándose en la inmersión real y la capacidad de Ester para "desbloquear" el idioma.
+
+### 3 Beneficios del Intensivo vs. Apps (Copy para Redes/Web)
+
+1.  **Inmersión Real y Feedback Personalizado:**
+    *   **SK:** `"Zabudni na nudné appky! S Habluj zažiješ skutočnú španielsku konverzáciu od prvého dňa. Ester ti poskytne okamžitú spätnú väzbu, opraví tvoje chyby a pomôže ti prekonať strach z rozprávania. Žiadne roboty, len ľudský kontakt a reálny pokrok!"`
+    *   **CZ:** `"Zapomeň na nudné aplikace! S Habluj zažiješ skutečnou španělskou konverzaci od prvního dne. Ester ti poskytne okamžitou zpětnou vazbu, opraví tvé chyby a pomůže ti překonat strach z mluvení. Žádní roboti, jen lidský kontakt a reálný pokrok!"`
+
+2.  **Desbloquea el Idioma en 14 Días con Ester:**
+    *   **SK:** `"Cítiš sa zaseknutý/á? Ester, tvoja skúsená lektorka, má overenú metódu, ako ti pomôcť 'odomknúť' španielčinu už za dva týždne. Intenzívny formát ti zaručí rýchly posun a sebadôveru, ktorú ti žiadna appka nedá. Priprav sa na prelom!"`
+    *   **CZ:** `"Cítíš se zaseknutý/á? Ester, tvá zkušená lektorka, má ověřenou metodu, jak ti pomoci 'odemknout' španělštinu už za dva týdny. Intenzivní formát ti zaručí rychlý posun a sebedůvěru, kterou ti žádná aplikace nedá. Připrav se na průlom!"`
+
+3.  **Comunidad y Motivación Grupal:**
+    *   **SK:** `"Učiť sa sám/sama je ťažké. V našich malých skupinách nájdeš motiváciu, podporu a nových priateľov, ktorí zdieľajú tvoju vášeň pre španielčinu. Spoločne prekonáte výzvy a oslávite každý pokrok. Je to viac než kurz, je to komunita!"`
+    *   **CZ:** `"Učit se sám/sama je těžké. V našich malých skupinách najdeš motivaci, podporu a nové přátele, kteří sdílejí tvou vášeň pro španělštinu. Společně překonáte výzvy a oslavíte každý pokrok. Je to víc než kurz, je to komunita!"`
+
+## 5. Gestión de Expectativas: Email para Horarios No Elegidos
+
+Es fundamental gestionar con amabilidad las expectativas de aquellos alumnos cuyas preferencias no pudieron ser emparejadas en un grupo. El objetivo es mantenerlos interesados y ofrecer alternativas.
+
+### Email para Horarios No Elegidos (SK/CZ)
+
+**Asunto (SK):** `Dôležité: Tvoje preferencie pre intenzívny kurz Habluj`
+
+**Cuerpo (SK):**
+
+> `Ahoj [Nombre del Alumno],`
+>
+> `Ďakujeme ti za záujem o naše intenzívne kurzy španielčiny. Starostlivo sme preverili tvoje preferencie, a hoci sme sa veľmi snažili, momentálne sa nám nepodarilo zostaviť skupinu, ktorá by presne zodpovedala tvojmu rozvrhu a úrovni.`
+>
+> `Chceme, aby si mal/a tú najlepšiu skúsenosť, a preto ti ponúkame niekoľko možností:`
+>
+> `1.  **Zápis do čakacej listiny:** Môžeme ťa zaradiť do našej čakacej listiny. Akonáhle sa objavia nové možnosti alebo sa zmenia preferencie iných študentov, budeme ťa kontaktovať ako prvého/prvú.`
+> `2.  **Individuálne lekcie 1:1:** Ak nechceš čakať, môžeme ti ponúknuť naše personalizované individuálne lekcie. Sú flexibilné a prispôsobené výhradne tvojim potrebám. Viac informácií nájdeš tu: [Link a Clases Individuales]`
+>
+> `Prosím, daj nám vedieť, ktorá možnosť ti vyhovuje najviac, alebo ak máš akékoľvek otázky. Tvoj pokrok v španielčine je pre nás prioritou!`
+>
+> `S pozdravom,`
+> `Tím Habluj`
+
+**Asunto (CZ):** `Důležité: Tvé preference pro intenzivní kurz Habluj`
+
+**Cuerpo (CZ):**
+
+> `Ahoj [Jméno studenta],`
+>
+> `Děkujeme ti za zájem o naše intenzivní kurzy španělštiny. Pečlivě jsme prověřili tvé preference, a ačkoli jsme se velmi snažili, momentálně se nám nepodařilo sestavit skupinu, která by přesně odpovídala tvému rozvrhu a úrovni.`
+>
+> `Chceme, abys měl/a tu nejlepší zkušenost, a proto ti nabízíme několik možností:`
+>
+> `1.  **Zápis do čekací listiny:** Můžeme tě zařadit do naší čekací listiny. Jakmile se objeví nové možnosti nebo se změní preference jiných studentů, budeme tě kontaktovat jako prvního/první.`
+> `2.  **Individuální lekce 1:1:** Pokud nechceš čekat, můžeme ti nabídnout naše personalizované individuální lekce. Jsou flexibilní a přizpůsobené výhradně tvým potřebám. Více informací najdeš zde: [Odkaz na Individuální lekce]`
+>
+> `Prosím, dej nám vědět, která možnost ti vyhovuje nejvíce, nebo pokud máš jakékoli dotazy. Tvůj pokrok ve španělštině je pro nás prioritou!`
+>
+> `S pozdravem,`
+> `Tým Habluj`
