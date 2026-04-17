@@ -6,6 +6,7 @@ import MethodDemoSection from './components/MethodDemoSection';
 import LearningPathsSection from './components/LearningPathsSection';
 import FeaturesSection from './components/FeaturesSection';
 import TestimonialsSection from './components/TestimonialsSection';
+import MeetEster from './components/MeetEster';
 import CTASection from './components/CTASection';
 import SiteFooter from '../../components/ui/SiteFooter';
 import { useTranslation } from '../../hooks/useTranslation';
@@ -108,6 +109,7 @@ const Homepage = () => {
         <LearningPathsSection />
         <FeaturesSection />
         <TestimonialsSection />
+        <MeetEster />
         <CTASection />
       </main>
 
