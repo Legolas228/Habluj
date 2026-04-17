@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
-import Carousel from '../../../components/Carousel';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { SETMORE_BOOKING_URL } from '../../../utils/setmore';
 import { getLocalizedPath } from '../../../utils/seo';
 
 const HeroSection = () => {
@@ -69,9 +67,9 @@ const HeroSection = () => {
               </p>
             </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer">
+            {/* CTA principal unico */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <Link to={getLocalizedPath('/booking-system', language)}>
                 <Button
                   variant="default"
                   size="lg"
@@ -81,29 +79,21 @@ const HeroSection = () => {
                 >
                   {t('hero.bookLesson')}
                 </Button>
-              </a>
-              <a href="#method-demo">
+              </Link>
+              <Link to={getLocalizedPath('/intensive-courses', language)}>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-primary text-primary hover:bg-primary hover:text-white"
-                  iconName="Play"
+                  className="border-primary text-primary hover:bg-primary hover:text-white transition-all"
+                  iconName="Zap"
                   iconPosition="left"
                 >
-                  {t('hero.watchVideo')}
-                </Button>
-              </a>
-              <Link to={getLocalizedPath('/tutoring-services', language)}>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="border border-border/80 bg-white/70 text-foreground hover:bg-white"
-                  iconName="ArrowRight"
-                  iconPosition="right"
-                >
-                  {t('hero.directCourseCta')}
+                  {t('hero.intensiveCourses')}
                 </Button>
               </Link>
+              <a href="#method-demo" className="text-sm text-primary hover:text-primary/80 underline underline-offset-4">
+                {t('hero.watchVideo')}
+              </a>
             </div>
 
             {/* Quick Stats */}
@@ -123,26 +113,39 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Hero Carousel */}
+          {/* Hero Image: Ester Portrait + Trust Card */}
           <div className="relative w-full h-full min-h-96 flex items-center justify-center">
             <div className="relative z-10 w-full h-full">
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-cultural bg-gray-200">
-                <Carousel
-                  images={[
-                    { src: '/assets/images/monuments/alhambra.webp', alt: 'Granada' },
-                    { src: '/assets/images/monuments/barcelona.webp', alt: 'Barcelona' },
-                    { src: '/assets/images/monuments/mezquitacodoba.webp', alt: 'Córdoba' },
-                    { src: '/assets/images/monuments/madrid.webp', alt: 'Madrid' },
-                    { src: '/assets/images/monuments/sevilla.webp', alt: 'Sevilla' },
-                    { src: '/assets/images/monuments/segovia.webp', alt: 'Segovia' },
-                    { src: '/assets/images/monuments/palma-de-mallorca.webp', alt: 'Palma de Mallorca' },
-                    { src: '/assets/images/monuments/toledo.webp', alt: 'Toledo' },
-                    { src: '/assets/images/monuments/playadelaconcha.webp', alt: 'San Sebastián' },
-                    { src: '/assets/images/monuments/catedralSantiago.webp', alt: 'Santiago de Compostela' },
-                  ]}
-                  delay={5000}
-                  priority={true}
-                />
+                {/* Ester Portrait Image */}
+                <div className="relative w-full h-full">
+                  <img
+                    src="/assets/images/ester-placeholder.webp"
+                    alt="Ester - Tu profesora de español"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    width="600"
+                    height="700"
+                  />
+                  {/* Dark Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                  
+                  {/* Trust Card Overlay */}
+                  <div className="absolute bottom-6 left-6 right-6 z-20 bg-white/95 backdrop-blur-sm p-5 rounded-xl shadow-lg border border-white/30">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Icon name="CheckCircle" size={18} className="text-success" />
+                        <p className="text-sm font-semibold text-foreground">{t('hero.trust2')}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground italic">
+                        "4+ años enseñando español a checos y eslovacos. 40+ estudiantes satisfechos."
+                      </p>
+                      <Link to={getLocalizedPath('/about-the-teacher', language)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-xs font-medium underline">
+                        Conoce mi historia <Icon name="ArrowRight" size={14} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

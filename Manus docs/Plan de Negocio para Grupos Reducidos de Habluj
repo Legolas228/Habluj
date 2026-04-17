@@ -1,0 +1,96 @@
+# Plan de Negocio para Grupos Reducidos de Habluj
+
+**Autor:** Manus AI
+**Fecha:** 15 de abril de 2026
+
+## 1. Configuración del Producto: Grupos Reducidos (4-6 alumnos)
+
+### Duración Óptima de Clases y Ciclos
+
+Para maximizar el compromiso y mantener un ticket final atractivo, se recomienda un equilibrio entre la duración de la clase y la extensión del ciclo. Clases de **90 minutos** son ideales para grupos, ya que permiten una inmersión más profunda, actividades interactivas y tiempo para la práctica conversacional, sin que el ritmo sea excesivamente rápido o lento. Una duración de ciclo de **8 semanas** (equivalente a 2 meses) es óptima. Esto permite a los alumnos ver un progreso tangible, facilita la planificación y reduce la percepción de un compromiso a largo plazo que podría disuadir a nuevos estudiantes. Un ciclo de 8 semanas con una clase semanal de 90 minutos suma 12 horas de instrucción.
+
+### Pricing Psicológico (Basado en Competencia CZ/SK)
+
+Considerando la oferta actual de la competencia en Praga y Bratislava (OnlineJazyky, Hispánica) y el precio actual de Habluj para clases 1:1 (20-25€/h), el "sweet spot" para clases grupales debe ser competitivo y percibido como un valor añadido. Un precio por hora de **15€/alumno** en grupo es atractivo y rentable. Esto se traduce en:
+
+*   **Precio por ciclo (8 semanas, 12 horas):** 15€/hora * 12 horas = **180€**
+
+Para los mercados checo y eslovaco, con un tipo de cambio aproximado de 1 EUR = 25 CZK, los precios con redondeo psicológico serían:
+
+| Moneda | Precio por Hora (estimado) | Precio por Ciclo (8 semanas / 12 horas) |
+| :--- | :--- | :--- |
+| **EUR** | 15€ | **179€** (Redondeo psicológico de 180€) |
+| **CZK** | 375 Kč | **4.490 Kč** (Redondeo psicológico de 4.500 Kč) |
+
+Este precio de 179€ / 4.490 Kč por ciclo es competitivo, permite un margen saludable con 4-6 alumnos por grupo, y el redondeo psicológico lo hace más atractivo para el consumidor final. Es importante destacar el ahorro por hora frente a las clases individuales.
+
+## 2. Estrategia de Captación de Bajo Coste (Low CAC)
+
+### Conversión de Interesados del "Test de Nivel" a Alumnos de Grupo
+
+Los usuarios que completan el Test de Nivel son leads cualificados. Para convertirlos en alumnos de grupo:
+
+1.  **Email Personalizado con Oferta de Grupo:** Tras recibir los resultados del test, enviar un email personalizado que, además de la evaluación, presente la opción de los grupos reducidos. Destacar los beneficios (interacción, precio más accesible, comunidad) y el ahorro por hora frente a las clases individuales. Incluir un CTA claro para "Más información sobre grupos" o "Inscríbete a un grupo".
+2.  **Webinar Gratuito "Introducción al Español en Grupo":** Organizar un webinar corto (30-45 min) donde se explique la metodología de los grupos, se resuelvan dudas y se ofrezca una pequeña clase de prueba. Esto permite a los interesados experimentar la dinámica grupal y conocer a la profesora, reduciendo la barrera de entrada. Promocionar este webinar a la base de datos del Test de Nivel.
+3.  **Segmentación y Retargeting:** Si se utilizan anuncios, segmentar a los usuarios que han iniciado o completado el test de nivel y mostrarles anuncios específicos de los grupos reducidos, destacando los beneficios y el precio.
+
+### Mecánica de "Member Get Member" (Referidos)
+
+Para incentivar las referencias en Chequia y Eslovaquia, donde la confianza en el boca a boca es alta, se propone un sistema de doble incentivo:
+
+*   **Incentivo para el Referente (Alumno Actual):** Un descuento del **10% en su próximo ciclo** o una **clase individual gratuita de 60 minutos** por cada amigo que se inscriba y pague un ciclo completo en un grupo. El descuento se aplica una vez que el amigo haya completado su inscripción.
+*   **Incentivo para el Referido (Amigo Nuevo):** Un **5% de descuento en su primer ciclo** de grupo. Esto reduce la barrera económica inicial.
+
+**Comunicación:** Promocionar esta mecánica a través de emails a alumnos actuales, publicaciones en Instagram y un apartado específico en la web. La clave es la simplicidad y la claridad de los beneficios.
+
+### Lista de Espera Proactiva (Waitlist) en Verano
+
+Para asegurar que los grupos nazcan llenos en octubre, una lista de espera es crucial:
+
+1.  **Lanzamiento Temprano (Julio/Agosto):** Crear una landing page sencilla (o una sección destacada en la web) para la "Lista de Espera de Grupos de Español - Octubre". Captar emails con un mensaje claro: "Sé el primero en enterarte de los nuevos grupos de español para octubre. Plazas limitadas. ¡Inscríbete ahora y recibe un regalo exclusivo!".
+2.  **Incentivo de Pre-reserva:** Ofrecer un **descuento "Early Bird" del 10%** a los primeros 10-15 inscritos de la lista de espera que confirmen su plaza en un grupo. Esto genera urgencia y recompensa la proactividad.
+3.  **Contenido Exclusivo para la Waitlist:** Enviar contenido de valor (mini-lecciones, tips de viaje, curiosidades culturales) a los miembros de la lista de espera durante el verano. Esto mantiene el engagement y refuerza el deseo de aprender español con Habluj.
+4.  **Comunicación Transparente:** Informar a los inscritos en la lista de espera sobre el progreso de la formación de grupos y las fechas clave de inscripción.
+
+## 3. Logística y Retención
+
+### Política de Cancelación/Ausencia en Grupos
+
+Para mantener la rentabilidad y la cohesión del grupo:
+
+*   **Ausencias:** Las clases perdidas por el alumno no son reembolsables ni recuperables individualmente. Se proporcionará la grabación de la clase (si aplica) y los materiales para que el alumno pueda ponerse al día. Esto incentiva la asistencia y evita la desorganización del grupo.
+*   **Cancelación del Grupo por Habluj:** Si un grupo no alcanza el mínimo de 4 alumnos, Habluj se reserva el derecho de cancelar el grupo, ofreciendo un reembolso completo o la opción de unirse a otro grupo/clases individuales con un ajuste de precio.
+*   **Flexibilidad Limitada:** En casos excepcionales y justificados (ej. enfermedad grave), se podría ofrecer una sesión de recuperación grupal (si la mayoría del grupo ha faltado) o un descuento en una clase individual.
+
+### Gestión de Diferentes Niveles (A1.1 vs A1.2)
+
+Para asegurar que nadie se sienta perdido y optimizar el aprendizaje:
+
+1.  **Test de Nivel Obligatorio:** Todos los alumnos interesados en grupos deben realizar el Test de Nivel (mejorado) para una asignación precisa. Complementar con una breve entrevista oral si es necesario.
+2.  **Grupos Homogéneos:** Crear grupos lo más homogéneos posible en cuanto a nivel (ej. A1.1, A1.2, A2.1, etc.). Evitar mezclar subniveles si el número de alumnos lo permite.
+3.  **Materiales Adaptados:** La profesora debe tener la flexibilidad de adaptar ligeramente los materiales y actividades para atender las pequeñas diferencias dentro de un mismo subnivel.
+4.  **Feedback Continuo:** Fomentar un ambiente donde los alumnos se sientan cómodos expresando si el nivel es demasiado alto o bajo. La profesora debe estar atenta a las señales y ajustar la dinámica si es necesario.
+
+## 4. Plan de Lanzamiento (Hitos Agosto - Octubre)
+
+| Hito | Fecha Estimada | Acción Clave | Precio 'Early Bird' |
+| :--- | :--- | :--- | :--- |
+| **Preparación de Contenido** | Julio | Finalizar materiales de grupos, adaptar Test de Nivel, crear landing page de Waitlist. | N/A |
+| **Lanzamiento Waitlist** | 1-15 Agosto | Abrir la Lista de Espera de Grupos de Octubre con incentivo de pre-reserva. Promoción en Instagram y email a base de datos. | **10% descuento** para los primeros 10-15 inscritos |
+| **Campaña de Expectación** | 15 Agosto - 15 Septiembre | Contenido regular en Instagram sobre los beneficios de aprender en grupo, testimonios, FAQs. Envío de contenido exclusivo a la Waitlist. | N/A |
+| **Apertura de Inscripciones** | 15-30 Septiembre | Abrir oficialmente las inscripciones para los grupos de octubre. Comunicación a la Waitlist con prioridad y recordatorio del descuento Early Bird. | Finaliza el **30 de Septiembre** |
+| **Cierre de Inscripciones** | 30 Septiembre | Cierre de inscripciones para grupos de octubre. Confirmación de grupos formados. | N/A |
+| **Inicio de Clases** | 1-7 Octubre | Comienzo de las clases de los grupos reducidos. | N/A |
+
+## 5. Tácticas de Marketing de Guerrilla (Low Cost)
+
+1.  **Desafío de Español en Instagram (5 días):** Crear un desafío gratuito de 5 días en Instagram Stories/Reels con pequeñas tareas diarias de español (ej. "Aprende 5 frases para pedir café", "Describe tu día en 3 palabras"). Al final del desafío, invitar a los participantes a unirse a la Waitlist de grupos o a reservar una clase demo. Esto genera engagement, visibilidad y leads cualificados a bajo coste.
+2.  **Colaboraciones con Influencers Locales (Micro-influencers):** Identificar micro-influencers en CZ/SK con audiencias interesadas en viajes, cultura o desarrollo personal. Ofrecerles clases gratuitas de español a cambio de menciones honestas y reseñas en sus perfiles. El coste es mínimo (clases gratis) y el alcance es muy segmentado.
+3.  **Contenido Generado por el Usuario (UGC) y Testimonios en Video:** Animar a los alumnos actuales a compartir su experiencia con Habluj en sus redes sociales (historias, posts) etiquetando a la academia. Ofrecer un pequeño incentivo (ej. 5€ de descuento en la próxima clase) por cada publicación. Recopilar testimonios en video de alumnos satisfechos (con su permiso) y utilizarlos en Instagram y la web. El UGC es altamente creíble y gratuito.))
+
+## Referencias
+
+*   [Habluj.vercel.app](https://habluj.vercel.app/) - Plataforma Habluj
+*   [OnlineJazyky.cz](https://www.onlinejazyky.cz/) - Competencia en CZ
+*   [Hispánica.cz](https://hispanica.cz/) - Competencia en CZ
+*   [Akademia Eñe Bratislava](https://www.akademiaenebratislava.com/) - Competencia en SK

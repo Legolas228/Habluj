@@ -30,3 +30,4 @@ backend/.audit-venv/
 .unlighthouse/
 self-improving-agent-*.zip
 self-improving-agent-*/
+.env*.local

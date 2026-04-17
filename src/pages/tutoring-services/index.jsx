@@ -334,8 +334,8 @@ const TutoringServices = () => {
                     variant="default"
                     size="sm"
                     fullWidth
-                    className="bg-primary hover:bg-primary/90"
-                    onClick={() => scrollToSection(program.targetId)}
+                    className={program.id === 'program-intensive' ? 'bg-secondary hover:bg-secondary/90' : 'bg-primary hover:bg-primary/90'}
+                    onClick={() => program.id === 'program-intensive' ? window.location.href = getLocalizedPath('/intensive-courses', language) : scrollToSection(program.targetId)}
                   >
                     {t('learning.cta')}
                   </Button>
@@ -457,6 +457,16 @@ const TutoringServices = () => {
                             asChild
                           >
                             <Link to={getLocalizedPath('/contact', language)}>{t('services.hero.ctaContact')}</Link>
+                          </Button>
+                        ) : section.id === 'intensive-courses' ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            fullWidth
+                            className={accentStyle.button}
+                            asChild
+                          >
+                            <Link to={getLocalizedPath('/intensive-courses', language)}>Más información</Link>
                           </Button>
                         ) : (
                           <Button

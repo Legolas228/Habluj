@@ -1,0 +1,86 @@
+# Informe de Auditoría CRO y UX Writing para Habluj
+
+**Autor:** Manus AI
+**Fecha:** 15 de abril de 2026
+
+## Resumen Ejecutivo
+
+Este informe detalla una auditoría de Conversion Rate Optimization (CRO) y UX Writing de la plataforma Habluj (habluj.vercel.app), enfocada en la experiencia de usuarios checos y eslovacos. El análisis cubre la claridad de la propuesta de valor, la fricción en el funnel de conversión, la localización y elementos de confianza, la optimización móvil y la efectividad del test de nivel como Lead Magnet. Se proporcionan recomendaciones concretas para mejorar la tasa de conversión.
+
+## 1. Claridad de la Propuesta de Valor (Hero Section)
+
+La sección principal (Hero Section) de Habluj comunica la orientación hacia estudiantes checos y eslovacos mediante un distintivo "ONLINE PRE ŠTUDENTOV ZO SK A CZ" y la disponibilidad de idiomas. Sin embargo, el titular principal, como "Španielčina, ktorá dáva zmysel" (Eslovaco) o "Zvládněte španělštinu s důvěrou" (Checo), es percibido como genérico. Aunque correcto, carece de un gancho emocional o una conexión directa con los puntos de dolor específicos de estos usuarios, como la superación del miedo a hablar o la comprensión de las particularidades del español desde su contexto lingüístico.
+
+La presencia de tres llamadas a la acción (CTAs) principales en el Hero Section ("Rezervovať lekciu", "Spustit test urovne", "Pozrieť kurzy a ceny") puede generar **parálisis por análisis** (Ley de Hick), dificultando la decisión del usuario sobre el siguiente paso más relevante.
+
+## 2. Fricción en el Funnel de Conversión
+
+### Flujo de Reserva de Lección
+
+El proceso de reserva de una lección presenta una fricción significativa. Al hacer clic en "Rezervovať lekciu", el usuario es redirigido a una plataforma externa (habluj.setmore.com). Este cambio de dominio y la interfaz de Setmore, que mezcla inglés con español en la descripción de servicios, rompen la coherencia de la experiencia de usuario y pueden mermar la confianza. La falta de una integración fluida o una personalización de la plataforma de reserva para mantener la marca Habluj es un punto crítico.
+
+### Flujo del Test de Nivel
+
+El test de nivel, accesible a través de "Spustit test urovne", es un formulario extenso de 15 preguntas de opción múltiple presentadas en una única página. Esta estructura resulta visualmente abrumadora y se asemeja más a un examen académico que a una herramienta de captación de leads. La extensión y el formato pueden generar una alta tasa de abandono antes de que el usuario complete el test y proporcione su información de contacto.
+
+## 3. Localización y Confianza
+
+### Coherencia Lingüística
+
+La web ofrece un selector de idiomas (Eslovaco, Checo, Español), y las traducciones generales son adecuadas. No obstante, se han identificado pequeños errores de UX Writing, como la omisión de diacríticos en la palabra "úrovne" en algunos botones de la versión eslovaca del test de nivel, lo que puede afectar la percepción de profesionalidad.
+
+### Precios y Moneda
+
+La presentación de precios en CZK en la versión checa (ej. 500 Kč/lekce) es apropiada y no parece una conversión automática. Esto contribuye a una percepción de transparencia y adaptación al mercado local.
+
+### Elementos de Confianza
+
+Aunque se incluye un testimonio textual de "Mariana V.", la ausencia de una fotografía de la alumna reduce su impacto y credibilidad. Un elemento crucial que falta es una imagen clara y destacada de la profesora, Ester, tanto en el Hero Section como en la sección "O mne". En un servicio de enseñanza personalizada, la conexión humana con el instructor es fundamental para generar confianza y cercanía con los potenciales alumnos.
+
+## 4. Optimización Móvil
+
+La presencia de múltiples CTAs en el Hero Section, combinada con el formato extenso del test de nivel, representa un desafío significativo para la usabilidad móvil. En dispositivos móviles, estos elementos pueden ocupar gran parte de la pantalla, forzando al usuario a realizar un desplazamiento excesivo (fatiga de scroll) para acceder a información relevante, lo que es crítico dado que un alto porcentaje de leads provienen de plataformas móviles como Instagram y TikTok.
+
+## 5. Análisis del Test de Nivel como Lead Magnet
+
+El test de nivel actual funciona más como una **barrera aburrida** que como un Lead Magnet efectivo. Su enfoque puramente gramatical y su formato de examen lo hacen poco atractivo y no ofrecen un valor inmediato o una experiencia gratificante. Si bien solicita el correo electrónico al final, la alta probabilidad de abandono antes de llegar a este punto minimiza su efectividad en la captación de leads.
+
+Para ser un Lead Magnet exitoso, el test debería ser más interactivo, quizás con un diseño de una pregunta por pantalla y una barra de progreso visual. Además, podría enfocarse en situaciones prácticas o escenarios de conversación, en lugar de solo gramática, para ofrecer una experiencia más relevante y atractiva.
+
+## Semáforo de Estado
+
+| Categoría | Estado | Justificación |
+| :--- | :--- | :--- |
+| **Velocidad** | Verde | La plataforma en Vercel ofrece una buena velocidad de carga. |
+| **UX (Experiencia de Usuario)** | Amarillo | Múltiples CTAs en Hero, test de nivel abrumador, salto a plataforma externa para reservas. |
+| **Copywriting** | Amarillo | Titulares genéricos en Hero, pequeños errores de diacríticos en botones, falta de enfoque en pain points. |
+| **Capacidad de Conversión** | Rojo/Amarillo | La fricción en el funnel de reserva y la naturaleza del test de nivel impactan negativamente la conversión. |
+
+## Quick Wins (5 cambios técnicos o de texto para implementar hoy)
+
+1.  **Reducir CTAs en Hero:** Simplificar el Hero Section a una única CTA principal (ej. "Reserva tu Clase Demo Gratuita" o "Haz tu Test de Nivel Rápido"), moviendo las otras opciones a un lugar menos prominente. Priorizar la acción más deseada.
+2.  **Mejorar UX del Test de Nivel:** Implementar un test de nivel interactivo (ej. usando Typeform o una solución similar) con una pregunta por pantalla, barra de progreso y un enfoque más lúdico/situacional. Al final, solicitar el email para enviar los resultados detallados y una recomendación personalizada.
+3.  **Personalizar Plataforma de Reserva:** Investigar opciones para integrar Setmore (o una alternativa) de forma más fluida, manteniendo la marca Habluj y el idioma del usuario durante todo el proceso de reserva. Idealmente, evitar el cambio de dominio.
+4.  **Añadir Foto de la Profesora:** Incluir una foto profesional y amigable de Ester en el Hero Section y en la sección "O mne" para humanizar la marca y generar confianza. La conexión personal es clave en servicios educativos.
+5.  **Optimizar Copy del Hero Section:** Reemplazar el titular genérico por uno que resuene con los pain points de los usuarios checos/eslovacos. Por ejemplo: "Aprende español sin miedo a hablar: Clases online personalizadas para checos y eslovacos" o "Domina el español con fluidez: Tu profesora nativa que entiende tu idioma".
+
+## Hipótesis de Test A/B (Cambio drástico en la Home para junio)
+
+**Hipótesis:** Un cambio radical en el Hero Section, que elimine los múltiples CTAs y presente un único camino claro hacia una clase demo gratuita de 15 minutos, aumentará significativamente la tasa de reservas de clases demo.
+
+**Variante A (Control):** Home actual con los tres CTAs y el titular genérico.
+
+**Variante B (Test):**
+*   **Titular:** "Aprende español sin miedo a hablar: Tu profesora nativa que entiende tu idioma (Checo/Eslovaco)"
+*   **Subtítulo:** "Clases online personalizadas para checos y eslovacos. Empieza hoy con una clase demo gratuita."
+*   **Único CTA visible:** Un botón grande y prominente que diga "Reserva tu Clase Demo Gratuita (15 min)".
+*   **Elemento de Confianza:** Una foto grande y sonriente de la profesora Ester junto al titular.
+
+**Métrica Clave:** Tasa de clics en el CTA principal y tasa de finalización del proceso de reserva de la clase demo.
+
+**Duración del Test:** 2-4 semanas para obtener datos estadísticamente significativos.
+
+## Referencias
+
+*   [Habluj.vercel.app](https://habluj.vercel.app/) - Plataforma Habluj
+*   [Habluj.setmore.com](https://habluj.setmore.com/) - Plataforma de reservas Setmore

@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import Button from './ui/Button';
 import Input from './ui/Input';
 import { submitLeadCapture } from '../services/leads';
 import { trackImpact } from '../utils/analytics';
 import { useTranslation } from '../hooks/useTranslation';
+import { getLocalizedPath } from '../utils/seo';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -194,13 +196,14 @@ const computeBand = (score) => {
 };
 
 const AdvancedSpanishTestForm = () => {
-  const { language } = useTranslation();
+  const { language, t } = useTranslation();
 
   const [answers, setAnswers] = useState({});
   const [testError, setTestError] = useState('');
   const [contactError, setContactError] = useState('');
   const [status, setStatus] = useState('idle');
-  const [showContactStep, setShowContactStep] = useState(false);
+  const [step, setStep] = useState('quiz');
+  const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -215,28 +218,60 @@ const AdvancedSpanishTestForm = () => {
   }, [answers]);
 
   const band = useMemo(() => computeBand(score), [score]);
+  const activeQuestion = QUESTIONS[activeQuestionIndex];
+  const totalQuestions = QUESTIONS.length;
+  const answeredCount = Object.keys(answers).length;
+  const progressPercent = Math.round(((activeQuestionIndex + 1) / totalQuestions) * 100);
+
+  const bookingSystemPath = getLocalizedPath('/booking-system', language);
+  const contactPath = getLocalizedPath('/contact', language);
 
   const onSelectAnswer = (questionId, optionKey) => {
     setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
     setTestError('');
   };
 
-  const onSubmitTest = (event) => {
+  const onContinueQuestion = (event) => {
     event.preventDefault();
 
-    if (Object.keys(answers).length !== QUESTIONS.length) {
-      setTestError('Debes responder las 15 preguntas antes de enviar.');
+    if (!answers[activeQuestion.id]) {
+      setTestError('Selecciona una respuesta para continuar.');
       return;
     }
 
-    setShowContactStep(true);
     setTestError('');
+
+    if (activeQuestionIndex < totalQuestions - 1) {
+      setActiveQuestionIndex((prev) => prev + 1);
+      return;
+    }
+
+    setStep('result');
 
     trackImpact('advanced_test_submitted', {
       location: 'level_questionnaire',
       score,
       band,
     });
+  };
+
+  const onBackQuestion = () => {
+    if (activeQuestionIndex === 0) return;
+    setActiveQuestionIndex((prev) => prev - 1);
+    setTestError('');
+  };
+
+  const onOpenContactStep = () => {
+    setStep('contact');
+  };
+
+  const onRestartTest = () => {
+    setStep('quiz');
+    setActiveQuestionIndex(0);
+    setAnswers({});
+    setTestError('');
+    setContactError('');
+    setStatus('idle');
   };
 
   const onSubmitContact = async (event) => {
@@ -287,6 +322,7 @@ const AdvancedSpanishTestForm = () => {
       });
 
       setStatus('success');
+      setStep('success');
     } catch (error) {
       setContactError(error?.message || 'No se pudo enviar el formulario. Inténtalo de nuevo.');
       setStatus('idle');
@@ -298,39 +334,51 @@ const AdvancedSpanishTestForm = () => {
       <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 p-5">
         <h3 className="text-2xl font-headlines font-bold text-foreground mb-2">Test de nivel</h3>
         <p className="text-foreground/80 text-sm">
-          Responde las 15 preguntas y te enviaremos el resultado al correo.
+          Flujo guiado en 3 pasos: respuestas, resultado y recomendación personalizada.
         </p>
       </div>
 
-      {status === 'success' ? (
-        <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-success text-sm">
-          Gracias. Hemos recibido tu test y te enviaremos por correo resultados, recomendaciones y enlaces de reserva.
-        </div>
-      ) : (
+      {step === 'quiz' && (
         <>
-          <form onSubmit={onSubmitTest} className="space-y-5">
-            {QUESTIONS.map((question) => (
-              <fieldset key={question.id} className="border border-border rounded-lg p-4">
-                <legend className="text-sm font-semibold text-foreground px-1">
-                  {question.id}. {question.prompt}
-                </legend>
-                <div className="mt-3 space-y-2">
-                  {question.options.map((option) => (
-                    <label key={`${question.id}-${option.key}`} className="flex items-start gap-2 text-sm text-foreground">
+          <div className="mb-5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+              <span>Pregunta {activeQuestionIndex + 1} de {totalQuestions}</span>
+              <span>{progressPercent}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+            </div>
+          </div>
+
+          <form onSubmit={onContinueQuestion} className="space-y-5">
+            <fieldset className="border border-border rounded-lg p-4 md:p-5">
+              <legend className="text-sm font-semibold text-foreground px-1">
+                {activeQuestion.id}. {activeQuestion.prompt}
+              </legend>
+              <div className="mt-3 space-y-2">
+                {activeQuestion.options.map((option) => {
+                  const isSelected = answers[activeQuestion.id] === option.key;
+                  return (
+                    <label
+                      key={`${activeQuestion.id}-${option.key}`}
+                      className={`flex items-start gap-3 text-sm rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
+                        isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/40'
+                      }`}
+                    >
                       <input
                         type="radio"
-                        name={`question-${question.id}`}
+                        name={`question-${activeQuestion.id}`}
                         value={option.key}
-                        checked={answers[question.id] === option.key}
-                        onChange={() => onSelectAnswer(question.id, option.key)}
+                        checked={isSelected}
+                        onChange={() => onSelectAnswer(activeQuestion.id, option.key)}
                         className="mt-1"
                       />
                       <span>{option.key}) {option.text}</span>
                     </label>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
+                  );
+                })}
+              </div>
+            </fieldset>
 
             {testError && (
               <div className="rounded-lg border border-error/20 bg-error/10 p-3 text-error text-sm" role="alert">
@@ -338,80 +386,124 @@ const AdvancedSpanishTestForm = () => {
               </div>
             )}
 
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">Progreso: {Object.keys(answers).length}/15 respondidas</p>
-              <Button type="submit" iconName="Send" iconPosition="right">Enviar test</Button>
-            </div>
-          </form>
-
-          {showContactStep && (
-            <form onSubmit={onSubmitContact} className="mt-8 border-t border-border pt-6 space-y-4">
-              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">
-                <p className="text-muted-foreground">Déjanos tus datos para enviarte la evaluación.</p>
-              </div>
-
-              <Input
-                type="text"
-                placeholder="Nombre y apellidos"
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                required
-                autoComplete="name"
-                aria-label="Nombre y apellidos"
-              />
-              <Input
-                type="email"
-                placeholder="Tu correo electrónico"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                autoComplete="email"
-                aria-label="Tu correo electrónico"
-              />
-              <Input
-                type="tel"
-                placeholder="Teléfono (opcional)"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                autoComplete="tel"
-                aria-label="Teléfono (opcional)"
-              />
-
-              <label className="flex items-start gap-2 text-sm text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={consentPrivacy}
-                  onChange={(event) => setConsentPrivacy(event.target.checked)}
-                  className="mt-1"
-                  required
-                />
-                <span>Acepto el tratamiento de datos personales según la política de privacidad.</span>
-              </label>
-
-              <label className="flex items-start gap-2 text-sm text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={consentMarketing}
-                  onChange={(event) => setConsentMarketing(event.target.checked)}
-                  className="mt-1"
-                />
-                <span>Quiero recibir novedades por email.</span>
-              </label>
-
-              {contactError && (
-                <div className="rounded-lg border border-error/20 bg-error/10 p-3 text-error text-sm" role="alert">
-                  {contactError}
-                </div>
-              )}
-
-              <div className="flex justify-end">
-                <Button type="submit" loading={status === 'submitting'} disabled={status === 'submitting'}>
-                  Recibir evaluación por correo
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-sm text-muted-foreground">Respondidas: {answeredCount}/{totalQuestions}</p>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={onBackQuestion} disabled={activeQuestionIndex === 0}>
+                  {t('common.previous')}
+                </Button>
+                <Button type="submit" iconName="ArrowRight" iconPosition="right">
+                  {activeQuestionIndex === totalQuestions - 1 ? 'Ver resultado' : t('common.next')}
                 </Button>
               </div>
-            </form>
-          )}
+            </div>
+          </form>
         </>
+      )}
+
+      {step === 'result' && (
+        <section className="space-y-4">
+          <div className="rounded-xl border border-success/25 bg-success/10 p-5">
+            <p className="text-xs font-semibold text-success uppercase tracking-wide mb-2">Resultado listo</p>
+            <h4 className="text-xl font-headlines font-bold text-foreground mb-2">Tu nivel estimado: {band}</h4>
+            <p className="text-sm text-muted-foreground">Aciertos: {score}/{totalQuestions}. Te enviaremos una recomendación personalizada y próximos pasos.</p>
+          </div>
+          <div className="rounded-xl border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+            Recomendación UX: reserva una clase demo después de enviarnos tus datos para recibir feedback individual.
+          </div>
+          <div className="flex flex-wrap gap-2 justify-end">
+            <Button variant="outline" onClick={onRestartTest}>Repetir test</Button>
+            <Button onClick={onOpenContactStep}>Continuar y recibir evaluación</Button>
+          </div>
+        </section>
+      )}
+
+      {step === 'contact' && (
+        <form onSubmit={onSubmitContact} className="border-t border-border pt-6 space-y-4">
+          <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">
+            <p className="font-medium">Estás a un paso de tu recomendación personalizada.</p>
+            <p className="text-muted-foreground">Déjanos tus datos y te escribimos con nivel, plan recomendado y CTA de siguiente acción.</p>
+          </div>
+
+          <Input
+            type="text"
+            placeholder="Nombre y apellidos"
+            value={fullName}
+            onChange={(event) => setFullName(event.target.value)}
+            required
+            autoComplete="name"
+            aria-label="Nombre y apellidos"
+          />
+          <Input
+            type="email"
+            placeholder="Tu correo electrónico"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            required
+            autoComplete="email"
+            aria-label="Tu correo electrónico"
+          />
+          <Input
+            type="tel"
+            placeholder="Teléfono (opcional)"
+            value={phone}
+            onChange={(event) => setPhone(event.target.value)}
+            autoComplete="tel"
+            aria-label="Teléfono (opcional)"
+          />
+
+          <label className="flex items-start gap-2 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={consentPrivacy}
+              onChange={(event) => setConsentPrivacy(event.target.checked)}
+              className="mt-1"
+              required
+            />
+            <span>Acepto el tratamiento de datos personales según la política de privacidad.</span>
+          </label>
+
+          <label className="flex items-start gap-2 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={consentMarketing}
+              onChange={(event) => setConsentMarketing(event.target.checked)}
+              className="mt-1"
+            />
+            <span>Quiero recibir novedades por email.</span>
+          </label>
+
+          {contactError && (
+            <div className="rounded-lg border border-error/20 bg-error/10 p-3 text-error text-sm" role="alert">
+              {contactError}
+            </div>
+          )}
+
+          <div className="flex justify-between gap-3 flex-wrap">
+            <Button type="button" variant="outline" onClick={() => setStep('result')}>
+              {t('common.previous')}
+            </Button>
+            <Button type="submit" loading={status === 'submitting'} disabled={status === 'submitting'}>
+              Recibir evaluación por correo
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {step === 'success' && (
+        <div className="space-y-4">
+          <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-success text-sm">
+            Gracias. Hemos recibido tu test y te enviaremos por correo resultados, recomendaciones y enlaces para continuar.
+          </div>
+          <div className="flex flex-wrap gap-2 justify-end">
+            <Button asChild variant="outline">
+              <Link to={contactPath}>Hablar con Habluj</Link>
+            </Button>
+            <Button asChild>
+              <Link to={bookingSystemPath}>Reservar siguiente paso</Link>
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
