@@ -6,7 +6,6 @@ import SiteFooter from '../../components/ui/SiteFooter';
 import AboutHero from './components/AboutHero';
 import PersonalStory from './components/PersonalStory';
 import TeachingPhilosophy from './components/TeachingPhilosophy';
-import VideoIntroduction from './components/VideoIntroduction';
 import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
 
 const AboutTheTeacher = () => {
@@ -25,7 +24,7 @@ const AboutTheTeacher = () => {
           name="description"
           content={t('about.meta.description')}
         />
-        <meta name="keywords" content="španielčina, lektorka španielčiny, Ester Mesároš, Habluj, online lekcie, slovenčina, čeština" />
+        <meta name="keywords" content="španielčina, lektorka španielčiny, Ester Mesároš Borrull, Habluj, online lekcie, slovenčina, čeština" />
         <meta property="og:title" content={t('about.meta.title')} />
         <meta property="og:description" content={t('about.meta.description')} />
         <meta property="og:url" content={getCanonicalUrl('/about-the-teacher', language)} />
@@ -47,9 +46,6 @@ const AboutTheTeacher = () => {
 
           {/* Teaching Philosophy */}
           <TeachingPhilosophy />
-
-          {/* Video Introduction */}
-          <VideoIntroduction />
         </main>
 
         <SiteFooter />

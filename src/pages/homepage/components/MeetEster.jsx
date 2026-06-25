@@ -50,28 +50,13 @@ const MeetEster = () => {
                 <div className="text-sm font-medium text-foreground">{t('meet-ester.stats.olympiad')}</div>
               </div>
               <div className="bg-white rounded-xl p-4 sm:p-6 border border-accent/10 hover:border-accent/20 transition-colors">
-                <div className="text-2xl sm:text-3xl font-bold text-accent font-headlines mb-2">30+</div>
+                <div className="text-2xl sm:text-3xl font-bold text-accent font-headlines mb-2">40+</div>
                 <div className="text-sm font-medium text-foreground">{t('meet-ester.stats.students')}</div>
               </div>
               <div className="bg-white rounded-xl p-4 sm:p-6 border border-green-200/30 hover:border-green-200/50 transition-colors">
                 <div className="text-2xl sm:text-3xl font-bold text-green-600 font-headlines mb-2">100%</div>
                 <div className="text-sm font-medium text-foreground">{t('meet-ester.stats.satisfaction')}</div>
               </div>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="space-y-4 pt-4">
-              <h4 className="font-semibold text-foreground">{t('meet-ester.methodology')}</h4>
-              <ul className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Icon name="CheckCircle" size={20} className="text-green-600 mt-1 flex-shrink-0" />
-                    <span className="text-muted-foreground">
-                      {t(`meet-ester.method${i}`)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             {/* CTA */}
@@ -104,22 +89,6 @@ const MeetEster = () => {
                 height="800"
               />
 
-              {/* Testimonial Card */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 sm:p-6 z-20">
-                <div className="text-white space-y-4">
-                  <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Icon key={i} name="Star" size={16} className="text-yellow-400 fill-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-xs sm:text-sm leading-relaxed italic">
-                    "{t('meet-ester.testimonial')}"
-                  </p>
-                  <p className="text-xs font-semibold opacity-80">
-                    {t('meet-ester.testimonial-author')}
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Decorative Badge */}

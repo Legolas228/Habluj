@@ -164,8 +164,9 @@ const LearningPathsSection = () => {
               className="bg-secondary hover:bg-secondary/90"
               iconName="MessageCircle"
               iconPosition="left"
+              asChild
             >
-              {t('features.ctaButton1')}
+              <Link to={getLocalizedPath('/contact', language)}>{t('features.ctaButton1')}</Link>
             </Button>
             <Link to={getLocalizedPath('/tutoring-services', language)}>
               <Button

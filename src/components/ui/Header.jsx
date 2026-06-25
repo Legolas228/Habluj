@@ -4,7 +4,6 @@ import Icon from '../AppIcon';
 import Button from './Button';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from '../../hooks/useTranslation';
-import { useAuth } from '../../context/AuthContext';
 import { SETMORE_BOOKING_URL } from '../../utils/setmore';
 import { getLocalizedPath, stripLanguagePrefix } from '../../utils/seo';
 
@@ -15,11 +14,6 @@ const Header = () => {
   const navigate = useNavigate();
   const { changeLanguage, language } = useLanguage();
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
-
-  const authBaseTarget = isAuthenticated ? '/student-dashboard' : '/login';
-  const authTarget = getLocalizedPath(authBaseTarget, language);
-  const authLabel = isAuthenticated ? t('header.dashboard') : t('header.login');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,7 +128,7 @@ const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <Link to={getLocalizedPath('/level-questionnaire', language)}>
+              <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="default" 
                   size="sm"
@@ -142,16 +136,7 @@ const Header = () => {
                 >
                   {t('header.book')}
                 </Button>
-              </Link>
-              <Link to={authTarget}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                >
-                  {authLabel}
-                </Button>
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -220,7 +205,7 @@ const Header = () => {
                     🇪🇸
                   </button>
                 </div>
-                <Link to={getLocalizedPath('/level-questionnaire', language)} onClick={() => setIsMobileMenuOpen(false)}>
+                <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button 
                     variant="default" 
                     fullWidth
@@ -228,16 +213,7 @@ const Header = () => {
                   >
                     {t('header.book')}
                   </Button>
-                </Link>
-                <Link to={authTarget} onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button
-                    variant="outline"
-                    fullWidth
-                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  >
-                    {authLabel}
-                  </Button>
-                </Link>
+                </a>
               </div>
             </nav>
           </div>

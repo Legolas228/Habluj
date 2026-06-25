@@ -19,7 +19,7 @@ const mapPreferredLanguage = (language) => {
 const QUESTIONS = [
   {
     id: 1,
-    prompt: 'Yo ___ Maria.',
+    prompt: 'Yo ___ María.',
     options: [
       { key: 'a', text: 'estoy' },
       { key: 'b', text: 'soy' },
@@ -29,7 +29,7 @@ const QUESTIONS = [
   },
   {
     id: 2,
-    prompt: '___ dias, como estas?',
+    prompt: '___ días, ¿cómo estás?',
     options: [
       { key: 'a', text: 'Buen' },
       { key: 'b', text: 'Buenos' },
@@ -54,12 +54,12 @@ const QUESTIONS = [
       { key: 'a', text: 'estamos' },
       { key: 'b', text: 'estuvimos' },
       { key: 'c', text: 'estamos estado' },
-      { key: 'd', text: 'estabamos sido' },
+      { key: 'd', text: 'estábamos sido' },
     ],
   },
   {
     id: 5,
-    prompt: 'Me ___ el cafe.',
+    prompt: 'Me ___ el café.',
     options: [
       { key: 'a', text: 'gusta' },
       { key: 'b', text: 'gustan' },
@@ -69,39 +69,39 @@ const QUESTIONS = [
   },
   {
     id: 6,
-    prompt: 'Que frase es correcta?',
+    prompt: '¿Qué frase es correcta?',
     options: [
-      { key: 'a', text: 'Voy a casa de mi amigo manana' },
-      { key: 'b', text: 'Voy a la casa de mi amigo manana' },
-      { key: 'c', text: 'Voy en casa de mi amigo manana' },
-      { key: 'd', text: 'Voy casa de mi amigo manana' },
+      { key: 'a', text: 'Voy a casa de mi amigo mañana' },
+      { key: 'b', text: 'Voy a la casa de mi amigo mañana' },
+      { key: 'c', text: 'Voy en casa de mi amigo mañana' },
+      { key: 'd', text: 'Voy casa de mi amigo mañana' },
     ],
   },
   {
     id: 7,
     prompt: 'Si tengo tiempo, ___ contigo.',
     options: [
-      { key: 'a', text: 'ire' },
+      { key: 'a', text: 'iré' },
       { key: 'b', text: 'iba' },
       { key: 'c', text: 'fuera' },
-      { key: 'd', text: 'habria ido' },
+      { key: 'd', text: 'habría ido' },
     ],
   },
   {
     id: 8,
-    prompt: 'No pienso que ella ___ razon.',
+    prompt: 'No pienso que ella ___ razón.',
     options: [
       { key: 'a', text: 'tiene' },
-      { key: 'b', text: 'tendra' },
+      { key: 'b', text: 'tendrá' },
       { key: 'c', text: 'tenga' },
       { key: 'd', text: 'tuvo' },
     ],
   },
   {
     id: 9,
-    prompt: 'Que significa "estar cansado de algo"?',
+    prompt: '¿Qué significa "estar cansado de algo"?',
     options: [
-      { key: 'a', text: 'Tener sueno' },
+      { key: 'a', text: 'Tener sueño' },
       { key: 'b', text: 'No querer seguir haciendolo' },
       { key: 'c', text: 'Estar enfermo' },
       { key: 'd', text: 'Tener hambre' },
@@ -112,7 +112,7 @@ const QUESTIONS = [
     prompt: 'No es que no ___ hacerlo, es que no puedo.',
     options: [
       { key: 'a', text: 'quiero' },
-      { key: 'b', text: 'querria' },
+      { key: 'b', text: 'querría' },
       { key: 'c', text: 'quiera' },
       { key: 'd', text: 'quise' },
     ],
@@ -121,7 +121,7 @@ const QUESTIONS = [
     id: 11,
     prompt: 'De haberlo sabido, no ___ asi.',
     options: [
-      { key: 'a', text: 'actuaria' },
+      { key: 'a', text: 'actuaría' },
       { key: 'b', text: 'habria actuado' },
       { key: 'c', text: 'actue' },
       { key: 'd', text: 'hubiera actuar' },
@@ -132,14 +132,14 @@ const QUESTIONS = [
     prompt: 'Se fue sin que nadie ___ cuenta.',
     options: [
       { key: 'a', text: 'se daba' },
-      { key: 'b', text: 'se de' },
+      { key: 'b', text: 'se dé' },
       { key: 'c', text: 'se diera' },
       { key: 'd', text: 'se dio' },
     ],
   },
   {
     id: 13,
-    prompt: 'Cuanto mas lo pienso, menos claro ___ veo.',
+    prompt: 'Cuanto más lo pienso, menos claro ___ veo.',
     options: [
       { key: 'a', text: 'lo' },
       { key: 'b', text: 'le' },
@@ -149,7 +149,7 @@ const QUESTIONS = [
   },
   {
     id: 14,
-    prompt: 'No solo no llamo, ___ dio explicaciones.',
+    prompt: 'No solo no llamó, ___ dio explicaciones.',
     options: [
       { key: 'a', text: 'pero' },
       { key: 'b', text: 'sino' },
@@ -159,7 +159,7 @@ const QUESTIONS = [
   },
   {
     id: 15,
-    prompt: 'Nunca habia visto algo ___ extrano.',
+    prompt: 'Nunca había visto algo ___ extraño.',
     options: [
       { key: 'a', text: 'tan' },
       { key: 'b', text: 'tanto' },
@@ -192,7 +192,7 @@ const computeBand = (score) => {
   if (score <= 6) return 'A2';
   if (score <= 9) return 'B1';
   if (score <= 12) return 'B1 alto';
-  return 'B2 (maximo del test)';
+  return 'B2 (máximo del test)';
 };
 
 const AdvancedSpanishTestForm = () => {
@@ -247,7 +247,7 @@ const AdvancedSpanishTestForm = () => {
       return;
     }
 
-    setStep('result');
+    setStep('contact');
 
     trackImpact('advanced_test_submitted', {
       location: 'level_questionnaire',
@@ -260,20 +260,6 @@ const AdvancedSpanishTestForm = () => {
     if (activeQuestionIndex === 0) return;
     setActiveQuestionIndex((prev) => prev - 1);
     setTestError('');
-  };
-
-  const onOpenContactStep = () => {
-    setStep('contact');
-  };
-
-  const onRestartTest = () => {
-    setStep('quiz');
-    setActiveQuestionIndex(0);
-    setAnswers({});
-    setTestError('');
-    setContactError('');
-    setContactWarning('');
-    setStatus('idle');
   };
 
   const onSubmitContact = async (event) => {
@@ -341,7 +327,7 @@ const AdvancedSpanishTestForm = () => {
       <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 p-5">
         <h3 className="text-2xl font-headlines font-bold text-foreground mb-2">Test de nivel</h3>
         <p className="text-foreground/80 text-sm">
-          Flujo guiado en 3 pasos: respuestas, resultado y recomendación personalizada.
+          Flujo guiado en 2 pasos: respuestas y envío por correo de tu resultado.
         </p>
       </div>
 
@@ -400,7 +386,7 @@ const AdvancedSpanishTestForm = () => {
                   {t('common.previous')}
                 </Button>
                 <Button type="submit" iconName="ArrowRight" iconPosition="right">
-                  {activeQuestionIndex === totalQuestions - 1 ? 'Ver resultado' : t('common.next')}
+                  {activeQuestionIndex === totalQuestions - 1 ? 'Continuar' : t('common.next')}
                 </Button>
               </div>
             </div>
@@ -408,28 +394,11 @@ const AdvancedSpanishTestForm = () => {
         </>
       )}
 
-      {step === 'result' && (
-        <section className="space-y-4">
-          <div className="rounded-xl border border-success/25 bg-success/10 p-5">
-            <p className="text-xs font-semibold text-success uppercase tracking-wide mb-2">Resultado listo</p>
-            <h4 className="text-xl font-headlines font-bold text-foreground mb-2">Tu nivel estimado: {band}</h4>
-            <p className="text-sm text-muted-foreground">Aciertos: {score}/{totalQuestions}. Te enviaremos una recomendación personalizada y próximos pasos.</p>
-          </div>
-          <div className="rounded-xl border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
-            Recomendación UX: reserva una clase demo después de enviarnos tus datos para recibir feedback individual.
-          </div>
-          <div className="flex flex-wrap gap-2 justify-end">
-            <Button variant="outline" onClick={onRestartTest}>Repetir test</Button>
-            <Button onClick={onOpenContactStep}>Continuar y recibir evaluación</Button>
-          </div>
-        </section>
-      )}
-
       {step === 'contact' && (
         <form onSubmit={onSubmitContact} className="border-t border-border pt-6 space-y-4">
           <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">
             <p className="font-medium">Estás a un paso de tu recomendación personalizada.</p>
-            <p className="text-muted-foreground">Déjanos tus datos y te escribimos con nivel, plan recomendado y CTA de siguiente acción.</p>
+            <p className="text-muted-foreground">Déjanos tus datos y te enviaremos por correo tu nivel estimado, plan recomendado y siguientes pasos.</p>
           </div>
 
           <Input
@@ -487,7 +456,7 @@ const AdvancedSpanishTestForm = () => {
           )}
 
           <div className="flex justify-between gap-3 flex-wrap">
-            <Button type="button" variant="outline" onClick={() => setStep('result')}>
+            <Button type="button" variant="outline" onClick={() => setStep('quiz')}>
               {t('common.previous')}
             </Button>
             <Button type="submit" loading={status === 'submitting'} disabled={status === 'submitting'}>
@@ -500,7 +469,7 @@ const AdvancedSpanishTestForm = () => {
       {step === 'success' && (
         <div className="space-y-4">
           <div className="rounded-lg border border-success/20 bg-success/10 p-4 text-success text-sm">
-            Gracias. Hemos recibido tu test y te enviaremos por correo resultados, recomendaciones y enlaces para continuar.
+            Gracias. Hemos recibido tu test y te enviaremos por correo tu resultado, recomendaciones y enlaces para continuar.
           </div>
           {contactWarning ? (
             <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 text-sm">

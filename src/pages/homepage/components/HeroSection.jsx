@@ -122,13 +122,9 @@ const HeroSection = () => {
                   {/* Trust Card Overlay */}
                   <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 z-20 bg-white/95 backdrop-blur-sm p-4 sm:p-5 rounded-xl shadow-lg border border-white/30">
                     <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Icon name="CheckCircle" size={18} className="text-success" />
-                        <p className="text-sm font-semibold text-foreground">{t('hero.trust2')}</p>
-                      </div>
-                      <p className="text-xs text-muted-foreground italic">
+                      <blockquote className="border-l-2 border-primary/30 pl-3 text-xs text-muted-foreground italic">
                         "{t('hero.trustQuote')}"
-                      </p>
+                      </blockquote>
                       <Link to={getLocalizedPath('/about-the-teacher', language)} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 text-xs font-medium underline">
                         {t('hero.storyLink')} <Icon name="ArrowRight" size={14} />
                       </Link>
