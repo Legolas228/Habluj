@@ -4,7 +4,6 @@ import Header from '../../components/ui/Header';
 import HeroSection from './components/HeroSection';
 import MethodDemoSection from './components/MethodDemoSection';
 import LearningPathsSection from './components/LearningPathsSection';
-import FeaturesSection from './components/FeaturesSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import MeetEster from './components/MeetEster';
 import CTASection from './components/CTASection';
@@ -107,7 +106,6 @@ const Homepage = () => {
         <HeroSection />
         <MethodDemoSection />
         <LearningPathsSection />
-        <FeaturesSection />
         <TestimonialsSection />
         <MeetEster />
         <CTASection />

@@ -15,7 +15,7 @@ const contentByLanguage = {
     sections: [
       {
         heading: '1. Prevádzkovateľ',
-        body: `Prevádzkovateľom je Habluj (vzdelávací projekt Ester Mesároš). Kontakt: ${contactEmail}.`
+        body: `Prevádzkovateľom je Habluj (vzdelávací projekt Ester Mesároš Borrull). Kontakt: ${contactEmail}.`
       },
       {
         heading: '2. Aké údaje spracúvame',
@@ -53,7 +53,7 @@ const contentByLanguage = {
     sections: [
       {
         heading: '1. Správce údajů',
-        body: `Správcem je Habluj (vzdělávací projekt Ester Mesároš). Kontakt: ${contactEmail}.`
+        body: `Správcem je Habluj (vzdělávací projekt Ester Mesároš Borrull). Kontakt: ${contactEmail}.`
       },
       {
         heading: '2. Jaké údaje zpracováváme',
@@ -91,7 +91,7 @@ const contentByLanguage = {
     sections: [
       {
         heading: '1. Responsable del tratamiento',
-        body: `El responsable del tratamiento es Habluj (proyecto educativo de Ester Mesároš). Para cualquier consulta en materia de protección de datos puede contactar en: ${contactEmail}.`
+        body: `El responsable del tratamiento es Habluj (proyecto educativo de Ester Mesároš Borrull). Para cualquier consulta en materia de protección de datos puede contactar en: ${contactEmail}.`
       },
       {
         heading: '2. Categorías de datos tratados',

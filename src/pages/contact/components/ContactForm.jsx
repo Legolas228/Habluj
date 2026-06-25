@@ -30,23 +30,23 @@ const ContactForm = () => {
       nameLabel: 'Meno a priezvisko',
       namePlaceholder: 'Vaše celé meno',
       emailLabel: 'Email',
-      emailPlaceholder: 'vas@email.sk',
+      emailPlaceholder: 'habluj.sk@gmail.com',
       inquiryLabel: 'Typ otázky',
       inquiryPlaceholder: 'Vyberte typ otázky',
       subjectLabel: 'Predmet',
-      subjectPlaceholder: 'Stručne opíšte vašu otázku',
+      subjectPlaceholder: 'Stručne popíšte svoju otázku',
       messageLabel: 'Správa',
-      messagePlaceholder: 'Opíšte detailne vašu otázku alebo požiadavku...',
+      messagePlaceholder: 'Popíšte podrobne svoju otázku alebo potrebu...',
       messageHint: 'Minimálne 20 znakov, maximálne 1000 znakov',
       privacyTitle: 'Ochrana osobných údajov',
-      privacyText: 'Vaše údaje používame výlučne na komunikáciu s vami a nikdy ich nezdieľame s tretími stranami. Odoslaním formulára súhlasíte so spracovaním osobných údajov v súlade s GDPR.',
-      privacyConsentLabel: 'Súhlasím so spracovaním osobných údajov na účel vybavenia mojej správy.',
+      privacyText: 'Vaše údaje používame výlučne na komunikáciu s vami a nikdy ich nezdieľame s tretími stranami. Odoslaním formulára súhlasíte so spracovaním vašich osobných údajov v súlade s GDPR.',
+      privacyConsentLabel: 'Súhlasím so spracovaním mojich osobných údajov na účel vybavenia mojej správy.',
       submit: 'Odoslať správu',
       submitting: 'Odosielam...',
       clear: 'Vymazať formulár',
       errors: {
         name: 'Meno musí mať aspoň 2 znaky',
-        email: 'Zadajte platnú emailovú adresu',
+        email: 'Zadajte platný email',
         inquiry: 'Vyberte typ otázky',
         subject: 'Predmet musí mať aspoň 5 znakov',
         messageMin: 'Správa musí mať aspoň 20 znakov',
@@ -65,23 +65,23 @@ const ContactForm = () => {
       nameLabel: 'Jméno a příjmení',
       namePlaceholder: 'Vaše celé jméno',
       emailLabel: 'Email',
-      emailPlaceholder: 'vas@email.cz',
+      emailPlaceholder: 'habluj.sk@gmail.com',
       inquiryLabel: 'Typ dotazu',
       inquiryPlaceholder: 'Vyberte typ dotazu',
       subjectLabel: 'Předmět',
-      subjectPlaceholder: 'Stručně popište váš dotaz',
+      subjectPlaceholder: 'Stručně popište svůj dotaz',
       messageLabel: 'Zpráva',
-      messagePlaceholder: 'Popište podrobně svůj dotaz nebo požadavek...',
+      messagePlaceholder: 'Popište podrobně svůj dotaz nebo potřebu...',
       messageHint: 'Minimálně 20 znaků, maximálně 1000 znaků',
       privacyTitle: 'Ochrana osobních údajů',
-      privacyText: 'Vaše údaje používáme výhradně pro komunikaci s vámi a nikdy je nesdílíme s třetími stranami. Odesláním formuláře souhlasíte se zpracováním osobních údajů v souladu s GDPR.',
-      privacyConsentLabel: 'Souhlasím se zpracováním osobních údajů za účelem vyřízení mé zprávy.',
+      privacyText: 'Vaše údaje používáme výhradně pro komunikaci s vámi a nikdy je nesdílíme s třetími stranami. Odesláním formuláře souhlasíte se zpracováním vašich osobních údajů v souladu s GDPR.',
+      privacyConsentLabel: 'Souhlasím se zpracováním svých osobních údajů za účelem vyřízení mé zprávy.',
       submit: 'Odeslat zprávu',
       submitting: 'Odesílám...',
       clear: 'Vymazat formulář',
       errors: {
         name: 'Jméno musí mít alespoň 2 znaky',
-        email: 'Zadejte platnou emailovou adresu',
+        email: 'Zadejte platný email',
         inquiry: 'Vyberte typ dotazu',
         subject: 'Předmět musí mít alespoň 5 znaků',
         messageMin: 'Zpráva musí mít alespoň 20 znaků',
@@ -91,8 +91,8 @@ const ContactForm = () => {
       inquiryTypes: ['Obecné otázky', 'Rezervace hodin', 'Technická podpora', 'Individuální program', 'Ceník a platby', 'Metodika výuky'],
     },
     es: {
-      title: 'Escríbanos',
-      subtitle: 'Complete el formulario y le responderemos a la mayor brevedad. Los campos marcados con asterisco son obligatorios.',
+      title: 'Escríbenos',
+      subtitle: 'Completa el formulario y te responderemos lo antes posible. Los campos marcados con asterisco son obligatorios.',
       successTitle: '¡Mensaje enviado!',
       successText: 'Gracias por su mensaje. Le responderemos en breve.',
       errorTitle: 'Error al enviar',
@@ -242,6 +242,7 @@ const ContactForm = () => {
                   placeholder={copy.namePlaceholder}
                   error={errors.name?.message}
                   autoComplete="name"
+                  required
                   {...register('name')}
                 />
               </div>
@@ -254,6 +255,7 @@ const ContactForm = () => {
                   error={errors.email?.message}
                   autoComplete="email"
                   inputMode="email"
+                  required
                   {...register('email')}
                 />
               </div>

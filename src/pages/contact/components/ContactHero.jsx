@@ -27,13 +27,13 @@ const ContactHero = () => {
     },
     es: {
       title: 'Contáctanos',
-      subtitle: 'Estamos a su disposición. Si desea información sobre las clases de español, soporte técnico o iniciar su itinerario de aprendizaje, estaremos encantados de atenderle.',
+      subtitle: 'Estamos a tu disposición. Si deseas información sobre las clases de español estaremos encantados de atenderte.',
       fastTitle: 'Respuesta rápida',
       fastDesc: 'Respondemos en un plazo aproximado de 3 horas en días laborables',
       personalTitle: 'Atención personalizada',
       personalDesc: 'Cada estudiante recibe un acompañamiento individualizado',
       trustTitle: 'Confianza',
-      trustDesc: 'Sus datos se tratan con garantías de seguridad',
+      trustDesc: 'tus datos se tratan con garantías de seguridad',
     },
   }[language === 'cz' ? 'cz' : language === 'es' ? 'es' : 'sk'];
 

@@ -17,7 +17,7 @@ const ContactMethods = () => {
       subtitle: 'Ponúkame viacero možností, ako sa s nami môžete spojiť. Vyberte si tú, ktorá vám najviac vyhovuje.',
       recommended: 'Odporúčané',
       hoursTitle: 'Pracovné hodiny',
-      hours: 'Pondelok - Piatok: 9:00 - 18:00\nSobota: 10:00 - 14:00\nNedeľa: Zatvorené',
+      hours: 'Pondelok - Piatok: 8:00 - 21:00\nSobota: 8:00 - 14:00\nNedeľa: Zatvorené',
       hoursNote: 'Mimo pracovných hodín odpovedáme do nasledujúceho pracovného dňa',
     },
     cz: {
@@ -29,7 +29,7 @@ const ContactMethods = () => {
       subtitle: 'Nabízíme více možností, jak se s námi spojit. Vyberte si tu, která vám nejvíce vyhovuje.',
       recommended: 'Doporučeno',
       hoursTitle: 'Pracovní hodiny',
-      hours: 'Pondělí - Pátek: 9:00 - 18:00\nSobota: 10:00 - 14:00\nNeděle: Zavřeno',
+      hours: 'Pondělí - Pátek: 8:00 - 21:00\nSobota: 8:00 - 14:00\nNeděle: Zavřeno',
       hoursNote: 'Mimo pracovní dobu odpovídáme následující pracovní den',
     },
     es: {
@@ -41,7 +41,7 @@ const ContactMethods = () => {
       subtitle: 'Le ofrecemos varias vías de comunicación. Seleccione la que mejor se adapte a sus preferencias.',
       recommended: 'Recomendado',
       hoursTitle: 'Horario de atención',
-      hours: 'Lunes - Viernes: 9:00 - 18:00\nSábado: 10:00 - 14:00\nDomingo: Cerrado',
+      hours: 'Lunes - Viernes: 8:00 - 21:00\nSábado: 8:00 - 14:00\nDomingo: Cerrado',
       hoursNote: 'Fuera de este horario, respondemos el siguiente día laborable',
     },
   }[language === 'cz' ? 'cz' : language === 'es' ? 'es' : 'sk'];
@@ -71,7 +71,11 @@ const ContactMethods = () => {
 
   const handleContactAction = (method) => {
     if (method?.link) {
-      window.open(method.link, '_blank');
+      if (method.link.startsWith('mailto:')) {
+        window.location.href = method.link;
+        return;
+      }
+      window.open(method.link, '_blank', 'noopener,noreferrer');
       return;
     }
     

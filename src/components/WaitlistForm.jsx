@@ -20,6 +20,8 @@ const mapWaitlistSource = (courseType) => {
 const INTENSIVE_COURSE_OPTIONS = [
   { value: 'intensive_general', labelKey: 'waitlist.intensiveCourse.general' },
   { value: 'intensive_conversation', labelKey: 'waitlist.intensiveCourse.conversation' },
+  { value: 'intensive_dele', labelKey: 'waitlist.intensiveCourse.dele' },
+  { value: 'intensive_business', labelKey: 'waitlist.intensiveCourse.business' },
 ];
 
 const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
@@ -48,6 +50,12 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
   const onSubmit = async (event) => {
     event.preventDefault();
     setError('');
+
+    if (!consentPrivacy) {
+      setStatus('error');
+      setError(t('waitlist.privacyConsent'));
+      return;
+    }
 
     const normalizedEmail = email.trim().toLowerCase();
     if (!EMAIL_PATTERN.test(normalizedEmail)) {
@@ -174,25 +182,25 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
         />
 
         <label htmlFor="waitlist-privacy" className="flex items-start gap-2 text-sm text-muted-foreground">
-          <Input
+          <input
             id="waitlist-privacy"
             type="checkbox"
             checked={consentPrivacy}
             onChange={(event) => setConsentPrivacy(event.target.checked)}
             required
-            className="mt-0.5"
+            className="mt-0.5 h-4 w-4 rounded border border-primary/60 bg-white accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={t('waitlist.privacyConsent')}
           />
           <span>{t('waitlist.privacyConsent')}</span>
         </label>
 
         <label htmlFor="waitlist-marketing" className="flex items-start gap-2 text-sm text-muted-foreground">
-          <Input
+          <input
             id="waitlist-marketing"
             type="checkbox"
             checked={consentMarketing}
             onChange={(event) => setConsentMarketing(event.target.checked)}
-            className="mt-0.5"
+            className="mt-0.5 h-4 w-4 rounded border border-primary/60 bg-white accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={t('waitlist.marketingConsent')}
           />
           <span>{t('waitlist.marketingConsent')}</span>

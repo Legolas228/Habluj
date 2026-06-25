@@ -88,7 +88,23 @@ const TeachingPhilosophy = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <h3 className="font-headlines text-2xl lg:text-3xl font-bold text-foreground mb-4">
-                {t('about.philosophy.methodology.title').replace('{highlight}', '')} <span className="text-spanish">{t('about.philosophy.methodology.titleHighlight')}</span>
+                {(() => {
+                  const title = t('about.philosophy.methodology.title');
+                  const highlight = t('about.philosophy.methodology.titleHighlight');
+
+                  if (title.includes('{highlight}')) {
+                    const parts = title.split('{highlight}');
+                    return (
+                      <>
+                        {parts[0]}
+                        <span className="text-spanish">{highlight}</span>
+                        {parts[1]}
+                      </>
+                    );
+                  }
+
+                  return title;
+                })()}
               </h3>
               <p className="text-muted-foreground leading-relaxed mb-8">
                 {t('about.philosophy.methodology.desc')}
@@ -99,14 +115,7 @@ const TeachingPhilosophy = () => {
                   <div key={index} className="relative pl-8 border-l-2 border-primary/20">
                     <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-primary"></div>
                     <h4 className="font-semibold text-lg text-foreground mb-2">{step.title}</h4>
-                    <p className="text-muted-foreground mb-4 leading-relaxed">{step.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {step.features.map((feature, featureIndex) => (
-                        <span key={featureIndex} className="text-xs font-medium bg-secondary/10 text-secondary-foreground px-3 py-1 rounded-full">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-muted-foreground leading-relaxed">{step.description}</p>
                   </div>
                 ))}
               </div>
@@ -119,7 +128,6 @@ const TeachingPhilosophy = () => {
                 <blockquote className="font-accent text-xl lg:text-2xl italic mb-6 leading-relaxed">
                   {t('about.philosophy.quote')}
                 </blockquote>
-                <div className="font-semibold">Ester Mesároš</div>
                 <div className="text-white/80 text-sm">{t('about.philosophy.quoteAuthor')}</div>
               </div>
             </div>

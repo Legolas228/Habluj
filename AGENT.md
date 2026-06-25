@@ -27,7 +27,7 @@ en que punto esta el proyecto.
 
 **Habluj** es una plataforma web de tutoria de espanol dirigida a hablantes
 de eslovaco y checo. Ofrece una web informativa y de marketing para la profesora
-Ester Mesároš (Bratislava, Eslovaquia), con sistema de reservas externo
+Ester Mesároš Borrull (Bratislava, Eslovaquia), con sistema de reservas externo
 (Setmore), paginas de servicios, contacto y soporte multilingue (SK/CZ/ES).
 
 **Publico objetivo:** Pequena academia de idiomas (50-200 alumnos).
@@ -596,7 +596,7 @@ Los componentes en src/components/ui/ DEBEN seguir este patron:
 
 | Ruta                  | Componente        | Estado   | Descripcion                      |
 |-----------------------|-------------------|----------|----------------------------------|
-| /                     | AboutTheTeacher   | Activa   | Landing page (redirect aqui)     |
+| /                     | AboutTheTeacher   | Activa   | Landing page (redirectaquí)     |
 | /homepage             | Homepage          | Activa   | Marketing: hero, features, CTA   |
 | /about-the-teacher    | AboutTheTeacher   | Activa   | Bio, filosofia, credenciales     |
 | /tutoring-services    | TutoringServices  | Activa   | Servicios, precios, CTA Setmore  |

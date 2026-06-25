@@ -5,7 +5,6 @@ import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
-import CurrencyDisplay from '../../components/CurrencyDisplay';
 import ServiceFeatures from './components/ServiceFeatures';
 import LevelQuizTeaser from '../../components/LevelQuizTeaser';
 import WaitlistForm from '../../components/WaitlistForm';
@@ -209,13 +208,13 @@ const TutoringServices = () => {
       features: t('learning.path1.features').split(','),
       duration: t('learning.path1.duration'),
       lessons: t('learning.path1.lessons'),
-      priceEUR: 20,
-      priceSuffix: t('learning.path1.priceSuffix'),
+      price: t('learning.path1.price'),
+      popular: false,
     },
     {
       id: 'program-group',
       targetId: 'group-classes',
-      icon: 'Users',
+      icon: 'TrendingUp',
       color: 'bg-primary',
       title: t('learning.path2.title'),
       subtitle: t('learning.path2.subtitle'),
@@ -223,13 +222,13 @@ const TutoringServices = () => {
       features: t('learning.path2.features').split(','),
       duration: t('learning.path2.duration'),
       lessons: t('learning.path2.lessons'),
-      priceEUR: 149,
-      priceSuffix: t('learning.path2.priceSuffix'),
+      price: t('learning.path2.price'),
+      popular: true,
     },
     {
       id: 'program-intensive',
       targetId: 'intensive-courses',
-      icon: 'Zap',
+      icon: 'Briefcase',
       color: 'bg-secondary',
       title: t('learning.path3.title'),
       subtitle: t('learning.path3.subtitle'),
@@ -237,8 +236,8 @@ const TutoringServices = () => {
       features: t('learning.path3.features').split(','),
       duration: t('learning.path3.duration'),
       lessons: t('learning.path3.lessons'),
-      priceEUR: 79,
-      priceSuffix: t('learning.path3.priceSuffix'),
+      price: t('learning.path3.price'),
+      popular: false,
     },
   ];
 
@@ -287,18 +286,26 @@ const TutoringServices = () => {
             </p>
           </div>
 
-          <div className="grid [grid-template-columns:repeat(auto-fit,minmax(280px,360px))] justify-center gap-8 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {completePrograms.map((program, index) => (
               <div
                 key={program.id}
-                className="relative bg-white rounded-2xl p-6 shadow-soft hover:shadow-cultural transition-all duration-300 group"
+                className={`relative bg-white rounded-2xl p-6 shadow-soft hover:shadow-cultural transition-all duration-300 group flex flex-col ${program.popular ? 'ring-2 ring-primary ring-offset-4' : ''}`}
                 style={{ '--milestone-index': index }}
               >
+                {program.popular && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-primary text-white px-4 py-1 rounded-full text-xs font-medium">
+                      {t('learning.path2.popular')}
+                    </div>
+                  </div>
+                )}
+
                 <div className={`w-12 h-12 ${program.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                   <Icon name={program.icon} size={24} className="text-white" />
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 flex flex-col h-full">
                   <div>
                     <h3 className="text-xl font-headlines font-bold text-foreground mb-1 line-clamp-2">
                       {program.title}
@@ -330,24 +337,21 @@ const TutoringServices = () => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">{t('learning.labels.price')}</span>
-                      <span className="font-bold text-primary text-right">
-                        <CurrencyDisplay priceEUR={program.priceEUR} className="font-bold text-primary" />
-                        {program.priceSuffix ? (
-                          <span className="block text-xs font-medium text-muted-foreground">{program.priceSuffix}</span>
-                        ) : null}
-                      </span>
+                      <span className="font-bold text-primary">{program.price}</span>
                     </div>
                   </div>
 
-                  <Button
-                    variant="default"
-                    size="sm"
-                    fullWidth
-                    className={program.id === 'program-intensive' ? 'bg-secondary hover:bg-secondary/90' : 'bg-primary hover:bg-primary/90'}
-                    onClick={() => program.id === 'program-intensive' ? window.location.href = getLocalizedPath('/intensive-courses', language) : scrollToSection(program.targetId)}
-                  >
-                    {t('learning.cta')}
-                  </Button>
+                  <div className="mt-auto pt-2">
+                    <Button
+                      variant={program.popular ? 'default' : 'outline'}
+                      size="sm"
+                      fullWidth
+                      className={program.popular ? 'bg-primary hover:bg-primary/90' : 'border-primary text-primary hover:bg-primary hover:text-white'}
+                      onClick={() => scrollToSection(program.targetId)}
+                    >
+                      {t('learning.cta')}
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

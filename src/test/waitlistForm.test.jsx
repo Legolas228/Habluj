@@ -123,4 +123,21 @@ describe('WaitlistForm', () => {
       }));
     });
   });
+
+  it('does not submit when privacy consent is not selected', async () => {
+    render(<WaitlistForm preferredCourseType="small_group" />);
+
+    fireEvent.change(screen.getByLabelText('waitlist.namePlaceholder'), {
+      target: { value: 'Mario Student' },
+    });
+    fireEvent.change(screen.getByLabelText('waitlist.emailPlaceholder'), {
+      target: { value: 'mario@example.com' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'waitlist.submit' }));
+
+    await waitFor(() => {
+      expect(submitLeadCaptureMock).not.toHaveBeenCalled();
+    });
+  });
 });

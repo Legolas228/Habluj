@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { trackImpact } from '../../../utils/analytics';
 import { getLocalizedPath } from '../../../utils/seo';
+import FeaturesSection from './FeaturesSection';
 
 const MethodDemoSection = () => {
   const { t, language } = useTranslation();
@@ -95,6 +96,8 @@ const MethodDemoSection = () => {
             </div>
           </div>
         </div>
+
+        <FeaturesSection integrated />
       </div>
     </section>
   );

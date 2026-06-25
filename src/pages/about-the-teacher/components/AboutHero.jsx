@@ -1,17 +1,9 @@
 import React from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
-import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 
 const AboutHero = () => {
   const { t } = useTranslation();
-
-  const scrollToVideo = () => {
-    const videoSection = document.getElementById('video-introduction');
-    if (videoSection) {
-      videoSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
 
   return (
     <section className="relative pt-24 pb-14 sm:pt-28 sm:pb-16 lg:pt-40 lg:pb-32 overflow-hidden">
@@ -40,25 +32,13 @@ const AboutHero = () => {
               {t('about.hero.description')}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Button
-                size="lg"
-                className="bg-spanish text-white hover:bg-spanish/90 shadow-lg shadow-spanish/20"
-                iconName="Play"
-                iconPosition="left"
-                onClick={scrollToVideo}
-              >
-                {t('about.hero.videoButton')}
-              </Button>
-            </div>
-
             <div className="grid grid-cols-3 gap-4 sm:gap-8 border-t border-border pt-6 sm:pt-8">
               <div>
                 <div className="font-headlines text-2xl sm:text-3xl font-bold text-primary mb-1">4+</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('about.hero.stats.experience')}</div>
               </div>
               <div>
-                <div className="font-headlines text-2xl sm:text-3xl font-bold text-primary mb-1">30+</div>
+                <div className="font-headlines text-2xl sm:text-3xl font-bold text-primary mb-1">40+</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('about.hero.stats.students')}</div>
               </div>
               <div>
@@ -74,7 +54,7 @@ const AboutHero = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
               <img
                 src="/assets/images/ester-placeholder.webp"
-                alt="Ester Mesároš"
+                alt="Ester Mesároš Borrull"
                 className="w-full h-full object-cover"
                 fetchpriority="high"
                 loading="eager"
@@ -90,7 +70,7 @@ const AboutHero = () => {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-foreground italic">"{t('about.hero.quote')}"</p>
-                    <p className="text-xs text-muted-foreground mt-1">- Ester Mesároš</p>
+                    <p className="text-xs text-muted-foreground mt-1">- Ester Mesároš Borrull</p>
                   </div>
                 </div>
               </div>

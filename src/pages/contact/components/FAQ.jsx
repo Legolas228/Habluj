@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Icon from '../../../components/AppIcon';
-import Input from '../../../components/ui/Input';
 import { contactInfo } from '../../../utils/contactInfo';
 import { useTranslation } from '../../../hooks/useTranslation';
 
@@ -26,7 +25,7 @@ const faqContent = {
     faqs: [
       { id: 1, category: 'teaching', question: 'Ako prebiehajú online lekcie?', answer: 'Lekcie prebiehajú individuálne cez online videohovor. Obsah je prispôsobený vašej úrovni, cieľom a tempu učenia.' },
       { id: 2, category: 'booking', question: 'Ako si rezervujem termín?', answer: 'Termín si vyberiete v rezervačnom systéme. Po potvrdení dostanete všetky inštrukcie na email.' },
-      { id: 3, category: 'pricing', question: 'Aká je cena lekcie?', answer: 'Štandardná cena je 20 € za 60 minút. Aktuálne podmienky a dostupnosť vidíte na stránke služieb.' },
+      { id: 3, category: 'pricing', question: 'Aká je cena lekcie?', answer: 'Štandardná cena je 25 € (cca 625 Kč) za 60 minút. Aktuálne podmienky a dostupnosť vidíte na stránke služieb.' },
       { id: 4, category: 'technical', question: 'Čo potrebujem na online hodinu?', answer: 'Stabilný internet, mikrofón, slúchadlá a tiché prostredie. Pred prvou hodinou vieme spraviť krátky technický test.' },
     ],
   },
@@ -50,7 +49,7 @@ const faqContent = {
     faqs: [
       { id: 1, category: 'teaching', question: 'Jak probíhají online lekce?', answer: 'Lekce probíhají individuálně přes online videohovor. Obsah je přizpůsoben vaší úrovni, cílům a tempu učení.' },
       { id: 2, category: 'booking', question: 'Jak si rezervuji termín?', answer: 'Termín si vyberete v rezervačním systému. Po potvrzení dostanete všechny instrukce na email.' },
-      { id: 3, category: 'pricing', question: 'Jaká je cena lekce?', answer: 'Standardní cena je 500 Kč za 60 minut. Aktuální podmínky a dostupnost najdete na stránce služeb.' },
+      { id: 3, category: 'pricing', question: 'Jaká je cena lekce?', answer: 'Standardní cena je 25 € (cca 625 Kč) za 60 minut. Aktuální podmínky a dostupnost najdete na stránce služeb.' },
       { id: 4, category: 'technical', question: 'Co potřebuji na online hodinu?', answer: 'Stabilní internet, mikrofon, sluchátka a klidné prostředí. Před první hodinou můžeme udělat krátký technický test.' },
     ],
   },
@@ -67,15 +66,15 @@ const faqContent = {
     searchPlaceholder: 'Buscar en preguntas...',
     emptyTitle: 'No se encontraron resultados',
     emptyText: 'Prueba otro término o categoría.',
-    ctaTitle: '¿No ha encontrado su respuesta?',
-    ctaText: 'Escríbanos directamente y le ayudaremos a elegir el siguiente paso más adecuado.',
+    ctaTitle: '¿No has encontrado tu respuesta?',
+    ctaText: 'Escríbenos directamente y te ayudaremos a elegir el siguiente paso más adecuado.',
     emailCta: 'Enviar correo',
     igCta: 'Instagram',
     faqs: [
-      { id: 1, category: 'teaching', question: '¿Cómo se imparten las clases online?', answer: 'Las clases son individuales por videollamada. El contenido se adapta a su nivel, objetivos y ritmo de aprendizaje.' },
-      { id: 2, category: 'booking', question: '¿Cómo puedo reservar una clase?', answer: 'Puede seleccionar el horario en el sistema de reservas. Tras confirmar, recibirá todas las instrucciones por correo electrónico.' },
-      { id: 3, category: 'pricing', question: '¿Cuál es el precio de una clase?', answer: 'El precio estándar es de 20 € por sesión de 60 minutos. Consulte condiciones y disponibilidad en la página de servicios.' },
-      { id: 4, category: 'technical', question: '¿Qué necesito para una clase online?', answer: 'Necesitará una conexión estable, micrófono, auriculares y un entorno tranquilo. Antes de la primera sesión podemos realizar una prueba técnica.' },
+      { id: 1, category: 'teaching', question: '¿Cómo se imparten las clases online?', answer: 'Las clases se realizan por videollamada. El profesor comparte la pizarra para que el alumno en todo momento sepa qué estamos haciendo. El contenido se adapta a su nivel, objetivos y ritmo de aprendizaje.' },
+      { id: 2, category: 'booking', question: '¿Cómo puedo reservar una clase?', answer: 'Puedes seleccionar el horario en el sistema de reservas. Tras confirmar, recibirás todas las instrucciones por correo electrónico.' },
+      { id: 3, category: 'pricing', question: '¿Cuál es el precio de una clase?', answer: 'El precio estándar es de 25 € (625 Kč) por sesión de 60 minutos. Consulta condiciones y disponibilidad en la página de servicios.' },
+      { id: 4, category: 'technical', question: '¿Qué necesito para una clase online?', answer: 'Necesitarás un ordenador con conexión estable, cámara, micrófono y un entorno tranquilo.' },
     ],
   },
 };
@@ -83,15 +82,12 @@ const faqContent = {
 const FAQ = () => {
   const { language } = useTranslation();
   const content = faqContent[language === 'cz' ? 'cz' : language === 'es' ? 'es' : 'sk'];
-  const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [openItems, setOpenItems] = useState(new Set());
 
   const filteredFAQs = content.faqs.filter((item) => {
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
-    const term = searchTerm.toLowerCase();
-    const matchesSearch = searchTerm === '' || item.question.toLowerCase().includes(term) || item.answer.toLowerCase().includes(term);
-    return matchesCategory && matchesSearch;
+    return matchesCategory;
   });
 
   const toggleItem = (id) => {
@@ -124,16 +120,6 @@ const FAQ = () => {
         </div>
 
         <div className="mb-8">
-          <div className="max-w-md mx-auto mb-6">
-            <Input
-              type="search"
-              placeholder={content.searchPlaceholder}
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              className="w-full"
-            />
-          </div>
-
           <div className="flex flex-wrap justify-center gap-2">
             {content.categories.map((category) => (
               <button

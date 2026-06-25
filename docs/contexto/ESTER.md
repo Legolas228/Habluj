@@ -1,4 +1,4 @@
-# ESTER.md — Información real sobre Ester Mesároš para agentes de IA
+# ESTER.md — Información real sobre Ester Mesároš Borrull para agentes de IA
 
 > **LEE ESTE ARCHIVO ANTES DE TOCAR CUALQUIER LOCALE O TEXTO DE LA WEB.**
 > Toda la información aquí es real y verificada. No inventes nada fuera de lo
@@ -9,7 +9,7 @@
 
 ## Quién es Ester
 
-- **Nombre completo:** Ester Mesároš
+- **Nombre completo:** Ester Mesároš Borrull
 - **Origen:** Eslovaquia (zona este del país)
 - **Residencia académica actual:** Praga, República Checa
 - **Estado civil:** casada; su relación nació en España
@@ -92,7 +92,7 @@
 
 - Ester tiene **22 años**, es **joven, directa y apasionada**.
 - No es corporativa ni formal. Es cercana pero segura de sí misma.
-- Tagline principal: **"Empieza hoy, habla mañana"** (o equivalente en SK/CZ).
+- Tagline principal: **"¡¡Empieza hoy, habla mañana!!"** (o equivalente en SK/CZ).
 - Puede decir que es exigente — eso la diferencia.
 - Puede decir que sus clases no son para todo el mundo — solo para gente
   motivada.
