@@ -19,14 +19,14 @@ const faqContent = {
     emptyTitle: 'Nenašli sa žiadne výsledky',
     emptyText: 'Skúste iný výraz alebo kategóriu.',
     ctaTitle: 'Nenašli ste odpoveď?',
-    ctaText: 'Napíšte nám priamo a pomôžeme vám s výberom správneho postupu.',
+    ctaText: 'Napíšte nám, radi Vám pomôžeme.',
     emailCta: 'Napísať email',
     igCta: 'Instagram',
     faqs: [
-      { id: 1, category: 'teaching', question: 'Ako prebiehajú online lekcie?', answer: 'Lekcie prebiehajú individuálne cez online videohovor. Obsah je prispôsobený vašej úrovni, cieľom a tempu učenia.' },
+      { id: 1, category: 'teaching', question: 'Ako prebiehajú online lekcie?', answer: 'Lekcie prebiehajú cez online videohovor. Obsah je prispôsobený Vašej úrovni, cieľom a tempu učenia. Pred každou hodinou obdržíte link na pripojenie. Počas celej hodiny je zdieľaná tabuľa, a tak presne viete kde sa aktuálne nachádzame.' },
       { id: 2, category: 'booking', question: 'Ako si rezervujem termín?', answer: 'Termín si vyberiete v rezervačnom systéme. Po potvrdení dostanete všetky inštrukcie na email.' },
-      { id: 3, category: 'pricing', question: 'Aká je cena lekcie?', answer: 'Štandardná cena je 25 € (cca 625 Kč) za 60 minút. Aktuálne podmienky a dostupnosť vidíte na stránke služieb.' },
-      { id: 4, category: 'technical', question: 'Čo potrebujem na online hodinu?', answer: 'Stabilný internet, mikrofón, slúchadlá a tiché prostredie. Pred prvou hodinou vieme spraviť krátky technický test.' },
+      { id: 3, category: 'pricing', question: 'Aká je cena lekcie?', answer: 'Štandardná cena je 25 € za 60 minút. Aktuálne podmienky a dostupnosť si overte na stránke služieb. V prípade ďalších otázok nás neváhajte kontaktovať.' },
+      { id: 4, category: 'technical', question: 'Čo potrebujem na online hodinu?', answer: 'Stabilný internet, mikrofón, slúchadlá a tiché prostredie.' },
     ],
   },
   cz: {
@@ -43,7 +43,7 @@ const faqContent = {
     emptyTitle: 'Nenalezeny žádné výsledky',
     emptyText: 'Zkuste jiný výraz nebo kategorii.',
     ctaTitle: 'Nenašli jste odpověď?',
-    ctaText: 'Napište nám přímo a pomůžeme vám vybrat správný postup.',
+    ctaText: 'Napište nám přímo a pomůžeme Vám vybrat správný postup.',
     emailCta: 'Napsat email',
     igCta: 'Instagram',
     faqs: [

@@ -67,7 +67,7 @@ const BookingCalendar = ({ onTimeSelect, selectedService }) => {
             Rezervácia termínu
           </h3>
           <p className="text-sm text-muted-foreground">
-            Vyberte si dátum a čas pre vašu lekciu
+            Vyberte si dátum a čas pre Vašu lekciu
           </p>
         </div>
       </div>

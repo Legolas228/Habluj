@@ -24,7 +24,7 @@ const AboutTheTeacher = () => {
           name="description"
           content={t('about.meta.description')}
         />
-        <meta name="keywords" content="španielčina, lektorka španielčiny, Ester Mesároš Borrull, Habluj, online lekcie, slovenčina, čeština" />
+        <meta name="keywords" content="španielčina, učiteľka španielčiny, Ester Mesároš Borrull, Habluj, online lekcie, slovenčina, čeština" />
         <meta property="og:title" content={t('about.meta.title')} />
         <meta property="og:description" content={t('about.meta.description')} />
         <meta property="og:url" content={getCanonicalUrl('/about-the-teacher', language)} />

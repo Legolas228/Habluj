@@ -10,22 +10,22 @@ const TestimonialsSection = () => {
     {
       id: 1,
       name: 'Mariana V.',
-      content: 'Hodiny španielčiny sa mi veľmi páčia ❤️ Okrem toho, že má Ester vždy pripravené niečo nové, tak je to aj sranda. Aspoň ja sa teda dobre bavím 😅 páči sa mi ako vie vždy naviazať na to, čo potrebujem vedieť, že je ochotná vysvetliť mi niektoré veci aj 10x, kým to nedostanem do hlavy. Cením si jej trpezlivosť, že ideme tempom, ktoré mi vyhovuje a že je veľmi všímavá a vidí, kedy sa v tom jazyku už strácam a potrebujem spomaliť. Inokedy ma zas mentálne nakopne a mám pocit, že môžem ísť hablovať s domácimi 😅 Som vďačná za čas, ktorý mi venuje a teším sa na ďalšie hodiny :)'
+      content: 'Hodiny španielčiny sa mi veľmi páčia ❤️ Okrem toho, že má Ester vždy pripravené niečo nové, tak je to aj sranda. Aspoň ja sa teda dobre bavím 😅 páči sa mi ako vie vždy naviazať na to, čo potrebujem vedieť, že je ochotná vysvetliť mi niektoré veci aj 10x, kým to nedostanem do hlavy. Cením si jej trpezlivosť, že ideme tempom, ktoré mi vyhovuje a že je veľmi všímavá a vidí, kedy sa v tom jazyku už strácam a potrebujem spomaliť. Inokedynászas mentálne nakopne a mám pocit, že môžem ísť hablovať s domácimi 😅 Som vďačná za čas, ktorý mi venuje a teším sa na ďalšie hodiny :)'
     },
     {
       id: 2,
       name: 'Daniela Ď.',
-      content: 'Ahojte, hodiny s Ester určite môžem odporučiť. Odkedy ma doučuje, som viac sebavedomá čo sa týka mojej španielčiny a mala som možnosť pochopiť španielsku literatúru, kultúru, gramatiku a konverzáciu lepšie, vzhľadom k tomu, že učebný systém v škole kam chodím mi nie vždy sadne. Je naozaj trpezlivá a vie vysvetliť učivo rôznymi spôsobmi. Keď som to potrebovala, vždy mi učivo vedela vysvetliť jednoduchým a pochopiteľným spôsobom. Má skúsenosti s rôznymi žiakmi, z bilingválu, z normálnej strednej, alebo proste jednoducho povedané, žiakov rôznych vekových kategórii a tak. Skrátka, je to veľmi milá, ľudská, ochotná a pracovitá osoba, takže som za hodiny s ňou rada, vždy sa na ne teším a určite by som nechcela meniť doučovateľku😊'
+      content: 'Ahojte, hodiny s Ester určite môžem odporučiť. Odkedynásdoučuje, som viac sebavedomá čo sa týka mojej španielčiny a mala som možnosť pochopiť španielsku literatúru, kultúru, gramatiku a konverzáciu lepšie, vzhľadom k tomu, že učebný systém v škole kam chodím mi nie vždy sadne. Je naozaj trpezlivá a vie vysvetliť učivo rôznymi spôsobmi. Keď som to potrebovala, vždy mi učivo vedela vysvetliť jednoduchým a pochopiteľným spôsobom. Má skúsenosti s rôznymi žiakmi, z bilingválu, z normálnej strednej, alebo proste jednoducho povedané, žiakov rôznych vekových kategórii a tak. Skrátka, je to veľmi milá, ľudská, ochotná a pracovitá osoba, takže som za hodiny s ňou rada, vždy sa na ne teším a určite by som nechcela meniť doučovateľku😊'
     },
     {
       id: 3,
       name: 'Daniel K.',
-      content: 'Ester je super doučovateľka s príjemným ľudským prístupom a zároveň mierou profesionality, ktorá vám pomôže byť sebavedomejším hovorcom Španielčiny. Určite odporúčam :)'
+      content: 'Ester je super doučovateľka s príjemným ľudským prístupom a zároveň mierou profesionality, ktorá Vám pomôže byť sebavedomejším hovorcom Španielčiny. Určite odporúčam :)'
     },
     {
       id: 4,
       name: 'Megan J.',
-      content: 'Osobne by som odporúčala. Vie veľmi dobre učiť, vždy má všetko naplánované a vie výborne vysvetľovať. Vždy sa teším na jej hodiny. Mám veľmi rada jej spôsob a postoj k učeniu. Motivuje ma to. Nerobím s ňou dlho ale už na sebe vidím zmeny. Je komunikatívna, priateľská a vie sa prispôsobiť. Mám ju veľmi rada a nikdy by som nechcela niekoho iného 💜'
+      content: 'Osobne by som odporúčala. Vie veľmi dobre učiť, vždy má všetko naplánované a vie výborne vysvetľovať. Vždy sa teším na jej hodiny. Mám veľmi rada jej spôsob a postoj k učeniu. Motivujenásto. Nerobím s ňou dlho ale už na sebe vidím zmeny. Je komunikatívna, priateľská a vie sa prispôsobiť. Mám ju veľmi rada a nikdy by som nechcela niekoho iného 💜'
     },
     {
       id: 5,

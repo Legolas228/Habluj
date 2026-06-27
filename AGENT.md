@@ -124,7 +124,7 @@ Habluj/
 │   │   └── IconRegistry.js        # Imports centralizados de lucide-react
 │   │
 │   ├── context/
-│   │   └── LanguageContext.jsx    # i18n: idioma + traducciones dinamicas
+│   │   └── LanguageContext.jsx    # i18n: idioma + traducciones dinámicas
 │   │
 │   ├── hooks/
 │   │   └── useTranslation.js      # Hook que envuelve LanguageContext

@@ -22,9 +22,9 @@ const ContactForm = () => {
   const copy = {
     sk: {
       title: 'Napíšte nám',
-      subtitle: 'Vyplňte formulár a my sa vám ozveme čo najskôr. Všetky polia označené hviezdičkou sú povinné.',
+      subtitle: 'Vyplňte formulár a my sa Vám ozveme čo najskôr. Všetky polia označené hviezdičkou sú povinné.',
       successTitle: 'Správa bola odoslaná!',
-      successText: 'Ďakujeme za vašu správu. Ozveme sa vám čo najskôr.',
+      successText: 'Ďakujeme za Vašu správu. Ozveme sa Vám čo najskôr.',
       errorTitle: 'Chyba pri odosielaní',
       errorText: 'Niečo sa pokazilo. Skúste to prosím znovu alebo nás kontaktujte priamo.',
       nameLabel: 'Meno a priezvisko',
@@ -39,7 +39,7 @@ const ContactForm = () => {
       messagePlaceholder: 'Popíšte podrobne svoju otázku alebo potrebu...',
       messageHint: 'Minimálne 20 znakov, maximálne 1000 znakov',
       privacyTitle: 'Ochrana osobných údajov',
-      privacyText: 'Vaše údaje používame výlučne na komunikáciu s vami a nikdy ich nezdieľame s tretími stranami. Odoslaním formulára súhlasíte so spracovaním vašich osobných údajov v súlade s GDPR.',
+      privacyText: 'Vaše údaje používame výlučne na komunikáciu s Vami a nikdy ich nezdieľame s tretími stranami. Odoslaním formulára súhlasíte so spracovaním vašich osobných údajov v súlade s GDPR.',
       privacyConsentLabel: 'Súhlasím so spracovaním mojich osobných údajov na účel vybavenia mojej správy.',
       submit: 'Odoslať správu',
       submitting: 'Odosielam...',
@@ -57,9 +57,9 @@ const ContactForm = () => {
     },
     cz: {
       title: 'Napište nám',
-      subtitle: 'Vyplňte formulář a my se vám ozveme co nejdříve. Pole označená hvězdičkou jsou povinná.',
+      subtitle: 'Vyplňte formulář a my se Vám ozveme co nejdříve. Pole označená hvězdičkou jsou povinná.',
       successTitle: 'Zpráva byla odeslána!',
-      successText: 'Děkujeme za vaši zprávu. Brzy se vám ozveme.',
+      successText: 'Děkujeme za vaši zprávu. Brzy se Vám ozveme.',
       errorTitle: 'Chyba při odeslání',
       errorText: 'Něco se pokazilo. Zkuste to prosím znovu nebo nás kontaktujte přímo.',
       nameLabel: 'Jméno a příjmení',

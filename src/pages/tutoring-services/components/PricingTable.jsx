@@ -10,7 +10,7 @@ const PricingTable = ({ packages, onSelectPackage }) => {
           Porovnanie balíčkov
         </h3>
         <p className="text-white/90">
-          Vyberte si balíček, ktorý najlepšie vyhovuje vašim potrebám
+          Vyberte si balíček, ktorý najlepšie vyhovuje Vašim potrebám
         </p>
       </div>
       <div className="overflow-x-auto">
