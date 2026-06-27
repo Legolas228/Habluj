@@ -88,7 +88,7 @@ const StudentSuccess = () => {
       },
       level: "A1 → B1",
       duration: "8 mesiacov",
-      achievement: "Erasmus pobyt v Valencii",
+      achievement: "Erazmus pobyt v Valencii",
       tags: ["Začiatočník", "Štúdium v zahraničí"]
     }
   ];

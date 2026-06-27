@@ -31,7 +31,7 @@ const contentByLanguage = {
       },
       {
         heading: '5. Duševné vlastníctvo',
-        body: 'Obsah stránky, materiály a metodiky sú chránené právami duševného vlastníctva. Bez súhlasu ich nie je možné neoprávnene šíriť.'
+        body: 'Obsah stránky, materiály a metodiky sú chránené práVami duševného vlastníctva. Bez súhlasu ich nie je možné neoprávnene šíriť.'
       },
       {
         heading: '6. Zodpovednosť',

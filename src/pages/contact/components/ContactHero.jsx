@@ -7,7 +7,7 @@ const ContactHero = () => {
   const copy = {
     sk: {
       title: 'Kontaktujte nás',
-      subtitle: 'Sme tu pre vás! Či už máte otázky o výučbe španielčiny, potrebujete technickú podporu alebo chcete začať svoju jazykovú cestu - radi vám pomôžeme.',
+      subtitle: 'Sme tu pre Vás! Ak máte otázky o výučbe španielčiny, veľmi radi Vám pomôžeme.',
       fastTitle: 'Rýchla odpoveď',
       fastDesc: 'Odpovedáme do 3 hodín v pracovných dňoch',
       personalTitle: 'Osobný prístup',
@@ -17,7 +17,7 @@ const ContactHero = () => {
     },
     cz: {
       title: 'Kontaktujte nás',
-      subtitle: 'Jsme tu pro vás! Ať už máte dotazy k výuce španělštiny, potřebujete technickou podporu nebo chcete začít svou jazykovou cestu, rádi pomůžeme.',
+      subtitle: 'Jsme tu pro Vás! Ať už máte dotazy k výuce španělštiny, potřebujete technickou podporu nebo chcete začít svou jazykovou cestu, rádi pomůžeme.',
       fastTitle: 'Rychlá odpověď',
       fastDesc: 'Odpovídáme do 3 hodin v pracovních dnech',
       personalTitle: 'Osobní přístup',
