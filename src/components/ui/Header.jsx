@@ -62,16 +62,12 @@ const Header = () => {
           <div className="flex items-center justify-between h-16 px-4 lg:px-6">
             {/* Logo */}
             <Link to={getLocalizedPath('/', language)} className="flex items-center space-x-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-cultural rounded-lg flex items-center justify-center shadow-warm group-hover:shadow-cultural transition-all duration-300">
-                  <span className="text-white font-headlines font-bold text-lg">H</span>
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
-              </div>
-              <div className="hidden sm:block">
-                <div className="font-headlines font-bold text-xl text-foreground group-hover:text-primary transition-colors">
-                  Habl<span className="text-primary">uj</span>
-                </div>
+              <img
+                src="/assets/images/logo-habluj.png"
+                alt="Habluj"
+                className="h-11 w-auto max-w-[118px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+              />
+              <div className="hidden sm:block border-l border-border pl-3">
                 <p className="text-xs text-muted-foreground font-accent">{t('header.tagline')}</p>
               </div>
             </Link>

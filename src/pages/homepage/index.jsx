@@ -9,7 +9,7 @@ import MeetEster from './components/MeetEster';
 import CTASection from './components/CTASection';
 import SiteFooter from '../../components/ui/SiteFooter';
 import { useTranslation } from '../../hooks/useTranslation';
-import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
+import { DEFAULT_OG_IMAGE, SITE_LOGO_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
 
 const Homepage = () => {
   const { t, language } = useTranslation();
@@ -38,7 +38,7 @@ const Homepage = () => {
     '@type': 'EducationalOrganization',
     name: 'Habluj',
     url: getCanonicalUrl('/', language),
-    logo: DEFAULT_OG_IMAGE,
+    logo: SITE_LOGO_IMAGE,
     sameAs: ['https://www.instagram.com/habluj_sk/'],
     areaServed: ['SK', 'CZ'],
     inLanguage: [locale, 'es-ES'],
