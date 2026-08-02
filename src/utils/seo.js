@@ -1,6 +1,6 @@
 const configuredSiteUrl = (import.meta.env.VITE_SITE_URL || 'https://habluj.sk').trim();
 export const BASE_URL = configuredSiteUrl.replace(/\/$/, '');
-export const DEFAULT_OG_IMAGE = `${BASE_URL}/assets/images/og-image.webp`;
+export const DEFAULT_OG_IMAGE = `${BASE_URL}/assets/images/og-image.png`;
 
 const LANGUAGE_TO_SEGMENT = {
   sk: 'sk',
