@@ -69,9 +69,9 @@ const Header = () => {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-headlines font-bold text-xl text-foreground group-hover:text-primary transition-colors">
+                <div className="font-headlines font-bold text-xl text-foreground group-hover:text-primary transition-colors">
                   Habl<span className="text-primary">uj</span>
-                </h1>
+                </div>
                 <p className="text-xs text-muted-foreground font-accent">{t('header.tagline')}</p>
               </div>
             </Link>

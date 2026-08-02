@@ -10,20 +10,20 @@
   <meta name="description" content="Naučte sa španielčinu online s Ester Mesároš Borrull. Personalizované lekcie pre Slovákov a Čechov, 20 € za lekciu." />
   <meta name="author" content="Ester Mesároš Borrull" />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://habluj.sk/sk" />
-  <link rel="alternate" href="https://habluj.sk/sk" hreflang="sk" />
-  <link rel="alternate" href="https://habluj.sk/cs" hreflang="cs" />
-  <link rel="alternate" href="https://habluj.sk/es" hreflang="es" />
-  <link rel="alternate" href="https://habluj.sk/sk" hreflang="x-default" />
+  <link rel="canonical" href="https://habluj.vercel.app/sk" />
+  <link rel="alternate" href="https://habluj.vercel.app/sk" hreflang="sk" />
+  <link rel="alternate" href="https://habluj.vercel.app/cs" hreflang="cs" />
+  <link rel="alternate" href="https://habluj.vercel.app/es" hreflang="es" />
+  <link rel="alternate" href="https://habluj.vercel.app/sk" hreflang="x-default" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Habluj" />
-  <meta property="og:url" content="https://habluj.sk/sk" />
+  <meta property="og:url" content="https://habluj.vercel.app/sk" />
   <meta property="og:title" content="Habluj — Španielčina pre Slovákov a Čechov" />
   <meta property="og:description" content="Personalizované online lekcie španielčiny s Ester Mesároš Borrull. 2× víťazka Národnej olympiády. 20 € za lekciu." />
-  <meta property="og:image" content="https://habluj.sk/assets/images/og-image.png" />
-  <meta property="og:image:secure_url" content="https://habluj.sk/assets/images/og-image.png" />
+  <meta property="og:image" content="https://habluj.vercel.app/assets/images/og-image.png" />
+  <meta property="og:image:secure_url" content="https://habluj.vercel.app/assets/images/og-image.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -36,7 +36,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Habluj — Španielčina pre Slovákov a Čechov" />
   <meta name="twitter:description" content="Personalizované online lekcie španielčiny s Ester Mesároš Borrull. 2× víťazka Národnej olympiády. 20 € za lekciu." />
-  <meta name="twitter:image" content="https://habluj.sk/assets/images/og-image.png" />
+  <meta name="twitter:image" content="https://habluj.vercel.app/assets/images/og-image.png" />
   <meta name="twitter:image:alt" content="Habluj - online lekcie španielčiny s Ester Mesároš Borrull" />
 
   <!-- Structured Data: Person + EducationalOrganization -->
@@ -46,23 +46,23 @@
     "@graph": [
       {
         "@type": "Person",
-        "@id": "https://habluj.sk/#ester",
+        "@id": "https://habluj.vercel.app/#ester",
         "name": "Ester Mesároš Borrull",
         "jobTitle": "učiteľka španielčiny",
         "description": "učiteľka španielčiny z východného Slovenska a 2× víťazka Národnej olympiády zo španielčiny na Slovensku.",
-        "image": "https://habluj.sk/assets/images/ester-placeholder.webp",
+        "image": "https://habluj.vercel.app/assets/images/ester-placeholder.webp",
         "knowsLanguage": ["sk", "es", "cs"],
-        "worksFor": { "@id": "https://habluj.sk/#org" },
-        "url": "https://habluj.sk/about-the-teacher",
+        "worksFor": { "@id": "https://habluj.vercel.app/#org" },
+        "url": "https://habluj.vercel.app/sk/about-the-teacher",
         "sameAs": ["https://www.instagram.com/habluj_sk/"]
       },
       {
         "@type": "EducationalOrganization",
-        "@id": "https://habluj.sk/#org",
+        "@id": "https://habluj.vercel.app/#org",
         "name": "Habluj",
         "description": "Personalizované online lekcie španielčiny pre slovenských a českých študentov.",
-        "url": "https://habluj.sk",
-        "logo": "https://habluj.sk/icon-512.png",
+        "url": "https://habluj.vercel.app/sk",
+        "logo": "https://habluj.vercel.app/icon-512.png",
         "areaServed": [
           { "@type": "Country", "name": "Slovakia" },
           { "@type": "Country", "name": "Czechia" }
@@ -78,7 +78,7 @@
       },
       {
         "@type": "Service",
-        "provider": { "@id": "https://habluj.sk/#org" },
+        "provider": { "@id": "https://habluj.vercel.app/#org" },
         "name": "Individuálne lekcie španielčiny online",
         "description": "Personalizované online lekcie španielčiny pre slovenských a českých študentov. Všetky úrovne od nuly.",
         "serviceType": "Online language tutoring",
@@ -108,7 +108,9 @@
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div class="dhiwise-code" id="root"></div>
+  <div class="dhiwise-code" id="root">
+    <h1>Španielčina online pre Slovákov a Čechov</h1>
+  </div>
   <script type="module" src="/src/index.jsx"></script>
 </body>
 
