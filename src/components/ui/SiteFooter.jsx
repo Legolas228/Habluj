@@ -16,13 +16,12 @@ const SiteFooter = () => {
         <div className="grid md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-cultural rounded-lg flex items-center justify-center">
-                <span className="text-white font-headlines font-bold text-lg">H</span>
-              </div>
+              <img
+                src="/assets/images/logo-habluj.png"
+                alt="Habluj"
+                className="h-12 w-auto max-w-[128px] object-contain"
+              />
               <div>
-                <h2 className="font-headlines font-bold text-xl">
-                  Habl<span className="text-primary">uj</span>
-                </h2>
                 <p className="text-xs text-gray-300 font-accent">{t('footer.tagline')}</p>
               </div>
             </div>
