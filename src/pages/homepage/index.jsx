@@ -9,7 +9,7 @@ import MeetEster from './components/MeetEster';
 import CTASection from './components/CTASection';
 import SiteFooter from '../../components/ui/SiteFooter';
 import { useTranslation } from '../../hooks/useTranslation';
-import { getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
+import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
 
 const Homepage = () => {
   const { t, language } = useTranslation();
@@ -19,7 +19,13 @@ const Homepage = () => {
     cz: 'cs-CZ',
     es: 'es-ES',
   };
+  const ogLocaleByLanguage = {
+    sk: 'sk_SK',
+    cz: 'cs_CZ',
+    es: 'es_ES',
+  };
   const locale = localeByLanguage[language] || 'sk-SK';
+  const ogLocale = ogLocaleByLanguage[language] || 'sk_SK';
   const offerByLanguage = {
     sk: { currency: 'EUR', price: '20', label: 'od 20 € / lekcia' },
     cz: { currency: 'CZK', price: '500', label: 'od 500 CZK / lekcia' },
@@ -32,7 +38,7 @@ const Homepage = () => {
     '@type': 'EducationalOrganization',
     name: 'Habluj',
     url: getCanonicalUrl('/', language),
-    logo: 'https://habluj.sk/assets/images/og-image.webp',
+    logo: DEFAULT_OG_IMAGE,
     sameAs: ['https://www.instagram.com/habluj_sk/'],
     areaServed: ['SK', 'CZ'],
     inLanguage: [locale, 'es-ES'],
@@ -87,15 +93,21 @@ const Homepage = () => {
         <meta property="og:description" content={t('meta.homeDescription')} />
         <meta property="og:url" content={getCanonicalUrl('/', language)} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://habluj.sk/assets/images/og-image.webp" />
-        <meta property="og:locale" content={locale} />
-        <meta property="og:locale:alternate" content="sk-SK" />
-        <meta property="og:locale:alternate" content="cs-CZ" />
-        <meta property="og:locale:alternate" content="es-ES" />
+        <meta property="og:image" content={DEFAULT_OG_IMAGE} />
+        <meta property="og:image:secure_url" content={DEFAULT_OG_IMAGE} />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Habluj - online lekcie španielčiny s Ester Mesároš Borrull" />
+        <meta property="og:locale" content={ogLocale} />
+        <meta property="og:locale:alternate" content="sk_SK" />
+        <meta property="og:locale:alternate" content="cs_CZ" />
+        <meta property="og:locale:alternate" content="es_ES" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t('meta.homeTitle')} />
         <meta name="twitter:description" content={t('meta.homeDescription')} />
-        <meta name="twitter:image" content="https://habluj.sk/assets/images/og-image.webp" />
+        <meta name="twitter:image" content={DEFAULT_OG_IMAGE} />
+        <meta name="twitter:image:alt" content="Habluj - online lekcie španielčiny s Ester Mesároš Borrull" />
         <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>

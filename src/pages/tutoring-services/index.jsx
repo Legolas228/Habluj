@@ -24,7 +24,13 @@ const TutoringServices = () => {
     cz: 'cs-CZ',
     es: 'es-ES',
   };
+  const ogLocaleByLanguage = {
+    sk: 'sk_SK',
+    cz: 'cs_CZ',
+    es: 'es_ES',
+  };
   const locale = localeByLanguage[language] || 'sk-SK';
+  const ogLocale = ogLocaleByLanguage[language] || 'sk_SK';
   const isCzech = language === 'cz';
   const offerCurrency = isCzech ? 'CZK' : 'EUR';
   const individualFromPrice = isCzech ? '500' : '20';
@@ -255,10 +261,10 @@ const TutoringServices = () => {
         <meta property="og:url" content={getCanonicalUrl('/tutoring-services', language)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
-        <meta property="og:locale" content={locale} />
-        <meta property="og:locale:alternate" content="sk-SK" />
-        <meta property="og:locale:alternate" content="cs-CZ" />
-        <meta property="og:locale:alternate" content="es-ES" />
+        <meta property="og:locale" content={ogLocale} />
+        <meta property="og:locale:alternate" content="sk_SK" />
+        <meta property="og:locale:alternate" content="cs_CZ" />
+        <meta property="og:locale:alternate" content="es_ES" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t('meta.servicesTitle')} />
         <meta name="twitter:description" content={t('meta.servicesDescription')} />
