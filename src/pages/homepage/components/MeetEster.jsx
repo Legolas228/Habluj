@@ -81,7 +81,7 @@ const MeetEster = () => {
               {/* Image */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" />
               <img
-                src="/assets/images/ester-placeholder.webp"
+                src="/assets/images/ester-foto.webp"
                 alt={t('meet-ester.image-alt')}
                 className="w-full h-full object-cover"
                 loading="lazy"

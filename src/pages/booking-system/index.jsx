@@ -319,7 +319,7 @@ const BookingSystem = () => {
                 <article className="rounded-xl border border-border bg-background p-4">
                   <div className="flex gap-3 items-start">
                     <AppImage
-                      src="/assets/images/ester-placeholder.webp"
+                      src="/assets/images/ester-foto.webp"
                       alt="Ester Mesaros"
                       className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0"
                     />

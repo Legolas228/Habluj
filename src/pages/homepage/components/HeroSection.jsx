@@ -109,7 +109,7 @@ const HeroSection = () => {
                 {/* Ester Portrait Image */}
                 <div className="relative w-full h-full">
                   <img
-                    src="/assets/images/ester-placeholder.webp"
+                    src="/assets/images/ester-foto.webp"
                     alt={t('hero.imageAlt')}
                     className="w-full h-full object-cover"
                     loading="lazy"
