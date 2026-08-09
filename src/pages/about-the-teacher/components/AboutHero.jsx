@@ -53,7 +53,7 @@ const AboutHero = () => {
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
               <img
-                src="/assets/images/ester-placeholder.webp"
+                src="/assets/images/ester-foto.webp"
                 alt="Ester Mesároš Borrull"
                 className="w-full h-full object-cover"
                 fetchpriority="high"
