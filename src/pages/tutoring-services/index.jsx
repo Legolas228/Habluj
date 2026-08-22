@@ -102,6 +102,11 @@ const TutoringServices = () => {
       subtitle: t('services.offers.individual.subtitle'),
       items: [
         {
+          title: t('services.offers.individual.item0'),
+          description: t('services.offers.individual.item0desc'),
+          helperDescription: t('services.offers.individual.item0help'),
+        },
+        {
           title: t('services.offers.individual.item1'),
           description: t('services.offers.individual.item1desc'),
           helperDescription: t('services.offers.individual.item1help'),
