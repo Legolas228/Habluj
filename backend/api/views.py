@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.db.models import Count, Q, Sum
 from django.db import transaction
 from django.http import HttpResponse
+from django.http import FileResponse
 from rest_framework import viewsets, permissions, status
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -39,6 +40,7 @@ from .models import (
     StudentMessage,
     Lead,
     LeadActivity,
+    EbookPurchase,
 )
 from .serializers import (
     UserProfileSerializer,
@@ -786,6 +788,25 @@ class StripeWebhookView(APIView):
         if not payment_id:
             return Response({'status': 'ignored'})
 
+        if event_object.get('metadata', {}).get('product') == 'ebook':
+            purchase, created = EbookPurchase.objects.get_or_create(
+                stripe_session_id=payment_id,
+                defaults={
+                    'email': event_object.get('customer_details', {}).get('email', ''),
+                    'amount': Decimal(event_object.get('amount_total', 0)) / Decimal('100'),
+                    'currency': str(event_object.get('currency') or 'EUR').upper(),
+                },
+            )
+            if event_type == 'checkout.session.completed' and purchase.status != 'completed':
+                purchase.status = 'completed'
+                purchase.email = event_object.get('customer_details', {}).get('email', '') or purchase.email
+                purchase.completed_at = timezone.now()
+                purchase.save(update_fields=['status', 'email', 'completed_at', 'updated_at'])
+            elif event_type in {'checkout.session.expired', 'payment_intent.payment_failed'}:
+                purchase.status = 'failed'
+                purchase.save(update_fields=['status', 'updated_at'])
+            return Response({'status': 'ok', 'created': created})
+
         payment = Payment.objects.filter(stripe_payment_id=payment_id).select_related('booking').first()
         if not payment:
             return Response({'status': 'ignored'})
@@ -819,6 +840,84 @@ class StripeWebhookView(APIView):
             payment.save(update_fields=['status', 'metadata', 'updated_at'])
 
         return Response({'status': 'ok'})
+
+
+class EbookCheckoutView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    PRICE_BY_LANGUAGE = {
+        'sk': {'amount': 15, 'currency': 'eur'},
+        'es': {'amount': 15, 'currency': 'eur'},
+        'cs': {'amount': 380, 'currency': 'czk'},
+    }
+
+    def post(self, request):
+        language = str(request.data.get('lang') or 'sk').lower()
+        offer = self.PRICE_BY_LANGUAGE.get(language, self.PRICE_BY_LANGUAGE['sk'])
+        stripe_secret_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+        success_url = getattr(settings, 'STRIPE_EBOOK_SUCCESS_URL', '').replace('{lang}', language)
+        cancel_url = getattr(settings, 'STRIPE_EBOOK_CANCEL_URL', '').replace('{lang}', language)
+        if not stripe_secret_key or not success_url or not cancel_url:
+            return Response({'error': 'Stripe eBook checkout is not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+        stripe.api_key = stripe_secret_key
+        amount_minor = offer['amount'] * 100
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                mode='payment',
+                line_items=[{
+                    'price_data': {
+                        'currency': offer['currency'],
+                        'product_data': {'name': 'Háblame en español eBook'},
+                        'unit_amount': amount_minor,
+                    },
+                    'quantity': 1,
+                }],
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={'product': 'ebook', 'language': language},
+            )
+        except stripe.error.StripeError:
+            return Response({'error': 'Unable to create Stripe eBook checkout session.'}, status=status.HTTP_502_BAD_GATEWAY)
+
+        EbookPurchase.objects.create(
+            stripe_session_id=checkout_session.id,
+            amount=offer['amount'],
+            currency=offer['currency'].upper(),
+        )
+        return Response({'checkout_url': checkout_session.url})
+
+
+class EbookDownloadView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, token):
+        purchase = EbookPurchase.objects.filter(download_token=token, status='completed').first()
+        if not purchase:
+            return Response({'error': 'Download is not available.'}, status=status.HTTP_404_NOT_FOUND)
+
+        ebook_path = settings.BASE_DIR / 'private_media' / 'ebooks' / 'ebook-hablame-en-espanol.pdf'
+        if not ebook_path.is_file():
+            return Response({'error': 'eBook file is unavailable.'}, status=status.HTTP_404_NOT_FOUND)
+
+        response = FileResponse(ebook_path.open('rb'), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="hablame-en-espanol.pdf"'
+        return response
+
+
+class EbookAccessView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        session_id = str(request.query_params.get('session_id') or '').strip()
+        purchase = EbookPurchase.objects.filter(stripe_session_id=session_id, status='completed').first()
+        if not purchase:
+            return Response({'error': 'Payment is not confirmed yet.'}, status=status.HTTP_402_PAYMENT_REQUIRED)
+
+        return Response({
+            'status': 'completed',
+            'download_url': f'/api/ebook/download/{purchase.download_token}/',
+        })
 
 
 class WeeklyAvailabilitySlotViewSet(viewsets.ModelViewSet):

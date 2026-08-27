@@ -1,4 +1,5 @@
 import re
+import uuid
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -184,6 +185,30 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment<{self.booking_id}:{self.status}:{self.amount} {self.currency}>"
+
+
+class EbookPurchase(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+
+    stripe_session_id = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, choices=Booking.CURRENCY_CHOICES, default='EUR')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    download_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"EbookPurchase<{self.stripe_session_id}:{self.status}>"
 
 
 class CreditLedger(models.Model):

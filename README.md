@@ -179,6 +179,13 @@ Para despliegue, configura estas variables de entorno en backend:
 - `DRF_THROTTLE_STUDENT_REGISTER` (por defecto `5/min`)
 - `DRF_THROTTLE_LEAD_CREATE` (por defecto `15/min`)
 - `DRF_THROTTLE_STRIPE_WEBHOOK` (por defecto `120/min`)
+- `STRIPE_EBOOK_SUCCESS_URL` (incluye `{CHECKOUT_SESSION_ID}`)
+- `STRIPE_EBOOK_CANCEL_URL`
+
+La venta del eBook usa `POST /api/ebook/checkout/`. Stripe confirma el pago en
+`POST /api/payments/stripe/webhook/`; solo entonces `GET /api/ebook/access/`
+devuelve un token de descarga. El PDF se guarda en
+`backend/private_media/ebooks/` y no debe moverse a `public/`.
 - `AUTH_IP_ATTEMPT_WINDOW_SECONDS` (por defecto `3600`)
 - `AUTH_IP_LOCK_MIN_FAILURES` (por defecto `5`)
 - `AUTH_IP_LOCK_BASE_SECONDS` (por defecto `60`)

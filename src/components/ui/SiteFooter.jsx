@@ -17,9 +17,9 @@ const SiteFooter = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <img
-                src="/assets/images/logo-habluj.jpg"
+                src="/assets/images/logo-habluj.png"
                 alt="Habluj"
-                className="h-12 w-auto max-w-[128px] rounded-md bg-white object-contain"
+                className="h-12 w-auto max-w-[128px] object-contain"
               />
               <div>
                 <p className="text-xs text-gray-300 font-accent">{t('footer.tagline')}</p>
