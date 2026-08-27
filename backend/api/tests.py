@@ -602,8 +602,8 @@ class StudentPortalDataApiTests(APITestCase):
 		booking = Booking.objects.get(id=create_response.data['id'])
 		payment = booking.payment
 		payment.status = 'processing'
-		payment.gopay_payment_id = 'gopay-test-confirm'
-		payment.save(update_fields=['status', 'gopay_payment_id', 'updated_at'])
+		payment.stripe_payment_id = 'stripe-test-confirm'
+		payment.save(update_fields=['status', 'stripe_payment_id', 'updated_at'])
 
 		confirm_response = self.client.post(f'/api/bookings/{booking.id}/confirm_payment/')
 		self.assertEqual(confirm_response.status_code, status.HTTP_202_ACCEPTED)
@@ -628,7 +628,7 @@ class StudentPortalDataApiTests(APITestCase):
 			amount='20.00',
 			currency='EUR',
 			status='completed',
-			gopay_payment_id='gopay-test-completed',
+			stripe_payment_id='stripe-test-completed',
 		)
 
 		response = self.client.post(f'/api/bookings/{booking.id}/confirm_payment/')

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
@@ -10,6 +10,7 @@ import { getLocalizedPath, stripLanguagePrefix } from '../../utils/seo';
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const menuToggleRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { changeLanguage, language } = useLanguage();
@@ -28,10 +29,29 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location?.pathname]);
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
+      setIsMobileMenuOpen(false);
+      menuToggleRef.current?.focus();
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMobileMenuOpen]);
+
   const navigationItems = [
     { path: getLocalizedPath('/', language), label: t('header.home'), icon: 'Home' },
     { path: getLocalizedPath('/about-the-teacher', language), label: t('header.about'), icon: 'User' },
-    { path: getLocalizedPath('/tutoring-services', language), label: t('header.services'), icon: 'BookOpen' }
+    { path: getLocalizedPath('/tutoring-services', language), label: t('header.services'), icon: 'BookOpen' },
+    { path: getLocalizedPath('/ebook', language), label: t('header.ebook'), icon: 'Book' }
   ];
 
   const secondaryItems = [
@@ -55,15 +75,21 @@ const Header = () => {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[60] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-soft"
+      >
+        {t('header.skipToContent')}
+      </a>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-soft' : 'bg-white'
       }`}>
         <div className="w-full">
-          <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+          <div className="flex h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
             {/* Logo */}
             <Link to={getLocalizedPath('/', language)} className="flex items-center space-x-3 group">
               <img
-                src="/assets/images/logo-habluj.png"
+                src="/assets/images/logo-habluj.jpg"
                 alt="Habluj"
                 className="h-11 w-auto max-w-[118px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
               />
@@ -73,13 +99,13 @@ const Header = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden items-center space-x-0 lg:flex xl:space-x-1">
               {[...navigationItems, ...secondaryItems].map((item) => (
                 <Link
                   key={item?.path}
                   to={item?.path}
                   aria-current={isActivePath(item?.path) ? 'page' : undefined}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                  className={`flex items-center space-x-1 rounded-md px-2 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary xl:space-x-2 xl:px-3 ${
                     isActivePath(item?.path)
                       ? 'bg-primary text-primary-foreground shadow-soft'
                       : 'text-foreground hover:text-primary hover:bg-muted'
@@ -137,9 +163,10 @@ const Header = () => {
 
             {/* Mobile Menu Button */}
             <button
+              ref={menuToggleRef}
               onClick={toggleMobileMenu}
               className="lg:hidden p-2 rounded-md text-foreground hover:text-primary hover:bg-muted transition-colors"
-              aria-label={isMobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
+              aria-label={isMobileMenuOpen ? t('header.closeMenu') : t('header.openMenu')}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-navigation"
             >
@@ -149,11 +176,16 @@ const Header = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`lg:hidden transition-all duration-300 overflow-hidden ${
-          isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        }`} aria-hidden={!isMobileMenuOpen}>
+        <div
+          data-testid="mobile-menu-panel"
+          className={`lg:hidden transition-all duration-300 overflow-hidden ${
+            isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          }`}
+          aria-hidden={!isMobileMenuOpen}
+          {...(!isMobileMenuOpen ? { inert: '' } : {})}
+        >
           <div className="bg-white border-t border-border shadow-soft max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <nav id="mobile-navigation" className="px-4 py-4 space-y-2" aria-label="Mobile navigation">
+            <nav id="mobile-navigation" className="px-4 py-4 space-y-2" aria-label={t('header.mobileNav')}>
               {[...navigationItems, ...secondaryItems].map((item) => (
                 <Link
                   key={item?.path}

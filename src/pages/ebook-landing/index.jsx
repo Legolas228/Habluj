@@ -1,22 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
-import {
-  BookOpen,
-  Check,
-  ChevronDown,
-  Download,
-  FileText,
-  Lock,
-  MonitorSmartphone,
-  ShieldCheck,
-  Sparkles,
-  TabletSmartphone,
-} from 'lucide-react';
-
 import Header from '../../components/ui/Header';
 import Button from '../../components/ui/Button';
 import SiteFooter from '../../components/ui/SiteFooter';
+import AppIcon from '../../components/AppIcon';
 import { getCanonicalUrl, getHreflangLinks, DEFAULT_OG_IMAGE } from '../../utils/seo';
 import { cn } from '../../utils/cn';
 
@@ -25,6 +13,8 @@ const copy = {
     metaTitle: 'eBook Španielčina bez strachu | Habluj',
     metaDescription: 'Digitálny eBook pre Slovákov a Čechov, ktorí chcú začať hovoriť po španielsky istejšie a bez zbytočného stresu.',
     heroBadge: 'Digitálny eBook PDF + EPUB',
+    bookTitle: 'Španielčina',
+    bookSubtitle: 'bez strachu',
     title: 'Prestaňte sa učiť španielčinu naslepo',
     subtitle: 'Praktický eBook, ktorý vám ukáže, ako si postaviť pevné základy, vyhnúť sa typickým chybám Slovákov a Čechov a začať hovoriť sebavedomejšie.',
     cta: 'Kúpiť za 15 €',
@@ -72,7 +62,6 @@ const copy = {
     ],
     faqTitle: 'Časté otázky',
     faqs: [
-      ['Ako dostanem eBook?', 'Po zaplatení dostanete prístup k digitálnym súborom. Platobný flow je pripravený v komponente cez handleCheckout(lang).'],
       ['V akom formáte príde?', 'Súčasťou nákupu je PDF aj EPUB, takže si ho môžete prečítať v prehliadači, mobile, tablete alebo čítačke.'],
       ['Môžem ho čítať na Kindle?', 'Áno, EPUB môžete poslať do Kindle knižnice cez službu Send to Kindle. PDF funguje lepšie na väčších obrazovkách.'],
       ['Je eBook vhodný pre úplných začiatočníkov?', 'Áno. Je písaný tak, aby pomohol najmä ľuďom, ktorí chcú začať španielčinu od základov rozumne a bez chaosu.'],
@@ -82,6 +71,8 @@ const copy = {
     metaTitle: 'eBook Španělština bez strachu | Habluj',
     metaDescription: 'Digitální eBook pro Slováky a Čechy, kteří chtějí začít mluvit španělsky jistěji a bez zbytečného stresu.',
     heroBadge: 'Digitální eBook PDF + EPUB',
+    bookTitle: 'Španělština',
+    bookSubtitle: 'bez strachu',
     title: 'Přestaňte se učit španělštinu naslepo',
     subtitle: 'Praktický eBook, který vám ukáže, jak si postavit pevné základy, vyhnout se typickým chybám Čechů a Slováků a začít mluvit sebejistěji.',
     cta: 'Koupit za 380 CZK',
@@ -129,10 +120,67 @@ const copy = {
     ],
     faqTitle: 'Časté otázky',
     faqs: [
-      ['Jak dostanu eBook?', 'Po zaplacení dostanete přístup k digitálním souborům. Platební flow je připravené v komponentě přes handleCheckout(lang).'],
       ['V jakém formátu přijde?', 'Součástí nákupu je PDF i EPUB, takže si ho můžete přečíst v prohlížeči, mobilu, tabletu nebo čtečce.'],
       ['Můžu ho číst na Kindle?', 'Ano, EPUB můžete poslat do Kindle knihovny přes službu Send to Kindle. PDF funguje lépe na větších obrazovkách.'],
       ['Je eBook vhodný pro úplné začátečníky?', 'Ano. Je napsaný tak, aby pomohl hlavně lidem, kteří chtějí začít španělštinu od základů rozumně a bez chaosu.'],
+    ],
+  },
+  es: {
+    metaTitle: 'eBook Español sin miedo | Habluj',
+    metaDescription: 'eBook digital para personas de habla eslovaca y checa que quieren empezar a hablar español con más seguridad y sin estrés innecesario.',
+    heroBadge: 'eBook digital PDF + EPUB',
+    bookTitle: 'Español',
+    bookSubtitle: 'sin miedo',
+    title: 'Deja de aprender español a ciegas',
+    subtitle: 'Un eBook práctico que te muestra cómo construir una base sólida, evitar los errores más comunes de eslovacos y checos y empezar a hablar con más confianza.',
+    cta: 'Comprar por 15 €',
+    secureBadge: 'Pago seguro y acceso instantáneo',
+    proof: [
+      'Lee en móvil, tableta u ordenador',
+      'Acceso instantáneo después del pago',
+      'Formatos PDF y EPUB incluidos',
+    ],
+    chaptersTitle: 'Qué aprenderás en el eBook',
+    chaptersSubtitle: 'Bloques concretos para superar los problemas que más frenan a los estudiantes eslovacos y checos de español.',
+    chapters: [
+      ['Cómo aprender español sin caos', 'Un sistema sencillo para saber qué hacer primero y dónde merece la pena invertir tu tiempo.'],
+      ['Los errores más comunes de eslovacos y checos', 'Pronunciación, trampas gramaticales y hábitos que trasladamos de nuestra lengua materna al español.'],
+      ['Hablar sin entrar en pánico', 'Cómo practicar la conversación para no bloquearte en la primera frase.'],
+      ['La gramática como herramienta', 'Cómo entender el sistema del idioma sin memorizar reglas aisladas.'],
+      ['Cultura y expresiones naturales', 'Expresiones y contexto para que tu español suene más vivo y natural.'],
+      ['Plan para tus primeros 30 días', 'Un proceso concreto para empezar y mantener el ritmo.'],
+    ],
+    fitTitle: 'Para quién es este eBook',
+    goodFitTitle: 'Es para ti si...',
+    badFitTitle: 'No es para ti si...',
+    goodFit: [
+      'quieres empezar a hablar español sin vergüenza',
+      'necesitas un plan claro en lugar de aplicaciones al azar',
+      'eres de Eslovaquia o Chequia y quieres explicaciones que tengan sentido',
+      'estás dispuesto a avanzar con pasos pequeños y constantes',
+    ],
+    badFit: [
+      'buscas un truco mágico sin esfuerzo',
+      'solo quieres coleccionar frases sin entender el sistema',
+      'necesitas preparación oficial para DELE o SIELE',
+      'no quieres dedicar tiempo al aprendizaje fuera de la lectura',
+    ],
+    pricingTitle: 'Consigue el eBook hoy mismo',
+    priceLabel: 'Pago único',
+    checkout: 'Comprar ahora',
+    loading: 'Preparando el pago...',
+    includesTitle: 'Qué incluye',
+    includes: [
+      'eBook en formato PDF',
+      'eBook en formato EPUB',
+      'Acceso desde cualquier dispositivo',
+      'Pequeñas actualizaciones futuras gratuitas',
+    ],
+    faqTitle: 'Preguntas frecuentes',
+    faqs: [
+      ['¿En qué formato viene?', 'La compra incluye PDF y EPUB, para que puedas leerlo en el navegador, móvil, tableta u otro lector.'],
+      ['¿Puedo leerlo en Kindle?', 'Sí. Puedes enviar el EPUB a tu biblioteca de Kindle mediante Send to Kindle. El PDF funciona mejor en pantallas grandes.'],
+      ['¿Es adecuado para principiantes absolutos?', 'Sí. Está escrito especialmente para quienes quieren empezar español desde cero de forma clara y sin caos.'],
     ],
   },
 };
@@ -140,9 +188,14 @@ const copy = {
 const priceByLanguage = {
   sk: { amount: '15', currency: '€', label: '15 €' },
   cs: { amount: '380', currency: 'CZK', label: '380 CZK' },
+  es: { amount: '15', currency: '€', label: '15 €' },
 };
 
-const normalizeLang = (lang) => (lang === 'cs' || lang === 'cz' ? 'cs' : 'sk');
+const normalizeLang = (lang) => {
+  if (lang === 'es') return 'es';
+  if (lang === 'cs' || lang === 'cz') return 'cs';
+  return 'sk';
+};
 
 const SectionHeader = ({ title, subtitle }) => (
   <div className="mx-auto max-w-3xl text-center space-y-3">
@@ -151,29 +204,29 @@ const SectionHeader = ({ title, subtitle }) => (
   </div>
 );
 
-const BookMockup = ({ text }) => (
+const BookMockup = ({ text, title, subtitle }) => (
   <div className="relative mx-auto w-full max-w-sm">
     <div className="absolute -inset-4 rounded-2xl bg-gradient-cultural opacity-10 blur-2xl" />
-    <div className="relative aspect-[4/5] rounded-2xl bg-white shadow-cultural border border-border p-5">
-      <div className="h-full rounded-xl bg-gradient-to-br from-primary via-secondary to-brand-spanish p-6 text-white flex flex-col justify-between overflow-hidden">
+    <div className="relative aspect-[4/5] max-w-full rounded-2xl bg-white shadow-cultural border border-border p-3 sm:p-5">
+      <div className="h-full rounded-xl bg-gradient-to-br from-primary via-secondary to-brand-spanish p-4 sm:p-6 text-white flex flex-col justify-between overflow-hidden">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-            <BookOpen size={14} />
+            <AppIcon name="BookOpen" size={14} />
             Habluj eBook
           </div>
           <div>
-            <p className="font-accent text-lg text-white/80">Španielčina</p>
-            <h3 className="text-3xl font-headlines font-bold leading-tight">bez strachu</h3>
+            <p className="font-accent text-lg text-white/80">{title}</p>
+            <h3 className="text-2xl sm:text-3xl font-headlines font-bold leading-tight">{subtitle}</h3>
           </div>
         </div>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-lg bg-white/15 p-3">
-              <FileText size={18} />
+              <AppIcon name="FileText" size={18} />
               <p className="mt-2 text-xs font-semibold">PDF</p>
             </div>
             <div className="rounded-lg bg-white/15 p-3">
-              <TabletSmartphone size={18} />
+              <AppIcon name="TabletSmartphone" size={18} />
               <p className="mt-2 text-xs font-semibold">EPUB</p>
             </div>
           </div>
@@ -185,18 +238,18 @@ const BookMockup = ({ text }) => (
 );
 
 const ProofBar = ({ items }) => {
-  const icons = [MonitorSmartphone, Download, FileText];
+  const icons = ['MonitorSmartphone', 'Download', 'FileText'];
 
   return (
     <section className="border-y border-border bg-white">
-      <div className="container mx-auto px-4 lg:px-6 py-5">
+      <div className="w-full max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
         <div className="grid gap-3 sm:grid-cols-3">
           {items.map((item, index) => {
-            const Icon = icons[index] || Check;
+            const iconName = icons[index] || 'Check';
             return (
               <div key={item} className="flex items-center gap-3 rounded-xl bg-muted/60 px-4 py-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Icon size={18} />
+                  <AppIcon name={iconName} size={18} />
                 </div>
                 <p className="text-sm font-semibold text-foreground">{item}</p>
               </div>
@@ -209,12 +262,12 @@ const ProofBar = ({ items }) => {
 };
 
 const ChaptersGrid = ({ content }) => (
-  <section className="py-14 lg:py-20">
-    <div className="container mx-auto px-4 lg:px-6 space-y-10">
+  <section className="py-10 sm:py-14 lg:py-20">
+    <div className="w-full max-w-7xl mx-auto px-4 space-y-8 sm:px-6 sm:space-y-10 lg:px-8">
       <SectionHeader title={content.chaptersTitle} subtitle={content.chaptersSubtitle} />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {content.chapters.map(([title, description], index) => (
-          <article key={title} className="rounded-2xl border border-border bg-white p-6 shadow-soft hover:shadow-cultural transition-shadow duration-300">
+          <article key={title} className="rounded-2xl border border-border bg-white p-5 shadow-soft hover:shadow-cultural transition-shadow duration-300 sm:p-6">
             <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary font-headlines font-bold">
               {String(index + 1).padStart(2, '0')}
             </div>
@@ -228,8 +281,8 @@ const ChaptersGrid = ({ content }) => (
 );
 
 const AudienceFit = ({ content }) => (
-  <section className="bg-muted/50 py-14 lg:py-20">
-    <div className="container mx-auto px-4 lg:px-6 space-y-10">
+  <section className="bg-muted/50 py-10 sm:py-14 lg:py-20">
+    <div className="w-full max-w-7xl mx-auto px-4 space-y-8 sm:px-6 sm:space-y-10 lg:px-8">
       <SectionHeader title={content.fitTitle} />
       <div className="grid gap-5 lg:grid-cols-2">
         <FitCard title={content.goodFitTitle} items={content.goodFit} positive />
@@ -246,7 +299,7 @@ const FitCard = ({ title, items, positive = false }) => (
       {items.map((item) => (
         <div key={item} className="flex gap-3">
           <div className={cn('mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full', positive ? 'bg-success/10 text-success' : 'bg-muted text-muted-foreground')}>
-            <Check size={15} />
+                <AppIcon name="Check" size={15} />
           </div>
           <p className="text-sm text-foreground">{item}</p>
         </div>
@@ -257,12 +310,12 @@ const FitCard = ({ title, items, positive = false }) => (
 
 const PricingCard = ({ content, price, lang, loading, onCheckout }) => (
   <section className="py-14 lg:py-20">
-    <div className="container mx-auto px-4 lg:px-6">
-      <div className="mx-auto max-w-3xl rounded-2xl border border-primary/20 bg-white p-6 shadow-cultural md:p-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-primary/20 bg-white p-5 shadow-cultural sm:p-6 md:p-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-              <Sparkles size={16} />
+              <AppIcon name="Sparkles" size={16} />
               {content.priceLabel}
             </div>
             <h2 className="mt-4 text-2xl sm:text-3xl font-headlines font-bold text-foreground">{content.pricingTitle}</h2>
@@ -277,12 +330,12 @@ const PricingCard = ({ content, price, lang, loading, onCheckout }) => (
               loading={loading}
               disabled={loading}
               onClick={() => onCheckout(lang)}
-              className="mt-6 bg-cta hover:bg-cta/90 text-white shadow-warm"
+              className="mt-6 w-full sm:w-auto bg-cta hover:bg-cta/90 text-white shadow-warm"
             >
               {loading ? content.loading : content.checkout}
             </Button>
             <p className="mt-3 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Lock size={15} />
+              <AppIcon name="ShieldCheck" size={15} />
               {content.secureBadge}
             </p>
           </div>
@@ -292,7 +345,7 @@ const PricingCard = ({ content, price, lang, loading, onCheckout }) => (
               {content.includes.map((item) => (
                 <div key={item} className="flex items-center gap-3">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-success/10 text-success">
-                    <Check size={15} />
+                    <AppIcon name="Check" size={15} />
                   </div>
                   <p className="text-sm text-foreground">{item}</p>
                 </div>
@@ -309,8 +362,8 @@ const FAQ = ({ content }) => {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="bg-muted/50 py-14 lg:py-20">
-      <div className="container mx-auto px-4 lg:px-6">
+    <section className="bg-muted/50 py-10 sm:py-14 lg:py-20">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <SectionHeader title={content.faqTitle} />
           <div className="mt-8 space-y-3">
@@ -320,14 +373,25 @@ const FAQ = ({ content }) => {
                 <div key={question} className="rounded-xl border border-border bg-white shadow-sm">
                   <button
                     type="button"
-                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left font-headlines font-semibold text-foreground"
+                    className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left font-headlines font-semibold text-foreground sm:gap-4 sm:px-5"
                     onClick={() => setOpenIndex(isOpen ? null : index)}
+                    id={`ebook-faq-question-${index}`}
                     aria-expanded={isOpen}
+                    aria-controls={`ebook-faq-answer-${index}`}
                   >
                     {question}
-                    <ChevronDown className={cn('h-5 w-5 shrink-0 text-primary transition-transform', isOpen && 'rotate-180')} />
+                    <AppIcon name="ChevronDown" className={cn('h-5 w-5 shrink-0 text-primary transition-transform', isOpen && 'rotate-180')} />
                   </button>
-                  {isOpen && <p className="px-5 pb-5 text-sm text-muted-foreground">{answer}</p>}
+                  {isOpen && (
+                    <p
+                      id={`ebook-faq-answer-${index}`}
+                      role="region"
+                      aria-labelledby={`ebook-faq-question-${index}`}
+                      className="px-4 pb-5 text-sm text-muted-foreground sm:px-5"
+                    >
+                      {answer}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -374,7 +438,7 @@ const EbookLandingPage = ({ lang = null }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <Helmet>
         <title>{content.metaTitle}</title>
         <meta name="description" content={content.metaDescription} />
@@ -395,16 +459,12 @@ const EbookLandingPage = ({ lang = null }) => {
       </Helmet>
 
       <Header />
-      <main>
-        <section className="relative overflow-hidden bg-gradient-warm pt-24 pb-14 lg:pt-28 lg:pb-20">
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute left-10 top-20 h-32 w-32 rounded-full bg-primary blur-3xl" />
-            <div className="absolute bottom-16 right-12 h-40 w-40 rounded-full bg-secondary blur-3xl" />
-          </div>
-          <div className="container relative z-10 mx-auto grid gap-10 px-4 lg:grid-cols-2 lg:items-center lg:px-6">
+      <main id="main-content" tabIndex={-1}>
+        <section className="relative overflow-hidden bg-gradient-warm pt-20 pb-10 sm:pt-24 sm:pb-14 lg:pt-28 lg:pb-20">
+          <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 px-4 sm:gap-10 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
-                <BookOpen size={16} />
+                <AppIcon name="BookOpen" size={16} />
                 {content.heroBadge}
               </div>
               <div className="space-y-4">
@@ -422,17 +482,17 @@ const EbookLandingPage = ({ lang = null }) => {
                   loading={isLoading}
                   disabled={isLoading}
                   onClick={() => handleCheckout(activeLang)}
-                  className="bg-cta hover:bg-cta/90 text-white shadow-warm"
+                  className="w-full bg-cta hover:bg-cta/90 text-white shadow-warm sm:w-auto"
                 >
                   {isLoading ? content.loading : content.cta}
                 </Button>
                 <div className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                  <ShieldCheck size={18} className="text-success" />
+                  <AppIcon name="ShieldCheck" size={18} className="text-success" />
                   {content.secureBadge}
                 </div>
               </div>
             </div>
-            <BookMockup text={content.heroBadge} />
+            <BookMockup text={content.heroBadge} title={content.bookTitle} subtitle={content.bookSubtitle} />
           </div>
         </section>
 

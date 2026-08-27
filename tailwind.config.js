@@ -6,6 +6,17 @@ export default {
   ],
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          sm: '1.5rem',
+          lg: '2rem'
+        },
+        screens: {
+          '2xl': '1536px'
+        }
+      },
       colors: {
         // Core System Colors
         background: 'var(--color-background)', // warm-50

@@ -37,7 +37,7 @@ const AboutTheTeacher = () => {
       </Helmet>
       <div className="min-h-screen bg-background">
         <Header />
-        <main>
+        <main id="main-content" tabIndex={-1}>
           {/* Hero Section */}
           <AboutHero />
 

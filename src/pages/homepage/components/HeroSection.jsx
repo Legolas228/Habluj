@@ -86,7 +86,7 @@ const HeroSection = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-6 sm:pt-8 border-t border-border/50">
+            <div className="grid grid-cols-1 gap-4 border-t border-border/50 pt-6 sm:grid-cols-3 sm:gap-4 sm:pt-8">
               <div className="text-center">
                 <div className="text-xl sm:text-2xl font-bold text-primary">{t('hero.stat1Value')}</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('hero.stat1Label')}</div>

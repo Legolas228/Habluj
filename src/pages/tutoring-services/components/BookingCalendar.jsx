@@ -57,7 +57,7 @@ const BookingCalendar = ({ onTimeSelect, selectedService }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-soft border p-6">
+    <div className="w-full max-w-full bg-white rounded-xl shadow-soft border p-4 sm:p-6">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
           <Icon name="Calendar" size={20} className="text-white" />
@@ -74,13 +74,13 @@ const BookingCalendar = ({ onTimeSelect, selectedService }) => {
       {/* Date Selection */}
       <div className="mb-6">
         <h4 className="font-medium text-foreground mb-3">Vyberte dátum</h4>
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-7">
           {calendarDays?.map((date, index) => (
             <button
               key={index}
               onClick={() => handleDateSelect(date)}
               disabled={isWeekend(date)}
-              className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`min-w-0 p-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                 selectedDate?.toDateString() === date?.toDateString()
                   ? 'bg-primary text-primary-foreground shadow-soft'
                   : isWeekend(date)

@@ -2552,24 +2552,24 @@ const EsterDashboard = () => {
       <Helmet>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <main className="mx-auto max-w-[1600px] px-4 lg:px-8 py-8 space-y-6">
-        <section className="bg-white border border-border rounded-xl shadow-soft p-5 md:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-[1600px] space-y-6 px-3 py-6 sm:px-4 sm:py-8 lg:px-8">
+        <section className="flex flex-col gap-4 rounded-xl border border-border bg-white p-4 shadow-soft sm:p-5 md:p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Admin interno</p>
-            <h1 className="text-3xl font-headlines font-bold text-foreground">Panel CRM de Ester</h1>
+            <h1 className="text-2xl font-headlines font-bold text-foreground sm:text-3xl">Panel CRM de Ester</h1>
             <p className="text-muted-foreground mt-1 text-sm">
               Gestión comercial centralizada de leads, estados y rendimiento por canal.
             </p>
           </div>
           {authHeader && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" iconName="Download" onClick={onExportCsv} disabled={isExporting || isLoading}>
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+              <Button variant="outline" iconName="Download" className="w-full sm:w-auto" onClick={onExportCsv} disabled={isExporting || isLoading}>
                 {isExporting ? 'Exportando...' : 'Export CSV'}
               </Button>
-              <Button variant="outline" iconName="RefreshCw" onClick={onRefresh} disabled={isLoading}>
+              <Button variant="outline" iconName="RefreshCw" className="w-full sm:w-auto" onClick={onRefresh} disabled={isLoading}>
                 Actualizar
               </Button>
-              <Button variant="destructive" iconName="LogOut" onClick={onLogout}>
+              <Button variant="destructive" iconName="LogOut" className="w-full sm:w-auto" onClick={onLogout}>
                 Cerrar sesión
               </Button>
             </div>
@@ -4116,7 +4116,7 @@ const EsterDashboard = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Estado</label>
                     <select
-                      className="flex h-11 w-full min-w-56 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      className="flex h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={selectedAgendaState}
                       onChange={(event) => setSelectedAgendaState(event.target.value)}
                       disabled={!selectedAgendaCell || selectedAgendaCell?.hasExternalEvent}
