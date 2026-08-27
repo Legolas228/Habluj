@@ -146,7 +146,7 @@ const PrivacyPolicyPage = () => {
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
       </Helmet>
       <Header />
-      <main className="container mx-auto px-4 lg:px-6 py-16 space-y-8">
+      <main id="main-content" tabIndex={-1} className="container mx-auto px-4 lg:px-6 py-16 space-y-8">
         <h1 className="text-3xl lg:text-4xl font-headlines font-bold text-foreground">{content.title}</h1>
         <p className="text-muted-foreground leading-relaxed">{content.intro}</p>
         <p className="text-sm text-muted-foreground">Última actualización / Posledná aktualizácia / Poslední aktualizace: {updatedAt}</p>

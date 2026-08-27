@@ -178,7 +178,7 @@ Para despliegue, configura estas variables de entorno en backend:
 - `DRF_THROTTLE_STUDENT_LOGIN` (por defecto `10/min`)
 - `DRF_THROTTLE_STUDENT_REGISTER` (por defecto `5/min`)
 - `DRF_THROTTLE_LEAD_CREATE` (por defecto `15/min`)
-- `DRF_THROTTLE_GOPAY_WEBHOOK` (por defecto `120/min`)
+- `DRF_THROTTLE_STRIPE_WEBHOOK` (por defecto `120/min`)
 - `AUTH_IP_ATTEMPT_WINDOW_SECONDS` (por defecto `3600`)
 - `AUTH_IP_LOCK_MIN_FAILURES` (por defecto `5`)
 - `AUTH_IP_LOCK_BASE_SECONDS` (por defecto `60`)
@@ -207,7 +207,7 @@ Ejemplo minimo para produccion gratuita (PythonAnywhere):
 - `DRF_THROTTLE_STUDENT_LOGIN=8/min`
 - `DRF_THROTTLE_STUDENT_REGISTER=4/min`
 - `DRF_THROTTLE_LEAD_CREATE=8/min`
-- `DRF_THROTTLE_GOPAY_WEBHOOK=90/min`
+- `DRF_THROTTLE_STRIPE_WEBHOOK=90/min`
 - `AUTH_IP_ATTEMPT_WINDOW_SECONDS=3600`
 - `AUTH_IP_LOCK_MIN_FAILURES=5`
 - `AUTH_IP_LOCK_BASE_SECONDS=60`

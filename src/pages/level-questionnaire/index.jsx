@@ -29,7 +29,7 @@ const LevelQuestionnairePage = () => {
       </Helmet>
 
       <Header />
-      <main className="py-14 lg:py-20">
+      <main id="main-content" tabIndex={-1} className="py-14 lg:py-20">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="max-w-3xl mx-auto text-center mb-8">
             <h1 className="text-3xl lg:text-4xl font-headlines font-bold text-foreground mb-3">

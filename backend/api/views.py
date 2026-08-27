@@ -1,6 +1,4 @@
 import csv
-import hmac
-import json
 from datetime import datetime, time
 from datetime import timedelta
 from datetime import timezone as dt_timezone
@@ -24,6 +22,7 @@ from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+import stripe
 from .mailerlite import MailerLiteSyncError, sync_lead_to_mailerlite, send_new_lead_notification, send_level_test_results_email
 from .models import (
     UserProfile,
@@ -623,25 +622,45 @@ class BookingViewSet(viewsets.ModelViewSet):
                 payment.amount = new_amount
                 payment.currency = currency
 
-        gopay_client_id = getattr(settings, 'GOPAY_CLIENT_ID', '')
-        gopay_client_secret = getattr(settings, 'GOPAY_CLIENT_SECRET', '')
-        gopay_goid = getattr(settings, 'GOPAY_GOID', '')
-        if not gopay_client_id or not gopay_client_secret or not gopay_goid:
-            return Response({'error': 'GoPay is not configured.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        stripe_secret_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
+        if not stripe_secret_key:
+            return Response({'error': 'Stripe is not configured.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        success_url = getattr(settings, 'STRIPE_SUCCESS_URL', '')
+        cancel_url = getattr(settings, 'STRIPE_CANCEL_URL', '')
+        if not success_url or not cancel_url:
+            return Response({'error': 'Stripe return URLs are not configured.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         amount_minor = int((Decimal(str(payment.amount)) * 100).quantize(Decimal('1'), rounding=ROUND_HALF_UP))
+        stripe.api_key = stripe_secret_key
 
-        gopay_payment_id = f"gopay-{booking.id}-{int(timezone.now().timestamp())}"
-        checkout_base = getattr(settings, 'GOPAY_CHECKOUT_BASE_URL', 'https://gate.gopay.cz').rstrip('/')
-        checkout_url = f"{checkout_base}/payments/{gopay_payment_id}"
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                mode='payment',
+                line_items=[{
+                    'price_data': {
+                        'currency': payment.currency.lower(),
+                        'product_data': {'name': f'Spanish lesson booking #{booking.id}'},
+                        'unit_amount': amount_minor,
+                    },
+                    'quantity': 1,
+                }],
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={'booking_id': str(booking.id)},
+            )
+        except stripe.error.StripeError:
+            return Response({'error': 'Unable to create Stripe checkout session.'}, status=status.HTTP_502_BAD_GATEWAY)
 
-        payment.gopay_payment_id = gopay_payment_id
-        payment.gopay_checkout_url = checkout_url
+        stripe_payment_id = checkout_session.id
+        checkout_url = checkout_session.url
+
+        payment.stripe_payment_id = stripe_payment_id
+        payment.stripe_checkout_url = checkout_url
         payment.status = 'processing'
         payment.metadata = {
             **(payment.metadata or {}),
-            'gopay_last_payment_id': gopay_payment_id,
-            'gopay_amount_minor': amount_minor,
+            'stripe_last_payment_id': stripe_payment_id,
+            'stripe_amount_minor': amount_minor,
         }
         payment.save()
 
@@ -651,7 +670,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             'amount': str(payment.amount),
             'currency': payment.currency,
             'checkout_url': checkout_url,
-            'payment_gateway': 'gopay',
+            'payment_gateway': 'stripe',
         })
 
     @action(detail=True, methods=['post'])
@@ -718,8 +737,8 @@ class BookingViewSet(viewsets.ModelViewSet):
             raise PermissionDenied('You can only confirm your own payment.')
 
         payment = getattr(booking, 'payment', None)
-        if not payment or not payment.gopay_payment_id:
-            return Response({'error': 'GoPay payment is not initialized.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not payment or not payment.stripe_payment_id:
+            return Response({'error': 'Stripe payment is not initialized.'}, status=status.HTTP_400_BAD_REQUEST)
 
         payment.refresh_from_db()
         booking.refresh_from_db()
@@ -737,43 +756,42 @@ class BookingViewSet(viewsets.ModelViewSet):
             return Response({'status': payment.status}, status=status.HTTP_400_BAD_REQUEST)
 
         # Do not trust client-triggered confirmation for payment completion.
-        # Final status is set by signed GoPay webhook events only.
+        # Final status is set by signed Stripe webhook events only.
         return Response({
             'status': 'processing',
-            'message': 'Waiting for GoPay webhook confirmation.',
+            'message': 'Waiting for Stripe webhook confirmation.',
         }, status=status.HTTP_202_ACCEPTED)
 
 
-class GoPayWebhookView(APIView):
+class StripeWebhookView(APIView):
     permission_classes = [permissions.AllowAny]
     throttle_classes = [ScopedRateThrottle]
-    throttle_scope = 'gopay_webhook'
+    throttle_scope = 'stripe_webhook'
 
     def post(self, request):
-        webhook_secret = getattr(settings, 'GOPAY_WEBHOOK_SECRET', '')
+        webhook_secret = getattr(settings, 'STRIPE_WEBHOOK_SECRET', '')
         if not webhook_secret and not settings.DEBUG:
-            return Response({'error': 'GoPay webhook secret is not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        if webhook_secret:
-            received_secret = request.META.get('HTTP_X_GOPAY_WEBHOOK_SECRET', '')
-            if not received_secret or not hmac.compare_digest(received_secret, webhook_secret):
-                return Response({'error': 'Invalid GoPay webhook secret.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Stripe webhook secret is not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         try:
-            event = json.loads(request.body.decode('utf-8') or '{}')
-        except Exception:
-            return Response({'error': 'Invalid JSON payload.'}, status=status.HTTP_400_BAD_REQUEST)
+            payload = request.body.decode('utf-8')
+            signature = request.META.get('HTTP_STRIPE_SIGNATURE', '')
+            event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
+        except (ValueError, stripe.error.SignatureVerificationError):
+            return Response({'error': 'Invalid Stripe webhook signature or payload.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        payment_id = str(event.get('id') or '').strip()
-        payment_state = str(event.get('state') or '').strip().upper()
+        event_type = event.get('type')
+        event_object = event.get('data', {}).get('object', {})
+        payment_id = str(event_object.get('id') or '').strip()
         if not payment_id:
             return Response({'status': 'ignored'})
 
-        payment = Payment.objects.filter(gopay_payment_id=payment_id).select_related('booking').first()
+        payment = Payment.objects.filter(stripe_payment_id=payment_id).select_related('booking').first()
         if not payment:
             return Response({'status': 'ignored'})
 
         booking = payment.booking
-        if payment_state in {'PAID', 'AUTHORIZED'}:
+        if event_type == 'checkout.session.completed':
             with transaction.atomic():
                 booking = Booking.objects.select_for_update().get(pk=booking.pk)
                 payment = Payment.objects.select_for_update().get(pk=payment.pk)
@@ -789,15 +807,15 @@ class GoPayWebhookView(APIView):
 
                 payment.status = 'completed'
                 payment.completed_at = timezone.now()
-                payment.metadata = {**(payment.metadata or {}), 'gopay_status': payment_state}
+                payment.metadata = {**(payment.metadata or {}), 'stripe_status': event_type}
                 payment.save(update_fields=['status', 'completed_at', 'metadata', 'updated_at'])
                 booking.status = 'confirmed'
                 booking.save(update_fields=['status', 'updated_at'])
                 ensure_meet_for_confirmed_booking(booking)
 
-        if payment_state in {'FAILED', 'CANCELED', 'REFUNDED'}:
+        if event_type in {'checkout.session.expired', 'payment_intent.payment_failed', 'charge.refunded'}:
             payment.status = 'failed'
-            payment.metadata = {**(payment.metadata or {}), 'gopay_status': payment_state}
+            payment.metadata = {**(payment.metadata or {}), 'stripe_status': event_type}
             payment.save(update_fields=['status', 'metadata', 'updated_at'])
 
         return Response({'status': 'ok'})

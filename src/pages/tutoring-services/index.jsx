@@ -277,7 +277,7 @@ const TutoringServices = () => {
         <script type="application/ld+json">{JSON.stringify(servicesSchema)}</script>
       </Helmet>
       <Header />
-      <main>
+      <main id="main-content" tabIndex={-1}>
       {/* Complete Programs Section (homepage style) */}
       <section className="py-16 lg:py-24 bg-background">
         <div className="container mx-auto px-4 lg:px-6">

@@ -105,7 +105,7 @@ const StudentSuccess = () => {
   const currentQuote = currentTestimonial?.quote?.[language] || currentTestimonial?.quote?.sk || '';
 
   return (
-    <section className="py-20 lg:py-32 bg-secondary/5 overflow-hidden" id="student-success">
+    <section className="overflow-hidden bg-secondary/5 py-12 sm:py-20 lg:py-32" id="student-success">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           {/* Left Column - Stats & Info */}
@@ -123,24 +123,24 @@ const StudentSuccess = () => {
               {t('about.success.description')}
             </p>
 
-            <div className="grid grid-cols-2 gap-6 mb-12">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
-                <div className="text-3xl font-bold text-primary mb-2">98%</div>
+            <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+              <div className="rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6">
+                <div className="mb-2 text-2xl font-bold text-primary sm:text-3xl">98%</div>
                 <div className="font-semibold text-foreground mb-1">{t('about.success.stats.success')}</div>
                 <div className="text-sm text-muted-foreground">{t('about.success.stats.successDesc')}</div>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
-                <div className="text-3xl font-bold text-spanish mb-2">6</div>
+              <div className="rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6">
+                <div className="mb-2 text-2xl font-bold text-spanish sm:text-3xl">6</div>
                 <div className="font-semibold text-foreground mb-1">{t('about.success.stats.months')}</div>
                 <div className="text-sm text-muted-foreground">{t('about.success.stats.monthsDesc')}</div>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
-                <div className="text-3xl font-bold text-trust mb-2">100%</div>
+              <div className="rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6">
+                <div className="mb-2 text-2xl font-bold text-trust sm:text-3xl">100%</div>
                 <div className="font-semibold text-foreground mb-1">{t('about.success.stats.certs')}</div>
                 <div className="text-sm text-muted-foreground">{t('about.success.stats.certsDesc')}</div>
               </div>
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-border">
-                <div className="text-3xl font-bold text-conversion mb-2">200+</div>
+              <div className="rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6">
+                <div className="mb-2 text-2xl font-bold text-conversion sm:text-3xl">200+</div>
                 <div className="font-semibold text-foreground mb-1">{t('about.success.stats.grads')}</div>
                 <div className="text-sm text-muted-foreground">{t('about.success.stats.gradsDesc')}</div>
               </div>

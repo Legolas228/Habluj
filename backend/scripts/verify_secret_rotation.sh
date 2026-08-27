@@ -92,16 +92,16 @@ for var_name in "${required_vars[@]}"; do
   echo "[OK] $var_name is set"
 done
 
-echo "[check] Validating optional GoPay secret policy..."
-if [[ -n "${GOPAY_CLIENT_ID-}" || -n "${GOPAY_CLIENT_SECRET-}" || -n "${GOPAY_GOID-}" ]]; then
-  if [[ -z "${GOPAY_WEBHOOK_SECRET-}" ]]; then
-    echo "[ERROR] GOPAY_WEBHOOK_SECRET is required when GoPay is configured"
+echo "[check] Validating optional Stripe secret policy..."
+if [[ -n "${STRIPE_SECRET_KEY-}" ]]; then
+  if [[ -z "${STRIPE_WEBHOOK_SECRET-}" ]]; then
+    echo "[ERROR] STRIPE_WEBHOOK_SECRET is required when Stripe is configured"
     errors=$((errors + 1))
-  elif is_placeholder "${GOPAY_WEBHOOK_SECRET}"; then
-    echo "[ERROR] GOPAY_WEBHOOK_SECRET still uses placeholder value"
+  elif is_placeholder "${STRIPE_WEBHOOK_SECRET}"; then
+    echo "[ERROR] STRIPE_WEBHOOK_SECRET still uses placeholder value"
     errors=$((errors + 1))
   else
-    echo "[OK] GOPAY_WEBHOOK_SECRET is set"
+    echo "[OK] STRIPE_WEBHOOK_SECRET is set"
   fi
 fi
 

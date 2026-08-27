@@ -66,7 +66,7 @@ const IntensiveCoursesPage = () => {
 
       <div className="min-h-screen bg-background">
         <Header />
-        <main>
+        <main id="main-content" tabIndex={-1}>
           {/* Hero Section */}
           <section className="relative min-h-96 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10 py-16 lg:py-24 overflow-hidden">
             <div className="absolute inset-0 opacity-30">
@@ -76,13 +76,13 @@ const IntensiveCoursesPage = () => {
 
             <div className="container mx-auto px-4 lg:px-6 relative z-10">
               <div className="max-w-3xl mx-auto text-center space-y-6">
-                <h1 className="text-4xl lg:text-6xl font-headlines font-bold text-foreground leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-6xl font-headlines font-bold text-foreground leading-tight">
                   {t('intensive.hero.title')}
                   {' '}
                   <span className="text-primary">{t('intensive.hero.highlight')}</span>
                 </h1>
 
-                <p className="text-xl text-muted-foreground leading-relaxed">
+                <p className="text-base sm:text-xl text-muted-foreground leading-relaxed">
                   {t('intensive.hero.subtitle')}
                 </p>
 

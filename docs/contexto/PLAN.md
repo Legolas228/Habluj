@@ -56,7 +56,7 @@ Recomendaciones concretas del análisis CRO/UX Writing:
 ### Carril A — Producto y conversión (prioridad de negocio)
 
 - [ ] Reemplazar Setmore por motor de reservas nativo end-to-end.
-- [ ] Completar pagos GoPay reales (init/confirm/webhook) y enlazar compra de créditos.
+- [ ] Completar pagos Stripe reales (init/confirm/webhook) y enlazar compra de créditos.
 - [ ] Exponer saldo/movimientos de créditos y estados de reservas/pagos en dashboard alumno.
 - [ ] Garantizar política de cancelación 24h en reglas backend y avisos UX.
 - [ ] Aplicar pricing dual EUR/CZK con redondeo psicológico a múltiplos de 10.
@@ -88,7 +88,7 @@ Recomendaciones concretas del análisis CRO/UX Writing:
 
 ## Cierre por hitos
 
-- Hito 1: reserva nativa + GoPay funcionales.
+- Hito 1: reserva nativa + Stripe funcionales.
 - Hito 2: localización/CRO y automatizaciones esenciales cerradas.
 - Hito 3: estabilización operativa completa con evidencia.
 
@@ -149,5 +149,5 @@ Recomendaciones concretas del análisis CRO/UX Writing:
 - Sin duplicados entre completado y pendiente.
 - Mantener tareas accionables y trazables por PR.
 - Respetar siempre `docs/contexto/ESTER.md` en contenido de negocio visible.
-- Mantener GoPay como pasarela por defecto en código y documentación.
+- Mantener Stripe como pasarela por defecto en código y documentación.
 - No introducir migración a Next.js en esta fase salvo decisión explícita posterior.

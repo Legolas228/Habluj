@@ -129,7 +129,7 @@ const SignupPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-4 py-10">
+      <main id="main-content" tabIndex={-1} className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md bg-white rounded-xl border border-border shadow-soft p-6 md:p-8">
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary mb-3">

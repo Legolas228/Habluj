@@ -39,7 +39,7 @@ from api.views import (
     AdminStudentListView,
     AdminStudentDetailView,
     AdminGoogleCalendarEventsView,
-    GoPayWebhookView,
+    StripeWebhookView,
 )
 
 router = DefaultRouter()
@@ -64,7 +64,7 @@ urlpatterns = [
     path('api/auth/logout/', StudentLogoutView.as_view(), name='student-logout'),
     path('api/auth/me/', StudentMeView.as_view(), name='student-me'),
     path('api/users/profile/', StudentProfileView.as_view(), name='student-profile'),
-    path('api/payments/gopay/webhook/', GoPayWebhookView.as_view(), name='gopay-webhook'),
+    path('api/payments/stripe/webhook/', StripeWebhookView.as_view(), name='stripe-webhook'),
     path('api/admin/students/', AdminStudentListView.as_view(), name='admin-students'),
     path('api/admin/students/<int:user_id>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
     path('api/admin/google-calendar/events/', AdminGoogleCalendarEventsView.as_view(), name='admin-google-calendar-events'),

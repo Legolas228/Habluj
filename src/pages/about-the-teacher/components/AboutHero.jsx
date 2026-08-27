@@ -32,7 +32,7 @@ const AboutHero = () => {
               {t('about.hero.description')}
             </p>
 
-            <div className="grid grid-cols-3 gap-4 sm:gap-8 border-t border-border pt-6 sm:pt-8">
+            <div className="grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-3 sm:gap-8 sm:pt-8">
               <div>
                 <div className="font-headlines text-2xl sm:text-3xl font-bold text-primary mb-1">4+</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('about.hero.stats.experience')}</div>

@@ -162,7 +162,7 @@ const BookingSystem = () => {
 
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <main className="flex-grow py-12">
+        <main id="main-content" tabIndex={-1} className="flex-grow py-12">
           <div className="container mx-auto px-4 lg:px-6 max-w-3xl">
             <section className="bg-white rounded-xl border border-border shadow-soft p-6 md:p-8">
               <div className="mx-auto mb-4 w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">

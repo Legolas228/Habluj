@@ -238,12 +238,12 @@ SERVER_EMAIL = os.environ.get('DJANGO_SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 # Keep lead capture independent from third-party services by default.
 LEAD_EXTERNAL_INTEGRATIONS_ENABLED = env_bool('LEAD_EXTERNAL_INTEGRATIONS_ENABLED', False)
 
-# Payments (GoPay)
-GOPAY_CLIENT_ID = os.environ.get('GOPAY_CLIENT_ID', '').strip()
-GOPAY_CLIENT_SECRET = os.environ.get('GOPAY_CLIENT_SECRET', '').strip()
-GOPAY_GOID = os.environ.get('GOPAY_GOID', '').strip()
-GOPAY_WEBHOOK_SECRET = os.environ.get('GOPAY_WEBHOOK_SECRET', '').strip()
-GOPAY_CHECKOUT_BASE_URL = os.environ.get('GOPAY_CHECKOUT_BASE_URL', 'https://gate.gopay.cz').strip()
+# Payments (Stripe)
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '').strip()
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '').strip()
+STRIPE_CHECKOUT_BASE_URL = os.environ.get('STRIPE_CHECKOUT_BASE_URL', 'https://checkout.stripe.com').strip()
+STRIPE_SUCCESS_URL = os.environ.get('STRIPE_SUCCESS_URL', '').strip()
+STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', '').strip()
 BOOKING_EUR_TO_CZK_RATE = os.environ.get('BOOKING_EUR_TO_CZK_RATE', '25')
 BOOKING_PAYMENT_TTL_MINUTES = int(os.environ.get('BOOKING_PAYMENT_TTL_MINUTES', '15'))
 BOOKING_CLASS_MINUTES = int(os.environ.get('BOOKING_CLASS_MINUTES', '60'))
@@ -260,8 +260,8 @@ if _google_sa_raw:
     except json.JSONDecodeError:
         GOOGLE_SERVICE_ACCOUNT_INFO = {}
 
-if not DEBUG and (GOPAY_CLIENT_ID or GOPAY_CLIENT_SECRET or GOPAY_GOID) and not GOPAY_WEBHOOK_SECRET:
-    raise ImproperlyConfigured('GOPAY_WEBHOOK_SECRET must be set when GoPay is configured and DEBUG=False.')
+if not DEBUG and STRIPE_SECRET_KEY and not STRIPE_WEBHOOK_SECRET:
+    raise ImproperlyConfigured('STRIPE_WEBHOOK_SECRET must be set when Stripe is configured and DEBUG=False.')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -279,7 +279,7 @@ REST_FRAMEWORK = {
         'student_login': os.environ.get('DRF_THROTTLE_STUDENT_LOGIN', '10/min'),
         'student_register': os.environ.get('DRF_THROTTLE_STUDENT_REGISTER', '5/min'),
         'lead_create': os.environ.get('DRF_THROTTLE_LEAD_CREATE', '15/min'),
-        'gopay_webhook': os.environ.get('DRF_THROTTLE_GOPAY_WEBHOOK', '120/min'),
+        'stripe_webhook': os.environ.get('DRF_THROTTLE_STRIPE_WEBHOOK', '120/min'),
     },
 }
 
