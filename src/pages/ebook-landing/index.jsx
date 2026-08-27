@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
 import Header from '../../components/ui/Header';
@@ -7,12 +7,15 @@ import SiteFooter from '../../components/ui/SiteFooter';
 import AppIcon from '../../components/AppIcon';
 import { getCanonicalUrl, getHreflangLinks, DEFAULT_OG_IMAGE } from '../../utils/seo';
 import { cn } from '../../utils/cn';
+import { createEbookCheckout } from '../../services/studentAuth';
 
 const copy = {
   sk: {
     metaTitle: 'eBook Španielčina bez strachu | Habluj',
     metaDescription: 'Digitálny eBook pre Slovákov a Čechov, ktorí chcú začať hovoriť po španielsky istejšie a bez zbytočného stresu.',
-    heroBadge: 'Digitálny eBook PDF + EPUB',
+    heroBadge: 'Digitálny eBook PDF',
+    sampleTitle: 'Ukážka knihy',
+    sampleSubtitle: 'Pozrite si niekoľko strán z knihy a objavte jej metódu, štruktúru a cvičenia.',
     bookTitle: 'Španielčina',
     bookSubtitle: 'bez strachu',
     title: 'Prestaňte sa učiť španielčinu naslepo',
@@ -22,7 +25,7 @@ const copy = {
     proof: [
       'Čítanie na mobile, tablete aj počítači',
       'Okamžitý prístup po zaplatení',
-      'Formáty PDF a EPUB v cene',
+      'eBook vo formáte PDF',
     ],
     chaptersTitle: 'Čo sa v eBooku naučíte',
     chaptersSubtitle: 'Konkrétne bloky zamerané na problémy, ktoré pri španielčine najčastejšie brzdia slovenských a českých študentov.',
@@ -56,21 +59,22 @@ const copy = {
     includesTitle: 'Čo dostanete',
     includes: [
       'eBook vo formáte PDF',
-      'eBook vo formáte EPUB',
       'Prístup na čítanie v akomkoľvek zariadení',
       'Budúce menšie aktualizácie zdarma',
     ],
     faqTitle: 'Časté otázky',
     faqs: [
-      ['V akom formáte príde?', 'Súčasťou nákupu je PDF aj EPUB, takže si ho môžete prečítať v prehliadači, mobile, tablete alebo čítačke.'],
-      ['Môžem ho čítať na Kindle?', 'Áno, EPUB môžete poslať do Kindle knižnice cez službu Send to Kindle. PDF funguje lepšie na väčších obrazovkách.'],
+      ['V akom formáte príde?', 'Súčasťou nákupu je PDF, takže si ho môžete prečítať v prehliadači, mobile, tablete alebo čítačke.'],
+      ['Môžem ho čítať na Kindle?', 'Áno, PDF môžete čítať aj na Kindle.'],
       ['Je eBook vhodný pre úplných začiatočníkov?', 'Áno. Je písaný tak, aby pomohol najmä ľuďom, ktorí chcú začať španielčinu od základov rozumne a bez chaosu.'],
     ],
   },
   cs: {
     metaTitle: 'eBook Španělština bez strachu | Habluj',
     metaDescription: 'Digitální eBook pro Slováky a Čechy, kteří chtějí začít mluvit španělsky jistěji a bez zbytečného stresu.',
-    heroBadge: 'Digitální eBook PDF + EPUB',
+    heroBadge: 'Digitální eBook PDF',
+    sampleTitle: 'Ukázka knihy',
+    sampleSubtitle: 'Prohlédněte si několik stran knihy a objevte její metodu, strukturu a cvičení.',
     bookTitle: 'Španělština',
     bookSubtitle: 'bez strachu',
     title: 'Přestaňte se učit španělštinu naslepo',
@@ -80,7 +84,7 @@ const copy = {
     proof: [
       'Čtení na mobilu, tabletu i počítači',
       'Okamžitý přístup po zaplacení',
-      'Formáty PDF a EPUB v ceně',
+      'eBook ve formátu PDF',
     ],
     chaptersTitle: 'Co se v eBooku naučíte',
     chaptersSubtitle: 'Konkrétní bloky zaměřené na problémy, které ve španělštině nejčastěji brzdí české a slovenské studenty.',
@@ -114,21 +118,22 @@ const copy = {
     includesTitle: 'Co dostanete',
     includes: [
       'eBook ve formátu PDF',
-      'eBook ve formátu EPUB',
       'Přístup ke čtení na jakémkoli zařízení',
       'Budoucí menší aktualizace zdarma',
     ],
     faqTitle: 'Časté otázky',
     faqs: [
-      ['V jakém formátu přijde?', 'Součástí nákupu je PDF i EPUB, takže si ho můžete přečíst v prohlížeči, mobilu, tabletu nebo čtečce.'],
-      ['Můžu ho číst na Kindle?', 'Ano, EPUB můžete poslat do Kindle knihovny přes službu Send to Kindle. PDF funguje lépe na větších obrazovkách.'],
+      ['V jakém formátu přijde?', 'Součástí nákupu je PDF, takže si ho můžete přečíst v prohlížeči, mobilu, tabletu nebo čtečce.'],
+      ['Můžu ho číst na Kindle?', 'Ano, PDF můžete číst i na Kindle.'],
       ['Je eBook vhodný pro úplné začátečníky?', 'Ano. Je napsaný tak, aby pomohl hlavně lidem, kteří chtějí začít španělštinu od základů rozumně a bez chaosu.'],
     ],
   },
   es: {
     metaTitle: 'eBook Español sin miedo | Habluj',
     metaDescription: 'eBook digital para personas de habla eslovaca y checa que quieren empezar a hablar español con más seguridad y sin estrés innecesario.',
-    heroBadge: 'eBook digital PDF + EPUB',
+    heroBadge: 'eBook digital PDF',
+    sampleTitle: 'Muestra del libro',
+    sampleSubtitle: 'Mira algunas páginas del libro y descubre su método, estructura y ejercicios.',
     bookTitle: 'Español',
     bookSubtitle: 'sin miedo',
     title: 'Deja de aprender español a ciegas',
@@ -138,7 +143,7 @@ const copy = {
     proof: [
       'Lee en móvil, tableta u ordenador',
       'Acceso instantáneo después del pago',
-      'Formatos PDF y EPUB incluidos',
+      'eBook en formato PDF',
     ],
     chaptersTitle: 'Qué aprenderás en el eBook',
     chaptersSubtitle: 'Bloques concretos para superar los problemas que más frenan a los estudiantes eslovacos y checos de español.',
@@ -172,14 +177,13 @@ const copy = {
     includesTitle: 'Qué incluye',
     includes: [
       'eBook en formato PDF',
-      'eBook en formato EPUB',
       'Acceso desde cualquier dispositivo',
       'Pequeñas actualizaciones futuras gratuitas',
     ],
     faqTitle: 'Preguntas frecuentes',
     faqs: [
-      ['¿En qué formato viene?', 'La compra incluye PDF y EPUB, para que puedas leerlo en el navegador, móvil, tableta u otro lector.'],
-      ['¿Puedo leerlo en Kindle?', 'Sí. Puedes enviar el EPUB a tu biblioteca de Kindle mediante Send to Kindle. El PDF funciona mejor en pantallas grandes.'],
+      ['¿En qué formato viene?', 'La compra incluye el PDF, para que puedas leerlo en el navegador, móvil, tableta u otro lector.'],
+      ['¿Puedo leerlo en Kindle?', 'Sí, también puedes leer el PDF en Kindle.'],
       ['¿Es adecuado para principiantes absolutos?', 'Sí. Está escrito especialmente para quienes quieren empezar español desde cero de forma clara y sin caos.'],
     ],
   },
@@ -197,6 +201,8 @@ const normalizeLang = (lang) => {
   return 'sk';
 };
 
+const samplePages = [1, 2, 6, 8, 21, 48, 64, 76, 79, 104, 144, 172];
+
 const SectionHeader = ({ title, subtitle }) => (
   <div className="mx-auto max-w-3xl text-center space-y-3">
     <h2 className="text-2xl sm:text-3xl lg:text-4xl font-headlines font-bold text-foreground">{title}</h2>
@@ -204,36 +210,13 @@ const SectionHeader = ({ title, subtitle }) => (
   </div>
 );
 
-const BookMockup = ({ text, title, subtitle }) => (
-  <div className="relative mx-auto w-full max-w-sm">
-    <div className="absolute -inset-4 rounded-2xl bg-gradient-cultural opacity-10 blur-2xl" />
-    <div className="relative aspect-[4/5] max-w-full rounded-2xl bg-white shadow-cultural border border-border p-3 sm:p-5">
-      <div className="h-full rounded-xl bg-gradient-to-br from-primary via-secondary to-brand-spanish p-4 sm:p-6 text-white flex flex-col justify-between overflow-hidden">
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
-            <AppIcon name="BookOpen" size={14} />
-            Habluj eBook
-          </div>
-          <div>
-            <p className="font-accent text-lg text-white/80">{title}</p>
-            <h3 className="text-2xl sm:text-3xl font-headlines font-bold leading-tight">{subtitle}</h3>
-          </div>
-        </div>
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg bg-white/15 p-3">
-              <AppIcon name="FileText" size={18} />
-              <p className="mt-2 text-xs font-semibold">PDF</p>
-            </div>
-            <div className="rounded-lg bg-white/15 p-3">
-              <AppIcon name="TabletSmartphone" size={18} />
-              <p className="mt-2 text-xs font-semibold">EPUB</p>
-            </div>
-          </div>
-          <p className="text-sm text-white/85">{text}</p>
-        </div>
-      </div>
-    </div>
+const BookMockup = ({ title, subtitle }) => (
+  <div className="mx-auto w-full max-w-sm overflow-hidden rounded-xl border border-border bg-white p-1 shadow-soft">
+    <img
+      src="/assets/images/portada-ebook.png"
+      alt={`${title} ${subtitle}`}
+      className="h-auto w-full max-w-full object-cover"
+    />
   </div>
 );
 
@@ -279,6 +262,73 @@ const ChaptersGrid = ({ content }) => (
     </div>
   </section>
 );
+
+const SamplePreview = ({ content }) => {
+  const [selectedPage, setSelectedPage] = useState(null);
+
+  useEffect(() => {
+    if (!selectedPage) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setSelectedPage(null);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPage]);
+
+  return (
+    <section className="border-b border-border bg-background py-10 sm:py-14 lg:py-20">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeader title={content.sampleTitle} subtitle={content.sampleSubtitle} />
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {samplePages.map((page) => (
+            <button
+              key={page}
+              type="button"
+              onClick={() => setSelectedPage(page)}
+              className="group overflow-hidden rounded-xl border border-border bg-white text-left shadow-sm transition-shadow hover:shadow-md"
+              aria-label={`${content.sampleTitle}, página ${page}`}
+            >
+              <img
+                src={`/assets/images/ebook-sample/page-${page}.jpg`}
+                alt={`${content.sampleTitle}, página ${page}`}
+                className="h-auto w-full max-w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {selectedPage && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${content.sampleTitle}, página ${selectedPage}`}
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-foreground/80 p-4 sm:p-8"
+          onClick={() => setSelectedPage(null)}
+        >
+          <div className="relative max-h-full max-w-4xl" onClick={(event) => event.stopPropagation()}>
+            <img
+              src={`/assets/images/ebook-sample/page-${selectedPage}.jpg`}
+              alt={`${content.sampleTitle}, página ${selectedPage}`}
+              className="max-h-[calc(100vh-2rem)] max-w-full rounded-lg object-contain shadow-cultural sm:max-h-[calc(100vh-4rem)]"
+            />
+            <button
+              type="button"
+              onClick={() => setSelectedPage(null)}
+              aria-label="Cerrar muestra"
+              className="absolute right-2 top-2 flex h-10 w-10 items-center justify-center rounded-full bg-foreground/80 text-white shadow-md transition-colors hover:bg-foreground"
+            >
+              <AppIcon name="X" size={20} />
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
 
 const AudienceFit = ({ content }) => (
   <section className="bg-muted/50 py-10 sm:py-14 lg:py-20">
@@ -430,11 +480,15 @@ const EbookLandingPage = ({ lang = null }) => {
     },
   }), [activeLang, content, price]);
 
-  const handleCheckout = (selectedLang) => {
+  const handleCheckout = async (selectedLang) => {
     setCheckoutLang(selectedLang);
-    window.setTimeout(() => {
+    try {
+      const checkout = await createEbookCheckout(selectedLang);
+      window.location.assign(checkout.checkout_url);
+    } catch (error) {
+      window.alert(error.message);
       setCheckoutLang(null);
-    }, 900);
+    }
   };
 
   return (
@@ -492,10 +546,11 @@ const EbookLandingPage = ({ lang = null }) => {
                 </div>
               </div>
             </div>
-            <BookMockup text={content.heroBadge} title={content.bookTitle} subtitle={content.bookSubtitle} />
+            <BookMockup title={content.bookTitle} subtitle={content.bookSubtitle} />
           </div>
         </section>
 
+        <SamplePreview content={content} />
         <ProofBar items={content.proof} />
         <ChaptersGrid content={content} />
         <AudienceFit content={content} />

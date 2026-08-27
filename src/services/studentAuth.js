@@ -207,6 +207,38 @@ export const confirmBookingPayment = async ({ token, bookingId }) => {
   return data;
 };
 
+export const createEbookCheckout = async (lang) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/ebook/checkout/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lang }),
+  });
+
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'No se pudo iniciar la compra del eBook.');
+  }
+
+  return data;
+};
+
+export const getEbookAccess = async (sessionId) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/ebook/access/?session_id=${encodeURIComponent(sessionId)}`);
+  const data = await parseResponseData(response);
+  if (!response.ok) {
+    throw new Error(data?.error || data?.detail || 'El pago todavía no está confirmado.');
+  }
+
+  return {
+    ...data,
+    download_url: data?.download_url?.startsWith('http')
+      ? data.download_url
+      : `${baseUrl}${data?.download_url || ''}`,
+  };
+};
+
 export const payBookingWithTokens = async ({ token, bookingId }) => {
   const baseUrl = resolveApiBaseUrl();
   const response = await fetch(`${baseUrl}/api/bookings/${bookingId}/pay_with_tokens/`, {
