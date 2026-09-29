@@ -7,7 +7,8 @@ import SiteFooter from '../../components/ui/SiteFooter';
 import AppIcon from '../../components/AppIcon';
 import { getCanonicalUrl, getHreflangLinks, DEFAULT_OG_IMAGE } from '../../utils/seo';
 import { cn } from '../../utils/cn';
-import { createEbookCheckout } from '../../services/studentAuth';
+
+const EBOOK_PAYMENT_URL = 'https://buy.stripe.com/bJeaEQeLB3Q94Sf48L5kk00?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAb21jcAUodmtleHRuA2FlbQMxMDAAcGRvZgJzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAad4NcfZzC6KXLe2IU7ltBKfPnyVkFbl5DguPT7UZ0N25_Sntz65xHF3cqmvZQ_aem_Ikxa2xI5sLZzgk28boLw2A';
 
 const copy = {
   sk: {
@@ -455,8 +456,7 @@ const EbookLandingPage = ({ lang = null }) => {
   const content = copy[activeLang];
   const price = priceByLanguage[activeLang];
   const hreflangLinks = getHreflangLinks('/ebook');
-  const [checkoutLang, setCheckoutLang] = useState(null);
-  const isLoading = checkoutLang === activeLang;
+  const isLoading = false;
 
   const schema = useMemo(() => ({
     '@context': 'https://schema.org',
@@ -477,22 +477,10 @@ const EbookLandingPage = ({ lang = null }) => {
     },
   }), [activeLang, content, price]);
 
-  const handleCheckout = async (selectedLang) => {
-    const checkoutWindow = window.open('', '_blank');
+  const handleCheckout = () => {
+    const checkoutWindow = window.open(EBOOK_PAYMENT_URL, '_blank', 'noopener,noreferrer');
     if (!checkoutWindow) {
       window.alert('Permite las ventanas emergentes para continuar con la compra.');
-      return;
-    }
-
-    checkoutWindow.opener = null;
-    setCheckoutLang(selectedLang);
-    try {
-      const checkout = await createEbookCheckout(selectedLang);
-      checkoutWindow.location.href = checkout.checkout_url;
-    } catch (error) {
-      checkoutWindow.close();
-      window.alert(error.message);
-      setCheckoutLang(null);
     }
   };
 
