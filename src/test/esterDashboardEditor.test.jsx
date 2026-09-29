@@ -3,6 +3,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import EsterDashboard from '../pages/ester-dashboard';
 
+global.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 const leads = vi.hoisted(() => [
   { id: 1, full_name: 'Ana Contacto', email: 'ana@example.com', phone: '+34 600 000 001', preferred_language: 'es', source: 'contact_form', stage: 'new', notes: 'inquiry:general | subject:Clases\nNecesito información.', consent_privacy: true, consent_marketing: false, created_at: '2026-06-20T10:00:00Z' },
   { id: 2, full_name: 'Luis Test', email: 'luis@example.com', preferred_language: 'sk', source: 'advanced_level_test', stage: 'qualified', notes: 'test_type:advanced_spanish_b2_ceiling | test_score:11/15 | test_band:B2 solido | q1:c | q2:a', consent_privacy: true, created_at: '2026-06-21T10:00:00Z' },

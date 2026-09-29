@@ -1233,13 +1233,13 @@ class LeadViewSet(viewsets.ModelViewSet):
         if score <= 3:
             band = band or 'A0-A1'
             return {'score': score, 'band': band}
-        if score <= 6:
+        if score <= 7:
             band = band or 'A2'
             return {'score': score, 'band': band}
-        if score <= 9:
+        if score <= 10:
             band = band or 'B1'
             return {'score': score, 'band': band}
-        if score <= 12:
+        if score <= 13:
             band = band or 'B1 alto'
             return {'score': score, 'band': band}
 

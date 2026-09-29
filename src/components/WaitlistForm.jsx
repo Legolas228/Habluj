@@ -31,6 +31,12 @@ const GROUP_COURSE_OPTIONS = [
   { value: 'group_maturita', labelKey: 'waitlist.groupCourse.maturita' },
 ];
 
+const FieldLabel = ({ children, required = false }) => (
+  <span className="text-sm font-medium text-foreground">
+    {children}{required && <span className="ml-1 text-destructive" aria-hidden="true">*</span>}
+  </span>
+);
+
 const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
   const { t, language } = useTranslation();
   const [fullName, setFullName] = useState('');
@@ -128,11 +134,12 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">{t('waitlist.courseLabel')}</label>
+          <label><FieldLabel required>{t('waitlist.courseLabel')}</FieldLabel></label>
           <select
             className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             value={courseType}
             onChange={(event) => setCourseType(event.target.value)}
+            required
           >
             <option value="intensive">{t('waitlist.course.intensive')}</option>
             <option value="small_group">{t('waitlist.course.smallGroup')}</option>
@@ -141,11 +148,12 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
         {courseType === 'intensive' && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">{t('waitlist.intensiveCourseLabel')}</label>
+            <label><FieldLabel required>{t('waitlist.intensiveCourseLabel')}</FieldLabel></label>
             <select
               className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={intensiveCourse}
               onChange={(event) => setIntensiveCourse(event.target.value)}
+              required
             >
               {INTENSIVE_COURSE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
@@ -156,11 +164,12 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
         {courseType === 'small_group' && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">{t('waitlist.groupCourseLabel')}</label>
+            <label><FieldLabel required>{t('waitlist.groupCourseLabel')}</FieldLabel></label>
             <select
               className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               value={groupCourse}
               onChange={(event) => setGroupCourse(event.target.value)}
+              required
             >
               {GROUP_COURSE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
@@ -171,6 +180,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
         <Input
           type="text"
+          label={t('waitlist.nameLabel')}
           placeholder={t('waitlist.namePlaceholder')}
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
@@ -181,6 +191,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
         <Input
           type="email"
+          label={t('waitlist.emailLabel')}
           placeholder={t('waitlist.emailPlaceholder')}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
@@ -192,6 +203,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
         <Input
           type="tel"
+          label={t('waitlist.phoneLabel')}
           placeholder={t('waitlist.phonePlaceholder')}
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
@@ -200,13 +212,17 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
           aria-label={t('waitlist.phonePlaceholder')}
         />
 
-        <textarea
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-24"
-          placeholder={t('waitlist.messagePlaceholder')}
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          aria-label={t('waitlist.messagePlaceholder')}
-        />
+        <div className="space-y-2">
+          <label htmlFor="waitlist-message"><FieldLabel>{t('waitlist.messageLabel')}</FieldLabel></label>
+          <textarea
+            id="waitlist-message"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm min-h-24"
+            placeholder={t('waitlist.messagePlaceholder')}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            aria-label={t('waitlist.messagePlaceholder')}
+          />
+        </div>
 
         <label htmlFor="waitlist-privacy" className="flex items-start gap-2 text-sm text-muted-foreground">
           <input
@@ -218,7 +234,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
             className="mt-0.5 h-4 w-4 rounded border border-primary/60 bg-white accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={t('waitlist.privacyConsent')}
           />
-          <span>{t('waitlist.privacyConsent')}</span>
+          <span>{t('waitlist.privacyConsent')} <span className="text-destructive" aria-hidden="true">*</span></span>
         </label>
 
         <label htmlFor="waitlist-marketing" className="flex items-start gap-2 text-sm text-muted-foreground">
