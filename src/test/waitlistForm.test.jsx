@@ -47,7 +47,7 @@ describe('WaitlistForm', () => {
   it('switches source to intensive waitlist when intensive course is selected', async () => {
     render(<WaitlistForm preferredCourseType="small_group" />);
 
-    fireEvent.change(screen.getByRole('combobox'), {
+    fireEvent.change(screen.getAllByRole('combobox')[0], {
       target: { value: 'intensive' },
     });
 
@@ -74,7 +74,7 @@ describe('WaitlistForm', () => {
 
     const selects = screen.getAllByRole('combobox');
     fireEvent.change(selects[1], {
-      target: { value: 'intensive_dele' },
+      target: { value: 'intensive_b1' },
     });
 
     fireEvent.change(screen.getByLabelText('waitlist.namePlaceholder'), {
@@ -94,12 +94,12 @@ describe('WaitlistForm', () => {
       expect(submitLeadCaptureMock).toHaveBeenCalledTimes(1);
       expect(submitLeadCaptureMock).toHaveBeenCalledWith(expect.objectContaining({
         source: 'waitlist_intensive',
-        notes: '[COURSE:intensive_dele]\nQuiero prepararme para examen',
+        notes: '[COURSE:intensive_b1]\nQuiero prepararme para examen',
       }));
     });
   });
 
-  it('does not include intensive metadata in notes for small groups waitlist', async () => {
+  it('includes group course metadata in notes for small groups waitlist', async () => {
     render(<WaitlistForm preferredCourseType="small_group" />);
 
     fireEvent.change(screen.getByLabelText('waitlist.namePlaceholder'), {
@@ -107,6 +107,9 @@ describe('WaitlistForm', () => {
     });
     fireEvent.change(screen.getByLabelText('waitlist.emailPlaceholder'), {
       target: { value: 'nora@example.com' },
+    });
+    fireEvent.change(screen.getAllByRole('combobox')[1], {
+      target: { value: 'group_private' },
     });
     fireEvent.change(screen.getByLabelText('waitlist.messagePlaceholder'), {
       target: { value: 'Prefiero martes por la tarde' },
@@ -119,7 +122,7 @@ describe('WaitlistForm', () => {
       expect(submitLeadCaptureMock).toHaveBeenCalledTimes(1);
       expect(submitLeadCaptureMock).toHaveBeenCalledWith(expect.objectContaining({
         source: 'waitlist_small_group',
-        notes: 'Prefiero martes por la tarde',
+        notes: '[COURSE:group_private]\nPrefiero martes por la tarde',
       }));
     });
   });

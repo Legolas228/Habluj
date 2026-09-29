@@ -29,32 +29,32 @@ const QUESTIONS = [
   },
   {
     id: 2,
-    prompt: '___ días, ¿cómo estás?',
+    prompt: 'Ja hrám futbal a vy hráte basketbal',
     options: [
-      { key: 'a', text: 'Buen' },
-      { key: 'b', text: 'Buenos' },
-      { key: 'c', text: 'Buena' },
-      { key: 'd', text: 'Bien' },
+      { key: 'a', text: 'Yo jugo al fútbol y vosotros jugáis al baloncesto' },
+      { key: 'b', text: 'Yo juego al fútbol y vosotros jugáis al baloncesto' },
+      { key: 'c', text: 'Yo jugo el fútbol y vosotros jugáis el baloncesto' },
+      { key: 'd', text: 'Yo juego el fútbol y vosotros jugáis el baloncesto' },
     ],
   },
   {
     id: 3,
-    prompt: 'El libro ->',
+    prompt: 'Musím ísť do mesta',
     options: [
-      { key: 'a', text: 'los libros' },
-      { key: 'b', text: 'los libro' },
-      { key: 'c', text: 'los libras' },
-      { key: 'd', text: 'los libroes' },
+      { key: 'a', text: 'tengo ir a la ciudad' },
+      { key: 'b', text: 'tengo que ir a la ciudad' },
+      { key: 'c', text: 'tengo ir en la ciudad' },
+      { key: 'd', text: 'tengo que ir en la ciudad' },
     ],
   },
   {
     id: 4,
     prompt: 'Ayer nosotros ___ en casa.',
     options: [
-      { key: 'a', text: 'estamos' },
+      { key: 'a', text: 'hemos estado' },
       { key: 'b', text: 'estuvimos' },
-      { key: 'c', text: 'estamos estado' },
-      { key: 'd', text: 'estábamos sido' },
+      { key: 'c', text: 'habíamos estado' },
+      { key: 'd', text: 'éramos' },
     ],
   },
   {
@@ -99,12 +99,12 @@ const QUESTIONS = [
   },
   {
     id: 9,
-    prompt: '¿Qué significa "estar cansado de algo"?',
+    prompt: 'Mira estos vestidos. ____ de ellos te gusta más?',
     options: [
-      { key: 'a', text: 'Tener sueño' },
-      { key: 'b', text: 'No querer seguir haciendolo' },
-      { key: 'c', text: 'Estar enfermo' },
-      { key: 'd', text: 'Tener hambre' },
+      { key: 'a', text: 'qué' },
+      { key: 'b', text: 'que' },
+      { key: 'c', text: 'cuál' },
+      { key: 'd', text: 'cuáles' },
     ],
   },
   {
@@ -129,12 +129,12 @@ const QUESTIONS = [
   },
   {
     id: 12,
-    prompt: 'Se fue sin que nadie ___ cuenta.',
+    prompt: '¿Cuál de estas palabras es correcta?',
     options: [
-      { key: 'a', text: 'se daba' },
-      { key: 'b', text: 'se dé' },
-      { key: 'c', text: 'se diera' },
-      { key: 'd', text: 'se dio' },
+      { key: 'a', text: 'teneré' },
+      { key: 'b', text: 'saberás' },
+      { key: 'c', text: 'querremos' },
+      { key: 'd', text: 'poderá' },
     ],
   },
   {
@@ -149,7 +149,7 @@ const QUESTIONS = [
   },
   {
     id: 14,
-    prompt: 'No solo no llamó, ___ dio explicaciones.',
+    prompt: 'No solo no llamó, ___ no dio explicaciones.',
     options: [
       { key: 'a', text: 'pero' },
       { key: 'b', text: 'sino' },
@@ -172,13 +172,13 @@ const QUESTIONS = [
 const ANSWER_KEY = {
   1: 'b',
   2: 'b',
-  3: 'a',
+  3: 'b',
   4: 'b',
   5: 'a',
   6: 'a',
   7: 'a',
   8: 'c',
-  9: 'b',
+  9: 'c',
   10: 'c',
   11: 'b',
   12: 'c',

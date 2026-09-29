@@ -140,6 +140,14 @@ const TutoringServices = () => {
           description: t('services.offers.group.item2desc'),
           action: 'contact',
         },
+        {
+          title: t('services.offers.group.item3'),
+          description: t('services.offers.group.item3desc'),
+        },
+        {
+          title: t('services.offers.group.item4'),
+          description: t('services.offers.group.item4desc'),
+        },
       ],
     },
     {
@@ -178,8 +186,9 @@ const TutoringServices = () => {
     ],
     'group-classes': [
       { icon: 'Users', color: 'bg-red-100', text: 'text-red-700' },
-      { icon: 'MessageCircle', color: 'bg-red-200', text: 'text-red-800' },
-      { icon: 'Sparkles', color: 'bg-red-300', text: 'text-red-900' },
+      { icon: 'MessageCircle', color: 'bg-red-100', text: 'text-red-700' },
+      { icon: 'User', color: 'bg-red-100', text: 'text-red-700' },
+      { icon: 'GraduationCap', color: 'bg-red-100', text: 'text-red-700' },
     ],
     'intensive-courses': [
       { icon: 'Zap', color: 'bg-blue-100', text: 'text-blue-700' },
@@ -465,7 +474,7 @@ const TutoringServices = () => {
                               <Icon name={itemStyle.icon} size={24} className={itemStyle.text || 'text-white'} />
                             </div>
                             <div>
-                              <h4 className="text-xl font-headlines font-bold text-foreground mb-1 line-clamp-2">{item.title}</h4>
+                              <h4 className={`text-xl font-headlines font-bold text-foreground mb-1 ${section.id === 'group-classes' ? '' : 'line-clamp-2'}`}>{item.title}</h4>
                               <p className={`text-sm font-medium ${accentStyle.label}`}>{section.title}</p>
                             </div>
                             <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>

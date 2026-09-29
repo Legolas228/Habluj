@@ -27,9 +27,9 @@ const Homepage = () => {
   const locale = localeByLanguage[language] || 'sk-SK';
   const ogLocale = ogLocaleByLanguage[language] || 'sk_SK';
   const offerByLanguage = {
-    sk: { currency: 'EUR', price: '20', label: 'od 20 € / lekcia' },
-    cz: { currency: 'CZK', price: '500', label: 'od 500 CZK / lekcia' },
-    es: { currency: 'EUR', price: '20', label: 'desde 20 € / clase' },
+    sk: { currency: 'EUR', price: '15', label: 'od 15 € / lekcia' },
+    cz: { currency: 'CZK', price: '375', label: 'od 375 CZK / lekcia' },
+    es: { currency: 'EUR', price: '15', label: 'desde 15 € / clase' },
   };
   const activeOffer = offerByLanguage[language] || offerByLanguage.sk;
 
