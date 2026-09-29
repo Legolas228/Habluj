@@ -19,8 +19,8 @@ const copy = {
     bookTitle: 'Španielčina',
     bookSubtitle: 'bez strachu',
     title: 'Prestaňte sa učiť španielčinu naslepo',
-    subtitle: 'Praktický eBook, ktorý vám ukáže, ako si postaviť pevné základy, vyhnúť sa typickým chybám Slovákov a Čechov a začať hovoriť sebavedomejšie.',
-    cta: 'Kúpiť za 15 €',
+    subtitle: 'Praktický eBook, ktorý Vám vytvorí pevné základy španielčiny. V čom sa táto kniha líši od bežných učebníc španielčiny? Okrem toho, že v každej lekcii nájdete 19 - 25 praktických cvičení na precvičenie gramatiky, je navrhnutá našou kruhovou metódou. Táto metóda podporuje skoré rozprávanie študenta a to práve vďaka tomu, že vrámci piatich lekcií sa naučíte ako prítomný, tak aj budúci a minulý čas. V knihe sa nachádza viac ako 600 slov vrámci slovnej zásoby. Každá lekcia obsahuje jasne vysvetlenú gramatiku a záver lekcie s užitočnými radami s učeniu.',
+    cta: 'Kúpiť za 24,90 €',
     secureBadge: 'Bezpečná platba a okamžitý prístup',
     proof: [
       'Čítanie na mobile, tablete aj počítači',
@@ -35,7 +35,6 @@ const copy = {
       ['Rozprávanie bez paniky', 'Ako trénovať hovorenie tak, aby ste sa nezasekli pri prvej vete.'],
       ['Gramatika ako nástroj, nie strašiak', 'Ako pochopiť systém jazyka bez memorovania izolovaných poučiek.'],
       ['Kultúra a prirodzené frázy', 'Výrazy a kontext, vďaka ktorým španielčina začne znieť živšie a prirodzenejšie.'],
-      ['Plán na prvých 30 dní', 'Konkrétny postup, ktorý vám pomôže začať a udržať tempo.'],
     ],
     fitTitle: 'Pre koho je tento eBook',
     goodFitTitle: 'Je pre vás, ak...',
@@ -79,7 +78,7 @@ const copy = {
     bookSubtitle: 'bez strachu',
     title: 'Přestaňte se učit španělštinu naslepo',
     subtitle: 'Praktický eBook, který vám ukáže, jak si postavit pevné základy, vyhnout se typickým chybám Čechů a Slováků a začít mluvit sebejistěji.',
-    cta: 'Koupit za 380 CZK',
+    cta: 'Koupit za 625 CZK',
     secureBadge: 'Bezpečná platba a okamžitý přístup',
     proof: [
       'Čtení na mobilu, tabletu i počítači',
@@ -94,7 +93,6 @@ const copy = {
       ['Mluvení bez paniky', 'Jak trénovat mluvení tak, abyste se nezasekli u první věty.'],
       ['Gramatika jako nástroj, ne strašák', 'Jak pochopit systém jazyka bez memorování izolovaných pouček.'],
       ['Kultura a přirozené fráze', 'Výrazy a kontext, díky kterým začne španělština znít živěji a přirozeněji.'],
-      ['Plán na prvních 30 dní', 'Konkrétní postup, který vám pomůže začít a udržet tempo.'],
     ],
     fitTitle: 'Pro koho je tento eBook',
     goodFitTitle: 'Je pro vás, pokud...',
@@ -138,7 +136,7 @@ const copy = {
     bookSubtitle: 'sin miedo',
     title: 'Deja de aprender español a ciegas',
     subtitle: 'Un eBook práctico que te muestra cómo construir una base sólida, evitar los errores más comunes de eslovacos y checos y empezar a hablar con más confianza.',
-    cta: 'Comprar por 15 €',
+    cta: 'Comprar por 24,90 €',
     secureBadge: 'Pago seguro y acceso instantáneo',
     proof: [
       'Lee en móvil, tableta u ordenador',
@@ -153,7 +151,6 @@ const copy = {
       ['Hablar sin entrar en pánico', 'Cómo practicar la conversación para no bloquearte en la primera frase.'],
       ['La gramática como herramienta', 'Cómo entender el sistema del idioma sin memorizar reglas aisladas.'],
       ['Cultura y expresiones naturales', 'Expresiones y contexto para que tu español suene más vivo y natural.'],
-      ['Plan para tus primeros 30 días', 'Un proceso concreto para empezar y mantener el ritmo.'],
     ],
     fitTitle: 'Para quién es este eBook',
     goodFitTitle: 'Es para ti si...',
@@ -190,9 +187,9 @@ const copy = {
 };
 
 const priceByLanguage = {
-  sk: { amount: '15', currency: '€', label: '15 €' },
-  cs: { amount: '380', currency: 'CZK', label: '380 CZK' },
-  es: { amount: '15', currency: '€', label: '15 €' },
+  sk: { amount: '24.90', currency: '€', label: '24,90 €' },
+  cs: { amount: '625', currency: 'CZK', label: '625 CZK' },
+  es: { amount: '24.90', currency: '€', label: '24,90 €' },
 };
 
 const normalizeLang = (lang) => {

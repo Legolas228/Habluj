@@ -45,7 +45,7 @@ const contentByLanguage = {
     sections: [
       {
         heading: '1. Co jsou cookies',
-        body: 'Cookies jsou malé textové soubory ukládané do vašeho zařízení pro zajištění funkčnosti webu a zapamatování preferencí.'
+        body: 'Cookies jsou malé textové soubory ukládané do Vašeho zařízení pro zajištění funkčnosti webu a zapamatování preferencí.'
       },
       {
         heading: '2. Typy cookies',
@@ -53,7 +53,7 @@ const contentByLanguage = {
       },
       {
         heading: '3. Právní základ',
-        body: 'Nezbytné cookies používáme na základě oprávněného zájmu na provozu webu. Ostatní cookies se používají pouze na základě vašeho souhlasu.'
+        body: 'Nezbytné cookies používáme na základě oprávněného zájmu na provozu webu. Ostatní cookies se používají pouze na základě Vašeho souhlasu.'
       },
       {
         heading: '4. Správa souhlasu',

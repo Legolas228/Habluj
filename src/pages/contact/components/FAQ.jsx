@@ -47,10 +47,10 @@ const faqContent = {
     emailCta: 'Napsat email',
     igCta: 'Instagram',
     faqs: [
-      { id: 1, category: 'teaching', question: 'Jak probíhají online lekce?', answer: 'Lekce probíhají individuálně přes online videohovor. Obsah je přizpůsoben vaší úrovni, cílům a tempu učení.' },
+      { id: 1, category: 'teaching', question: 'Jak probíhají online lekce?', answer: 'Lekce probíhají individuálně přes online videohovor. Obsah je přizpůsoben Vaší úrovni, cílům a tempu učení.' },
       { id: 2, category: 'booking', question: 'Jak si rezervuji termín?', answer: 'Termín si vyberete v rezervačním systému. Po potvrzení dostanete všechny instrukce na email.' },
       { id: 3, category: 'pricing', question: 'Jaká je cena lekce?', answer: 'Standardní cena je 25 € (cca 625 Kč) za 60 minut. Aktuální podmínky a dostupnost najdete na stránce služeb.' },
-      { id: 4, category: 'technical', question: 'Co potřebuji na online hodinu?', answer: 'Stabilní internet, mikrofon, sluchátka a klidné prostředí. Před první hodinou můžeme udělat krátký technický test.' },
+      { id: 4, category: 'technical', question: 'Co potřebuji na online hodinu?', answer: 'Stabilní internet, mikrofon, sluchátka a klidné prostředí.' },
     ],
   },
   es: {

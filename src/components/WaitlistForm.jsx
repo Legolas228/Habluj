@@ -18,10 +18,17 @@ const mapWaitlistSource = (courseType) => {
 };
 
 const INTENSIVE_COURSE_OPTIONS = [
-  { value: 'intensive_general', labelKey: 'waitlist.intensiveCourse.general' },
+  { value: 'intensive_a1', labelKey: 'waitlist.intensiveCourse.summerA1' },
+  { value: 'intensive_a2', labelKey: 'waitlist.intensiveCourse.summerA2' },
+  { value: 'intensive_b1', labelKey: 'waitlist.intensiveCourse.summerB1' },
   { value: 'intensive_conversation', labelKey: 'waitlist.intensiveCourse.conversation' },
-  { value: 'intensive_dele', labelKey: 'waitlist.intensiveCourse.dele' },
-  { value: 'intensive_business', labelKey: 'waitlist.intensiveCourse.business' },
+];
+
+const GROUP_COURSE_OPTIONS = [
+  { value: 'group_pair', labelKey: 'waitlist.groupCourse.pair' },
+  { value: 'group_small', labelKey: 'waitlist.groupCourse.small' },
+  { value: 'group_private', labelKey: 'waitlist.groupCourse.private' },
+  { value: 'group_maturita', labelKey: 'waitlist.groupCourse.maturita' },
 ];
 
 const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
@@ -31,7 +38,8 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [courseType, setCourseType] = useState(preferredCourseType);
-  const [intensiveCourse, setIntensiveCourse] = useState('intensive_general');
+  const [intensiveCourse, setIntensiveCourse] = useState('intensive_a1');
+  const [groupCourse, setGroupCourse] = useState('group_pair');
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -43,7 +51,10 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
 
   useEffect(() => {
     if (courseType !== 'intensive') {
-      setIntensiveCourse('intensive_general');
+      setIntensiveCourse('intensive_a1');
+    }
+    if (courseType !== 'small_group') {
+      setGroupCourse('group_pair');
     }
   }, [courseType]);
 
@@ -69,7 +80,8 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
       const source = mapWaitlistSource(courseType);
       const cleanMessage = message.trim();
       const cleanPhone = phone.trim();
-      const courseMeta = courseType === 'intensive' ? `[COURSE:${intensiveCourse}]` : '';
+      const selectedCourse = courseType === 'intensive' ? intensiveCourse : groupCourse;
+      const courseMeta = `[COURSE:${selectedCourse}]`;
       const combinedNotes = [courseMeta, cleanMessage].filter(Boolean).join('\n').trim();
 
       await submitLeadCapture({
@@ -136,6 +148,21 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
               onChange={(event) => setIntensiveCourse(event.target.value)}
             >
               {INTENSIVE_COURSE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {courseType === 'small_group' && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">{t('waitlist.groupCourseLabel')}</label>
+            <select
+              className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              value={groupCourse}
+              onChange={(event) => setGroupCourse(event.target.value)}
+            >
+              {GROUP_COURSE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
               ))}
             </select>

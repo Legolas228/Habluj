@@ -242,6 +242,15 @@ LEAD_EXTERNAL_INTEGRATIONS_ENABLED = env_bool('LEAD_EXTERNAL_INTEGRATIONS_ENABLE
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '').strip()
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', '').strip()
 STRIPE_CHECKOUT_BASE_URL = os.environ.get('STRIPE_CHECKOUT_BASE_URL', 'https://checkout.stripe.com').strip()
+STRIPE_EBOOK_PAYMENT_LINKS = {
+    'sk': (os.environ.get('STRIPE_EBOOK_PAYMENT_LINK_SK') or os.environ.get('STRIPE_EBOOK_PAYMENT_LINK', '')).strip(),
+    'es': (os.environ.get('STRIPE_EBOOK_PAYMENT_LINK_ES') or os.environ.get('STRIPE_EBOOK_PAYMENT_LINK', '')).strip(),
+    'cs': (os.environ.get('STRIPE_EBOOK_PAYMENT_LINK_CS') or os.environ.get('STRIPE_EBOOK_PAYMENT_LINK', '')).strip(),
+}
+EBOOK_DOWNLOAD_PUBLIC_BASE_URL = os.environ.get(
+    'EBOOK_DOWNLOAD_PUBLIC_BASE_URL',
+    os.environ.get('DJANGO_PUBLIC_BASE_URL', ''),
+).strip()
 STRIPE_SUCCESS_URL = os.environ.get('STRIPE_SUCCESS_URL', '').strip()
 STRIPE_CANCEL_URL = os.environ.get('STRIPE_CANCEL_URL', '').strip()
 STRIPE_EBOOK_SUCCESS_URL = os.environ.get('STRIPE_EBOOK_SUCCESS_URL', '').strip()

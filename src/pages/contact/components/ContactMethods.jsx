@@ -11,6 +11,9 @@ const ContactMethods = () => {
     sk: {
       emailDesc: 'Pre všeobecné otázky a informácie',
       emailAction: 'Napísať email',
+      whatsappDesc: 'Najrýchlejší spôsob, ako sa s nami spojiť',
+      whatsappAction: 'Otvoriť WhatsApp',
+      whatsappContact: 'Napíšte nám priamo cez WhatsApp',
       igDesc: 'Sledujte nás na sociálnych sieťach',
       igAction: 'Sledovať',
       title: 'Vyberte si spôsob komunikácie',
@@ -23,6 +26,9 @@ const ContactMethods = () => {
     cz: {
       emailDesc: 'Pro obecné dotazy a informace',
       emailAction: 'Napsat email',
+      whatsappDesc: 'Nejrychlejší způsob, jak se s námi spojit',
+      whatsappAction: 'Otevřít WhatsApp',
+      whatsappContact: 'Napište nám přímo přes WhatsApp',
       igDesc: 'Sledujte nás na sociálních sítích',
       igAction: 'Sledovat',
       title: 'Vyberte si způsob komunikace',
@@ -35,6 +41,9 @@ const ContactMethods = () => {
     es: {
       emailDesc: 'Para preguntas generales e información',
       emailAction: 'Enviar correo',
+      whatsappDesc: 'La forma más rápida de contactar con nosotros',
+      whatsappAction: 'Abrir WhatsApp',
+      whatsappContact: 'Escríbenos directamente por WhatsApp',
       igDesc: 'Síguenos en redes sociales',
       igAction: 'Seguir',
       title: 'Elige tu canal de contacto',
@@ -49,16 +58,26 @@ const ContactMethods = () => {
   const contactMethods = [
     {
       id: 1,
+      icon: "MessageCircle",
+      title: "WhatsApp",
+      description: text.whatsappDesc,
+      contact: text.whatsappContact,
+      action: text.whatsappAction,
+      primary: true,
+      link: getContactLinks.whatsapp()
+    },
+    {
+      id: 2,
       icon: "Mail",
       title: "Email",
       description: text.emailDesc,
       contact: contactInfo.email,
       action: text.emailAction,
-      primary: true,
+      primary: false,
       link: getContactLinks.email()
     },
     {
-      id: 2,
+      id: 3,
       icon: "Instagram",
       title: "Instagram",
       description: text.igDesc,

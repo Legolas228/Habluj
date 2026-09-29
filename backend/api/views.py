@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.cache import cache
+from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.db.models import Count, Q, Sum
 from django.db import transaction
@@ -164,6 +165,16 @@ def _register_auth_failure(scope, ip):
 def _clear_auth_failures(scope, ip):
     cache.delete(_auth_fail_key(scope, ip))
     cache.delete(_auth_lock_key(scope, ip))
+
+
+def _ebook_download_url(purchase):
+    base_url = getattr(settings, 'EBOOK_DOWNLOAD_PUBLIC_BASE_URL', '').rstrip('/')
+    path = f'/api/ebook/download/{purchase.download_token}/'
+    return f'{base_url}{path}' if base_url else path
+
+
+def _ebook_file_path():
+    return settings.BASE_DIR / 'private_media' / 'ebooks' / 'ebook-hablame-en-espanol.pdf'
 
 
 class StudentLoginView(APIView):
@@ -797,11 +808,43 @@ class StripeWebhookView(APIView):
                     'currency': str(event_object.get('currency') or 'EUR').upper(),
                 },
             )
-            if event_type == 'checkout.session.completed' and purchase.status != 'completed':
-                purchase.status = 'completed'
+            if event_type == 'checkout.session.completed':
                 purchase.email = event_object.get('customer_details', {}).get('email', '') or purchase.email
-                purchase.completed_at = timezone.now()
-                purchase.save(update_fields=['status', 'email', 'completed_at', 'updated_at'])
+                if purchase.status != 'completed':
+                    purchase.status = 'completed'
+                    purchase.completed_at = timezone.now()
+                    purchase.save(update_fields=['status', 'email', 'completed_at', 'updated_at'])
+                elif purchase.email:
+                    purchase.save(update_fields=['email', 'updated_at'])
+
+                if purchase.email and not purchase.email_sent_at:
+                    download_url = _ebook_download_url(purchase)
+                    ebook_path = _ebook_file_path()
+                    if not ebook_path.is_file():
+                        return Response({'error': 'Ebook file is unavailable.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                    try:
+                        email = EmailMessage(
+                            subject='Tu eBook de Háblame en español',
+                            body=(
+                                'Gracias por tu compra. Puedes descargar tu eBook aquí:\n\n'
+                                f'{download_url}\n\n'
+                                'También lo encontrarás adjunto en este correo.'
+                            ),
+                            from_email=settings.DEFAULT_FROM_EMAIL,
+                            recipient_list=[purchase.email],
+                        )
+                        email.attach(
+                            'hablame-en-espanol.pdf',
+                            ebook_path.read_bytes(),
+                            'application/pdf',
+                        )
+                        delivered = email.send(fail_silently=False)
+                    except Exception:
+                        return Response({'error': 'Ebook delivery email could not be sent.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                    if delivered != 1:
+                        return Response({'error': 'Ebook delivery email could not be sent.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+                    purchase.email_sent_at = timezone.now()
+                    purchase.save(update_fields=['email_sent_at', 'updated_at'])
             elif event_type in {'checkout.session.expired', 'payment_intent.payment_failed'}:
                 purchase.status = 'failed'
                 purchase.save(update_fields=['status', 'updated_at'])
@@ -846,14 +889,18 @@ class EbookCheckoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
     PRICE_BY_LANGUAGE = {
-        'sk': {'amount': 15, 'currency': 'eur'},
-        'es': {'amount': 15, 'currency': 'eur'},
-        'cs': {'amount': 380, 'currency': 'czk'},
+        'sk': {'amount': Decimal('24.90'), 'currency': 'eur'},
+        'es': {'amount': Decimal('24.90'), 'currency': 'eur'},
+        'cs': {'amount': Decimal('625'), 'currency': 'czk'},
     }
 
     def post(self, request):
         language = str(request.data.get('lang') or 'sk').lower()
         offer = self.PRICE_BY_LANGUAGE.get(language, self.PRICE_BY_LANGUAGE['sk'])
+        payment_link = getattr(settings, 'STRIPE_EBOOK_PAYMENT_LINKS', {}).get(language, '')
+        if payment_link:
+            return Response({'checkout_url': payment_link})
+
         stripe_secret_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
         success_url = getattr(settings, 'STRIPE_EBOOK_SUCCESS_URL', '').replace('{lang}', language)
         cancel_url = getattr(settings, 'STRIPE_EBOOK_CANCEL_URL', '').replace('{lang}', language)
@@ -861,7 +908,7 @@ class EbookCheckoutView(APIView):
             return Response({'error': 'Stripe eBook checkout is not configured.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         stripe.api_key = stripe_secret_key
-        amount_minor = offer['amount'] * 100
+        amount_minor = int(offer['amount'] * 100)
         try:
             checkout_session = stripe.checkout.Session.create(
                 mode='payment',
@@ -896,7 +943,7 @@ class EbookDownloadView(APIView):
         if not purchase:
             return Response({'error': 'Download is not available.'}, status=status.HTTP_404_NOT_FOUND)
 
-        ebook_path = settings.BASE_DIR / 'private_media' / 'ebooks' / 'ebook-hablame-en-espanol.pdf'
+        ebook_path = _ebook_file_path()
         if not ebook_path.is_file():
             return Response({'error': 'eBook file is unavailable.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -916,7 +963,7 @@ class EbookAccessView(APIView):
 
         return Response({
             'status': 'completed',
-            'download_url': f'/api/ebook/download/{purchase.download_token}/',
+            'download_url': _ebook_download_url(purchase),
         })
 
 
