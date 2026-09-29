@@ -478,11 +478,19 @@ const EbookLandingPage = ({ lang = null }) => {
   }), [activeLang, content, price]);
 
   const handleCheckout = async (selectedLang) => {
+    const checkoutWindow = window.open('', '_blank');
+    if (!checkoutWindow) {
+      window.alert('Permite las ventanas emergentes para continuar con la compra.');
+      return;
+    }
+
+    checkoutWindow.opener = null;
     setCheckoutLang(selectedLang);
     try {
       const checkout = await createEbookCheckout(selectedLang);
-      window.location.assign(checkout.checkout_url);
+      checkoutWindow.location.href = checkout.checkout_url;
     } catch (error) {
+      checkoutWindow.close();
       window.alert(error.message);
       setCheckoutLang(null);
     }
