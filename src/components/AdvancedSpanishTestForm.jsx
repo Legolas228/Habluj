@@ -184,14 +184,14 @@ const ANSWER_KEY = {
   12: 'c',
   13: 'a',
   14: 'c',
-  15: 'c',
+  15: 'a',
 };
 
 const computeBand = (score) => {
   if (score <= 3) return 'A0-A1';
-  if (score <= 6) return 'A2';
-  if (score <= 9) return 'B1';
-  if (score <= 12) return 'B1 alto';
+  if (score <= 7) return 'A2';
+  if (score <= 10) return 'B1';
+  if (score <= 13) return 'B1 alto';
   return 'B2 (máximo del test)';
 };
 

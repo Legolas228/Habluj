@@ -117,11 +117,11 @@ def _with_query_params(url, params):
 def _level_bucket(score):
     if score <= 3:
         return 'starter'
-    if score <= 6:
+    if score <= 7:
         return 'basic'
-    if score <= 9:
+    if score <= 10:
         return 'intermediate'
-    if score <= 12:
+    if score <= 13:
         return 'upper_intermediate'
     return 'b2_ready'
 
@@ -174,80 +174,99 @@ def _email_copy(language, score, band, full_name):
 
     if language == 'es':
         tier_text = {
-            'starter': 'Te conviene consolidar base y desbloquear expresion oral cuanto antes.',
-            'basic': 'Estas en buen punto para acelerar fluidez con estructura guiada.',
-            'intermediate': 'Ya tienes base: ahora toca convertir conocimiento en conversacion natural.',
-            'upper_intermediate': 'Estas cerca de un salto fuerte de seguridad y precision al hablar.',
-            'b2_ready': 'Excelente base: podemos orientarte a resultados de nivel B2 real.',
+            'starter': 'Le conviene consolidar las bases y desarrollar su expresión oral.',
+            'basic': 'Tiene una buena base para mejorar su fluidez con una estructura guiada.',
+            'intermediate': 'Ya tiene una buena base; ahora puede convertir sus conocimientos en una conversación más natural.',
+            'upper_intermediate': 'Está cerca de dar un gran salto en seguridad y precisión al hablar.',
+            'b2_ready': 'Tiene una base excelente para orientarse hacia un nivel B2 sólido.',
         }
         return {
-            'subject': 'Tu resultado de espanol + plan recomendado (paso siguiente)',
-            'preheader': 'Ya tienes tu nivel estimado y el plan mas rapido para avanzar.',
-            'greeting': f'Hola {first_name},',
-            'intro': 'Gracias por completar el test de nivel de Habluj.aquí tienes tu resultado y el siguiente paso recomendado.',
+            'subject': 'Su resultado del test de español y el plan recomendado',
+            'preheader': 'Ya tiene su nivel estimado y una recomendación para seguir avanzando.',
+            'greeting': f'Hola, {first_name}:',
+            'intro': 'Gracias por completar el test de nivel de Habluj. Aquí tiene su resultado y el siguiente paso recomendado.',
             'result_label': 'Nivel estimado',
-            'score_label': 'Puntuacion',
+            'score_label': 'Puntuación',
             'bucket_text': tier_text[bucket],
             'plan_title': 'Plan recomendado',
-            'plan_individual': 'Empieza con 1:1 para corregir bloqueos y ganar confianza rapidamente.',
-            'plan_group': 'Combina con grupo para practicar conversacion en contexto real.',
+            'plan_individual': 'Empiece con clases individuales para corregir sus dificultades y ganar confianza.',
+            'plan_group': 'Combine las clases individuales con un grupo para practicar la conversación en situaciones reales.',
             'cta_primary': 'Reservar una clase de inicio',
             'cta_secondary': 'Ver programas y precios',
-            'urgency': 'Plazas limitadas por semana para mantener calidad personalizada.',
-            'followup': 'Si respondes este correo con tu objetivo, te enviamos una ruta concreta de 4 semanas.',
+            'urgency': 'Las plazas semanales son limitadas para mantener una atención personalizada.',
+            'followup': 'Si responde a este correo con su objetivo, le enviaremos una ruta concreta de cuatro semanas.',
             'team': 'Equipo Habluj',
         }
 
     if language == 'cz':
         tier_text = {
-            'starter': 'Nejvetsi prinos ted bude upevnit zaklady a rychle rozmluvit.',
-            'basic': 'Mas dobry zaklad a je cas zrychlit plynulost se strukturou.',
-            'intermediate': 'Zaklady mas, ted je treba je premenit na prirozenou konverzaci.',
-            'upper_intermediate': 'Jsi blizko vyrazneho posunu v jistote i presnosti.',
-            'b2_ready': 'Skvela uroven, muzeme cilit na realny B2 vysledek.',
+            'starter': 'Nejvíce Vám nyní pomůže upevnit základy a začít plynuleji mluvit.',
+            'basic': 'Máte dobrý základ a můžete zrychlit svou plynulost pomocí strukturované výuky.',
+            'intermediate': 'Základy již máte; nyní je můžete proměnit v přirozenou konverzaci.',
+            'upper_intermediate': 'Jste blízko výrazného posunu v jistotě i přesnosti při mluvení.',
+            'b2_ready': 'Máte skvělý základ pro dosažení solidní úrovně B2.',
         }
         return {
-            'subject': 'Tvuj vysledek testu + doporuceny plan (dalsi krok)',
-            'preheader': 'Mas odhad uroven a nejrychlejsi plan, jak se posunout dal.',
-            'greeting': f'Ahoj {first_name},',
-            'intro': 'Diky za vyplneni testu urovne v Habluj. Nize je tvuj vysledek a doporuceny dalsi krok.',
-            'result_label': 'Odhadovana uroven',
-            'score_label': 'Skore',
+            'subject': 'Váš výsledek testu španělštiny a doporučený plán',
+            'preheader': 'Znáte svou odhadovanou úroveň a další doporučený krok.',
+            'greeting': f'Dobrý den, {first_name}:',
+            'intro': 'Děkujeme Vám za vyplnění testu úrovně v Habluj. Níže najdete svůj výsledek a doporučený další krok.',
+            'result_label': 'Odhadovaná úroveň',
+            'score_label': 'Skóre',
             'bucket_text': tier_text[bucket],
-            'plan_title': 'Doporuceny plan',
-            'plan_individual': 'Zacni 1:1 lekcemi pro odstraneni bloku a rychlejsi jistotu v mluveni.',
-            'plan_group': 'Dopln to skupinou pro konverzaci v realnych situacich.',
-            'cta_primary': 'Rezervovat uvodni lekci',
-            'cta_secondary': 'Zobrazit programy a ceny',
-            'urgency': 'Kapacita tydne je omezena, aby zustala kvalita vyuky vysoka.',
-            'followup': 'Odpovez na tento email se svym cilem a posleme ti konkretni plan na 4 tydny.',
-            'team': 'Tym Habluj',
+            'plan_title': 'Doporučený plán',
+            'plan_individual': 'Začněte individuálními lekcemi, které Vám pomohou odstranit obtíže a získat větší jistotu.',
+            'plan_group': 'Doplňte je skupinovou výukou pro procvičení konverzace v reálných situacích.',
+            'cta_primary': 'Rezervovat úvodní lekci',
+            'cta_secondary': 'Prohlédnout programy a ceny',
+            'urgency': 'Týdenní kapacita je omezená, abychom zachovali vysokou kvalitu výuky.',
+            'followup': 'Odpovězte na tento e-mail se svým cílem a zašleme Vám konkrétní plán na čtyři týdny.',
+            'team': 'Tým Habluj',
         }
 
     tier_text = {
-        'starter': 'Najvacsi prinos teraz bude upevnit zaklady a rychlo sa rozrozpravat.',
-        'basic': 'Mas dobry zaklad a je cas zrychlit plynulost so strukturou.',
-        'intermediate': 'Zaklady mas, teraz ich treba premenit na prirodzenu konverzaciu.',
-        'upper_intermediate': 'Si blizko vyrazneho posunu v istote aj presnosti.',
-        'b2_ready': 'Skvela uroven, vieme cielit na realny B2 vysledok.',
+        'starter': 'Najviac Vám teraz pomôže upevniť základy a začať plynulejšie rozprávať.',
+        'basic': 'Máte dobrý základ a môžete zrýchliť svoju plynulosť pomocou štruktúrovanej výučby.',
+        'intermediate': 'Základy už máte; teraz ich môžete premeniť na prirodzenú konverzáciu.',
+        'upper_intermediate': 'Ste blízko výrazného posunu v istote aj presnosti pri rozprávaní.',
+        'b2_ready': 'Máte skvelý základ na dosiahnutie solídnej úrovne B2.',
     }
     return {
-        'subject': 'Tvoj vysledok testu + odporucany plan (dalsi krok)',
-        'preheader': 'Mas odhad uroven a najrychlejsi plan, ako sa posunut dalej.',
-        'greeting': f'Ahoj {first_name},',
-        'intro': 'Dakujeme za vyplnenie testu urovne v Habluj. Nizsie je tvoj vysledok a odporucany dalsi krok.',
-        'result_label': 'Odhadovana uroven',
-        'score_label': 'Skore',
+        'subject': 'Váš výsledok testu španielčiny a odporúčaný plán',
+        'preheader': 'Poznáte svoju odhadovanú úroveň a ďalší odporúčaný krok.',
+        'greeting': f'Dobrý deň, {first_name}:',
+        'intro': 'Ďakujeme Vám za vyplnenie testu úrovne v Habluj. Nižšie nájdete svoj výsledok a odporúčaný ďalší krok.',
+        'result_label': 'Odhadovaná úroveň',
+        'score_label': 'Skóre',
         'bucket_text': tier_text[bucket],
-        'plan_title': 'Odporucany plan',
-        'plan_individual': 'Zacni 1:1 lekciami pre odstranenie blokov a rychlejsiu istotu v rozpravani.',
-        'plan_group': 'Dopln to skupinou pre konverzaciu v realnych situaciach.',
-        'cta_primary': 'Rezervovat uvodnu lekciu',
-        'cta_secondary': 'Pozriet programy a ceny',
-        'urgency': 'Tyzdenna kapacita je obmedzena, aby zostala kvalita vyucby vysoka.',
-        'followup': 'Odpis na tento email so svojim cielom a posleme ti konkretny plan na 4 tyzdne.',
-        'team': 'Tim Habluj',
+        'plan_title': 'Odporúčaný plán',
+        'plan_individual': 'Začnite individuálnymi lekciami, ktoré Vám pomôžu odstrániť ťažkosti a získať väčšiu istotu.',
+        'plan_group': 'Doplňte ich skupinovou výučbou na precvičenie konverzácie v reálnych situáciách.',
+        'cta_primary': 'Rezervovať úvodnú lekciu',
+        'cta_secondary': 'Pozrieť si programy a ceny',
+        'urgency': 'Týždenná kapacita je obmedzená, aby sme zachovali vysokú kvalitu výučby.',
+        'followup': 'Odpovedzte na tento e-mail so svojím cieľom a pošleme Vám konkrétny plán na štyri týždne.',
+        'team': 'Tím Habluj',
     }
+
+
+def _localized_test_band(language, band):
+    labels = {
+        'es': {
+            'B2 (maximo del test)': 'B2 (máximo del test)',
+        },
+        'cz': {
+            'B1 alto': 'B1 vyšší',
+            'B2 (máximo del test)': 'B2 (maximum testu)',
+            'B2 (maximo del test)': 'B2 (maximum testu)',
+        },
+        'sk': {
+            'B1 alto': 'B1 vyššia úroveň',
+            'B2 (máximo del test)': 'B2 (maximum testu)',
+            'B2 (maximo del test)': 'B2 (maximum testu)',
+        },
+    }
+    return labels.get(language, {}).get(band, band)
 
 
 def sync_lead_to_mailerlite(lead):
@@ -317,7 +336,7 @@ def send_new_lead_notification(lead):
 def send_level_test_results_email(*, lead, score, band):
     sender_email = os.environ.get('MAILERLITE_SENDER_EMAIL') or getattr(settings, 'DEFAULT_FROM_EMAIL', '')
     booking_url = os.environ.get('BOOKING_PUBLIC_URL', 'https://habluj.setmore.com/')
-    services_base_url = os.environ.get('PUBLIC_SITE_URL', 'https://habluj.sk').rstrip('/')
+    services_base_url = os.environ.get('PUBLIC_SITE_URL', 'https://habluj.vercel.app').rstrip('/')
     services_url_env = os.environ.get('SERVICES_PUBLIC_URL', '').strip()
     language = (lead.preferred_language or 'sk').lower()
     services_path_by_language = {
@@ -331,6 +350,7 @@ def send_level_test_results_email(*, lead, score, band):
         return {'status': 'skipped', 'reason': 'MAILERLITE_SENDER_EMAIL or DJANGO_DEFAULT_FROM_EMAIL is not configured'}
 
     copy = _email_copy(language, score, band, lead.full_name)
+    localized_band = _localized_test_band(language, band)
     campaign = f'level_test_{language}'
     tracked_booking_url = _with_query_params(booking_url, {
         'utm_source': 'email',
@@ -352,7 +372,7 @@ def send_level_test_results_email(*, lead, score, band):
     text_content = (
         f"{copy['greeting']}\n\n"
         f"{copy['intro']}\n\n"
-        f"{copy['result_label']}: {band}\n"
+        f"{copy['result_label']}: {localized_band}\n"
         f"{copy['score_label']}: {score}/15\n\n"
         f"{copy['bucket_text']}\n\n"
         f"{copy['plan_title']}:\n"
@@ -373,23 +393,23 @@ def send_level_test_results_email(*, lead, score, band):
         '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f7fb;padding:24px 0;">'
         '<tr><td align="center">'
         '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;">'
-        '<tr><td style="background:linear-gradient(135deg,#C4622D,#A55021);padding:28px 24px;color:#ffffff;">'
+        '<tr><td style="background:linear-gradient(135deg,#4F8A78,#3D6F61);padding:28px 24px;color:#ffffff;">'
         '<p style="margin:0 0 8px;font-size:14px;opacity:.9;">Habluj</p>'
-        f'<h1 style="margin:0;font-size:24px;line-height:1.3;">{copy["result_label"]}: {band}</h1>'
+        f'<h1 style="margin:0;font-size:24px;line-height:1.3;">{copy["result_label"]}: {localized_band}</h1>'
         f'<p style="margin:10px 0 0;font-size:14px;opacity:.95;">{copy["score_label"]}: {score}/15</p>'
         '</td></tr>'
         '<tr><td style="padding:24px;">'
         f'<p style="margin:0 0 12px;font-size:16px;">{copy["greeting"]}</p>'
         f'<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#374151;">{copy["intro"]}</p>'
-        f'<p style="margin:0 0 18px;padding:12px 14px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;font-size:14px;line-height:1.6;color:#9a3412;">{copy["bucket_text"]}</p>'
+        f'<p style="margin:0 0 18px;padding:12px 14px;background:#EEF6F2;border:1px solid #CFE3DA;border-radius:10px;font-size:14px;line-height:1.6;color:#2F6658;">{copy["bucket_text"]}</p>'
         f'<h2 style="margin:0 0 8px;font-size:18px;">{copy["plan_title"]}</h2>'
         '<ul style="margin:0 0 18px;padding-left:20px;color:#374151;font-size:14px;line-height:1.6;">'
         f'<li style="margin-bottom:6px;">{copy["plan_individual"]}</li>'
         f'<li>{copy["plan_group"]}</li>'
         '</ul>'
         f'<p style="margin:0 0 12px;font-size:14px;color:#6b7280;">{copy["urgency"]}</p>'
-        f'<a href="{tracked_booking_url}" style="display:inline-block;background:#C4622D;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;margin-right:8px;margin-bottom:10px;">{copy["cta_primary"]}</a>'
-        f'<a href="{tracked_services_url}" style="display:inline-block;background:#ffffff;color:#C4622D;text-decoration:none;padding:11px 16px;border-radius:10px;border:1px solid #C4622D;font-weight:700;font-size:14px;margin-bottom:10px;">{copy["cta_secondary"]}</a>'
+        f'<a href="{tracked_booking_url}" style="display:inline-block;background:#4F8A78;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;margin-right:8px;margin-bottom:10px;">{copy["cta_primary"]}</a>'
+        f'<a href="{tracked_services_url}" style="display:inline-block;background:#ffffff;color:#3D6F61;text-decoration:none;padding:11px 16px;border-radius:10px;border:1px solid #4F8A78;font-weight:700;font-size:14px;margin-bottom:10px;">{copy["cta_secondary"]}</a>'
         f'<p style="margin:14px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">{copy["followup"]}</p>'
         '</td></tr>'
         '<tr><td style="padding:16px 24px;border-top:1px solid #e5e7eb;background:#fafafa;">'

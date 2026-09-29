@@ -185,6 +185,19 @@ export const updateLeadStage = async ({ leadId, stage, authHeader }) => {
   return updateLead({ leadId, patch: { stage }, authHeader });
 };
 
+export const deleteLead = async ({ leadId, authHeader }) => {
+  const baseUrl = resolveApiBaseUrl();
+  const response = await fetch(`${baseUrl}/api/leads/${leadId}/`, {
+    method: 'DELETE',
+    headers: getAdminHeaders(authHeader),
+  });
+
+  if (!response.ok) {
+    const data = await parseResponseData(response);
+    throw new Error(getErrorMessage(response, data, 'No se pudo eliminar el registro.'));
+  }
+};
+
 export const exportLeadsCsv = async (authHeader, filters = {}) => {
   const baseUrl = resolveApiBaseUrl();
   const queryString = buildQueryString(filters);
