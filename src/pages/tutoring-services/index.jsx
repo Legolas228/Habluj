@@ -133,20 +133,31 @@ const TutoringServices = () => {
         {
           title: t('services.offers.group.item1'),
           description: t('services.offers.group.item1desc'),
+          duration: t('services.offers.group.item1duration'),
+          lessons: t('services.offers.group.item1lessons'),
+          price: t('services.offers.group.item1price'),
           action: 'waitlist',
+        },
+        {
+          title: t('services.offers.group.item4'),
+          description: t('services.offers.group.item4desc'),
+          duration: t('services.offers.group.item4duration'),
+          lessons: t('services.offers.group.item4lessons'),
+          price: t('services.offers.group.item4price'),
+        },
+        {
+          title: t('services.offers.group.item3'),
+          description: t('services.offers.group.item3desc'),
+          priceOptions: [
+            t('services.offers.group.item3price45'),
+            t('services.offers.group.item3price60'),
+            t('services.offers.group.item3price90'),
+          ],
         },
         {
           title: t('services.offers.group.item2'),
           description: t('services.offers.group.item2desc'),
           action: 'contact',
-        },
-        {
-          title: t('services.offers.group.item3'),
-          description: t('services.offers.group.item3desc'),
-        },
-        {
-          title: t('services.offers.group.item4'),
-          description: t('services.offers.group.item4desc'),
         },
       ],
     },
@@ -478,6 +489,35 @@ const TutoringServices = () => {
                               <p className={`text-sm font-medium ${accentStyle.label}`}>{section.title}</p>
                             </div>
                             <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                            {item.priceOptions && (
+                              <div className="space-y-2 pt-4 border-t border-border">
+                                <p className={`text-sm font-medium ${accentStyle.label}`}>{t('learning.labels.price')}</p>
+                                <ul className="space-y-1.5 text-sm text-muted-foreground">
+                                  {item.priceOptions.map((option) => (
+                                    <li key={option} className="flex items-center gap-2">
+                                      <Icon name="Check" size={14} className="text-success flex-shrink-0" />
+                                      <span>{option}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {item.duration && (
+                              <div className="space-y-2 pt-4 border-t border-border">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">{t('learning.labels.duration')}</span>
+                                  <span className="font-medium text-foreground">{item.duration}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">{t('learning.labels.lessons')}</span>
+                                  <span className="font-medium text-foreground">{item.lessons}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-muted-foreground">{t('learning.labels.price')}</span>
+                                  <span className="font-bold text-primary">{item.price}</span>
+                                </div>
+                              </div>
+                            )}
                           </>
                         )}
 
