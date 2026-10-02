@@ -29,13 +29,13 @@ const statusTone = (stage) => ({
 }[stage] || { border: 'border-l-border', pill: 'bg-muted text-foreground', select: 'border-input bg-background' });
 const languageLabel = (code) => ({ sk: 'Eslovaco', cz: 'Checo', es: 'Español' }[code] || code || '-');
 const formatDate = (value) => { if (!value) return '-'; const date = new Date(value); return Number.isNaN(date.getTime()) ? '-' : date.toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' }); };
-const parseNotes = (notes = '') => { const fields = {}; notes.split(/\s*\|\s*|\n+/).forEach((fragment) => { const match = fragment.trim().match(/^([^:]+):\s*(.*)$/); if (match) fields[match[1].trim()] = match[2].trim(); }); return fields; };
+const parseNotes = (notes = '') => { const fields = {}; notes.split(/\s*\|\s*|\n+/).forEach((fragment) => { const match = fragment.trim().match(/^([^:]+):\s*(.*)$/); if (match) { const key = match[1].trim(); const value = match[2].trim(); fields[key] = key === 'test_band' && value === 'B1 alto' ? 'B1+' : value; } }); return fields; };
 const inquiryLabel = (value) => ({ general: 'General', booking: 'Reserva de clase', technical: 'Problema técnico', custom: 'Consulta personalizada', pricing: 'Precios', methodology: 'Metodología' }[value] || value || '-');
 const withoutPipes = (value) => value.replace(/\s*\|\s*/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
 const formatNotes = (lead, section) => {
   const notes = lead.notes || '';
   if (section === 'inbox') return withoutPipes(notes.replace(/inquiry:([^|\n]+)/g, (_, value) => `Tipo de consulta: ${inquiryLabel(value.trim())}`).replace(/subject:([^|\n]+)/g, (_, value) => `Asunto: ${value.trim()}`));
-  if (section === 'tests') return withoutPipes(notes.replace(/test_type:([^|\n]+)/g, 'Tipo de prueba: $1').replace(/test_score:([^|\n]+)/g, 'Puntuación: $1').replace(/test_band:([^|\n]+)/g, 'Nivel estimado: $1').replace(/\s*\|\s*q\d+:[^|]+/g, ''));
+  if (section === 'tests') return withoutPipes(notes.replace(/test_type:([^|\n]+)/g, 'Tipo de prueba: $1').replace(/test_score:([^|\n]+)/g, 'Puntuación: $1').replace(/test_band:B1 alto/g, 'test_band:B1+').replace(/test_band:([^|\n]+)/g, 'Nivel estimado: $1').replace(/\s*\|\s*q\d+:[^|]+/g, ''));
   return withoutPipes(notes.replace(/\[COURSE:([^\]]+)\]/g, `Curso solicitado: ${courseLabel(lead)}`));
 };
 const contactSummary = (lead) => { const notes = parseNotes(lead.notes); return notes.subject ? `Asunto: ${notes.subject}` : notes.inquiry ? `Tipo de consulta: ${inquiryLabel(notes.inquiry)}` : 'Sin asunto'; };

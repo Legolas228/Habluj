@@ -1240,7 +1240,7 @@ class LeadViewSet(viewsets.ModelViewSet):
             band = band or 'B1'
             return {'score': score, 'band': band}
         if score <= 13:
-            band = band or 'B1 alto'
+            band = 'B1+' if band == 'B1 alto' else (band or 'B1+')
             return {'score': score, 'band': band}
 
         band = band or 'B2 (maximo del test)'

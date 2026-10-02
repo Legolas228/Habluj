@@ -191,7 +191,7 @@ const computeBand = (score) => {
   if (score <= 3) return 'A0-A1';
   if (score <= 7) return 'A2';
   if (score <= 10) return 'B1';
-  if (score <= 13) return 'B1 alto';
+  if (score <= 13) return 'B1+';
   return 'B2 (máximo del test)';
 };
 
