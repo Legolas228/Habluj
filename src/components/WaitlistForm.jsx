@@ -26,10 +26,10 @@ const INTENSIVE_COURSE_OPTIONS = [
 ];
 
 const GROUP_COURSE_OPTIONS = [
-  { value: 'group_pair', labelKey: 'waitlist.groupCourse.pair' },
   { value: 'group_small', labelKey: 'waitlist.groupCourse.small' },
-  { value: 'group_private', labelKey: 'waitlist.groupCourse.private' },
   { value: 'group_maturita', labelKey: 'waitlist.groupCourse.maturita' },
+  { value: 'group_pair', labelKey: 'waitlist.groupCourse.pair' },
+  { value: 'group_private', labelKey: 'waitlist.groupCourse.private' },
 ];
 
 const FieldLabel = ({ children, required = false }) => (
