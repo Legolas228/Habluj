@@ -181,7 +181,7 @@ def _email_copy(language, score, band, full_name):
             'basic': 'Tiene una buena base sobre la que construir una conversación segura.',
             'intermediate': 'Ya tiene una buena base; ahora puede convertir sus conocimientos en una conversación más natural.',
             'upper_intermediate': 'Está cerca de dar un gran salto en seguridad y precisión al hablar.',
-            'b2_ready': 'Tiene una base excelente para orientarse hacia un nivel B2 sólido.',
+            'b2_ready': 'Tiene una excelente base gramatical que podemos llevar a un nivel de conversación fluida y segura.',
         }
         plan_items_by_bucket = {
             'starter': [
@@ -223,21 +223,21 @@ def _email_copy(language, score, band, full_name):
             'starter': 'Potřebujete si upevnit základy, abyste se mohli rozmluvit.',
             'basic': 'Máte dobrý základ, na kterém můžeme pomocí strukturované výuky postavit sebevědomou konverzaci.',
             'intermediate': 'Základy již máte, nyní je čas přejít na složitější gramatiku, která posune Vaše mluvení na úplně jiný level.',
-            'upper_intermediate': 'Potrebujete si upevniť základy, aby ste sa mohli rozhovoriť.',
-            'b2_ready': 'Potrebujete si upevniť základy, aby ste sa mohli rozhovoriť.',
+            'upper_intermediate': 'Už jste velmi blízko k tomu, abyste se ve španělštině dokázali sebevědomě vyjadřovat i ve složitějších větách.',
+            'b2_ready': 'Máte skvělý gramatický základ, který můžeme posunout k plynulé a sebevědomé konverzaci na vysoké úrovni.',
         }
         plan_items_by_bucket = {
             'starter': [
                 'Začněte individuálními nebo skupinovými lekcemi.',
                 'Pokud si vyberete individuální lekce, budete mít více prostoru a pozornosti a lekce bude možné lépe přizpůsobit Vašim potřebám. Tuto možnost doporučujeme zejména v případě, že jste v minulosti měli špatné zkušenosti se skupinovými lekcemi nebo pokud jste výrazně introvertní typ.',
                 'Pokud si vyberete skupinové lekce, můžete se učit také z chyb ostatních. Skupiny jsou malé, protože chceme, aby se každý student cítil, že je vnímán, vyslyšen a pochopen. Podporujeme individuální přístup i v rámci skupinek.',
-                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
+                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15-minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
             ],
             'basic': [
                 'Začněte individuálními nebo skupinovými lekcemi.',
                 'Pokud si vyberete individuální lekce, budete mít více prostoru a pozornosti a lekce bude možné lépe přizpůsobit Vašim potřebám. Tuto možnost doporučujeme zejména v případě, že jste v minulosti měli špatné zkušenosti se skupinovými lekcemi nebo pokud jste výrazně introvertní typ.',
                 'Pokud si vyberete skupinové lekce, můžete se učit také z chyb ostatních. Skupiny jsou malé, protože chceme, aby se každý student cítil, že je vnímán, vyslyšen a pochopen. Podporujeme individuální přístup i v rámci skupinek.',
-                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
+                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15-minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
             ],
             'upper_intermediate': [
                 'Doporučujeme Vám naše individuální lekce, díky kterým můžete odstranit některé nedostatky a získat větší jistotu v mluvení.',
