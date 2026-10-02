@@ -137,6 +137,24 @@ DATABASES = {
     }
 }
 
+# Redis is optional. When it is not configured, the single-process local cache
+# still provides basic throttling and progressive login locks for this deployment.
+CACHE_URL = os.environ.get('DJANGO_CACHE_URL', '').strip()
+if CACHE_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': CACHE_URL,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'habluj-local-cache',
+        }
+    }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -237,6 +255,8 @@ SERVER_EMAIL = os.environ.get('DJANGO_SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 
 # Keep lead capture independent from third-party services by default.
 LEAD_EXTERNAL_INTEGRATIONS_ENABLED = env_bool('LEAD_EXTERNAL_INTEGRATIONS_ENABLED', False)
+TURNSTILE_SECRET_KEY = os.environ.get('TURNSTILE_SECRET_KEY', '').strip()
+TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
 # Payments (Stripe)
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '').strip()
@@ -276,7 +296,7 @@ if not DEBUG and STRIPE_SECRET_KEY and not STRIPE_WEBHOOK_SECRET:
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'api.authentication.ExpiringTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
@@ -315,3 +335,5 @@ AUTH_IP_ATTEMPT_WINDOW_SECONDS = int(os.environ.get('AUTH_IP_ATTEMPT_WINDOW_SECO
 AUTH_IP_LOCK_MIN_FAILURES = int(os.environ.get('AUTH_IP_LOCK_MIN_FAILURES', '5'))
 AUTH_IP_LOCK_BASE_SECONDS = int(os.environ.get('AUTH_IP_LOCK_BASE_SECONDS', '60'))
 AUTH_IP_LOCK_MAX_SECONDS = int(os.environ.get('AUTH_IP_LOCK_MAX_SECONDS', '3600'))
+AUTH_TOKEN_MAX_AGE_SECONDS = int(os.environ.get('AUTH_TOKEN_MAX_AGE_SECONDS', '86400'))
+EBOOK_DOWNLOAD_MAX_AGE_SECONDS = int(os.environ.get('EBOOK_DOWNLOAD_MAX_AGE_SECONDS', str(7 * 24 * 60 * 60)))

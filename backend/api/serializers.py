@@ -1028,6 +1028,7 @@ class LeadActivitySerializer(serializers.ModelSerializer):
 
 
 class LeadSerializer(serializers.ModelSerializer):
+    turnstile_token = serializers.CharField(write_only=True, required=False, allow_blank=True)
     duplicate_of_email = serializers.SerializerMethodField()
     activities = serializers.SerializerMethodField()
 
@@ -1041,6 +1042,12 @@ class LeadSerializer(serializers.ModelSerializer):
             fields['last_contacted_at'].read_only = True
             fields['duplicate_of'].read_only = True
             fields['duplicate_confidence'].read_only = True
+            fields['consent_at'].read_only = True
+            fields['ip_address'].read_only = True
+            fields['user_agent'].read_only = True
+            fields['mailerlite_contact_id'].read_only = True
+            fields['mailerlite_synced_at'].read_only = True
+            fields['mailerlite_sync_error'].read_only = True
         return fields
 
     class Meta:
@@ -1051,6 +1058,9 @@ class LeadSerializer(serializers.ModelSerializer):
             'mailerlite_contact_id',
             'mailerlite_synced_at',
             'mailerlite_sync_error',
+            'consent_at',
+            'ip_address',
+            'user_agent',
             'created_at',
             'updated_at',
         )

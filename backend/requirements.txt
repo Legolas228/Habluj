@@ -1,8 +1,8 @@
-django==5.0.0
-djangorestframework==3.14.0
+Django==5.2.17
+djangorestframework==3.17.2
 django-cors-headers==4.3.0
 psycopg2-binary==2.9.9
-python-dotenv==1.0.0
+python-dotenv==1.2.2
 google-api-python-client==2.170.0
 google-auth==2.40.3
 stripe>=11.0.0,<12.0.0

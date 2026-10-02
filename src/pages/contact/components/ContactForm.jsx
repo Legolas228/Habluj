@@ -10,6 +10,7 @@ import Textarea from '../../../components/ui/Textarea';
 import LevelQuizTeaser from '../../../components/LevelQuizTeaser';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { submitLeadCapture } from '../../../services/leads';
+import TurnstileField from '../../../components/TurnstileField';
 
 const mapPreferredLanguage = (language) => {
   if (language === 'cz') return 'cz';
@@ -138,6 +139,7 @@ const ContactForm = () => {
 
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitErrorMessage, setSubmitErrorMessage] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const {
     register,
@@ -181,6 +183,7 @@ const ContactForm = () => {
         consent_privacy: data.consentPrivacy,
         consent_marketing: false,
         consent_version: 'v1',
+        turnstile_token: turnstileToken,
       });
 
       setSubmitStatus('success');
@@ -193,6 +196,7 @@ const ContactForm = () => {
 
   return (
     <section className="py-16 lg:py-24 bg-muted/30">
+      <TurnstileField onToken={setTurnstileToken} />
       <div className="max-w-4xl mx-auto px-4 lg:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-headlines font-bold text-foreground mb-6">
