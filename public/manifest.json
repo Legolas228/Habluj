@@ -5,14 +5,14 @@
   "lang": "sk",
   "icons": [
     {
-      "src": "/assets/images/logo-habluj.png",
-      "sizes": "1063x613",
+      "src": "/assets/images/favicon-habluj.png",
+      "sizes": "1114x1060",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/assets/images/logo-habluj.png",
-      "sizes": "1063x613",
+      "src": "/assets/images/favicon-habluj.png",
+      "sizes": "1114x1060",
       "type": "image/png",
       "purpose": "any maskable"
     }

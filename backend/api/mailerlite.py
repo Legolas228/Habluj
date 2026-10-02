@@ -104,6 +104,8 @@ def _extract_level_metadata(notes):
                 score = None
         elif item.startswith('test_band:'):
             band = item.split(':', 1)[1].strip()
+            if band == 'B1 alto':
+                band = 'B1+'
     return score, band
 
 
@@ -174,11 +176,28 @@ def _email_copy(language, score, band, full_name):
 
     if language == 'es':
         tier_text = {
-            'starter': 'Le conviene consolidar las bases y desarrollar su expresión oral.',
-            'basic': 'Tiene una buena base para mejorar su fluidez con una estructura guiada.',
+            'starter': 'Le conviene consolidar las bases.',
+            'basic': 'Tiene una buena base sobre la que construir una conversación segura.',
             'intermediate': 'Ya tiene una buena base; ahora puede convertir sus conocimientos en una conversación más natural.',
             'upper_intermediate': 'Está cerca de dar un gran salto en seguridad y precisión al hablar.',
             'b2_ready': 'Tiene una base excelente para orientarse hacia un nivel B2 sólido.',
+        }
+        plan_items_by_bucket = {
+            'starter': [
+                'Empiece con clases individuales o clases grupales.',
+                'Si elige clases individuales, tendrá más atención para usted y las clases podrán ser más personalizadas según sus necesidades. Le recomendamos esta opción sobre todo si en el pasado ha tenido malas experiencias con los grupos o si es una persona muy introvertida.',
+                'Si elige clases grupales, podrá aprender también de los errores de los demás. Los grupos son pequeños porque queremos que cada alumno se sienta visto, escuchado y comprendido.',
+                'Si necesita ayuda para decidir, le acompañaremos en el proceso mediante una videollamada de 15 minutos y le ayudaremos a comprender mejor nuestro sistema y a elegir.',
+            ],
+            'basic': [
+                'Empiece con clases individuales o clases grupales.',
+                'Si elige clases individuales, tendrá más atención para usted y las clases podrán ser más personalizadas según sus necesidades. Le recomendamos esta opción sobre todo si en el pasado ha tenido malas experiencias con los grupos o si es una persona muy introvertida.',
+                'Si elige clases grupales, podrá aprender también de los errores de los demás. Los grupos son pequeños porque queremos que cada alumno se sienta visto, escuchado y comprendido.',
+                'Si necesita ayuda para decidir, le acompañaremos en el proceso mediante una videollamada de 15 minutos y le ayudaremos a comprender mejor nuestro sistema y a elegir.',
+            ],
+            'b2_ready': [
+                'Le recomendamos nuestras clases individuales para corregir algunas dificultades y ganar confianza.',
+            ],
         }
         return {
             'subject': 'Su resultado del test de español y el plan recomendado',
@@ -188,23 +207,44 @@ def _email_copy(language, score, band, full_name):
             'result_label': 'Nivel estimado',
             'score_label': 'Puntuación',
             'bucket_text': tier_text[bucket],
+            'plan_items': plan_items_by_bucket.get(bucket),
             'plan_title': 'Plan recomendado',
             'plan_individual': 'Empiece con clases individuales para corregir sus dificultades y ganar confianza.',
             'plan_group': 'Combine las clases individuales con un grupo para practicar la conversación en situaciones reales.',
             'cta_primary': 'Reservar una clase de inicio',
             'cta_secondary': 'Ver programas y precios',
             'urgency': 'Las plazas semanales son limitadas para mantener una atención personalizada.',
-            'followup': 'Si responde a este correo con su objetivo, le enviaremos una ruta concreta de cuatro semanas.',
             'team': 'Equipo Habluj',
         }
 
     if language == 'cz':
         tier_text = {
-            'starter': 'Nejvíce Vám nyní pomůže upevnit základy a začít plynuleji mluvit.',
-            'basic': 'Máte dobrý základ a můžete zrychlit svou plynulost pomocí strukturované výuky.',
-            'intermediate': 'Základy již máte; nyní je můžete proměnit v přirozenou konverzaci.',
-            'upper_intermediate': 'Jste blízko výrazného posunu v jistotě i přesnosti při mluvení.',
-            'b2_ready': 'Máte skvělý základ pro dosažení solidní úrovně B2.',
+            'starter': 'Potřebujete si upevnit základy, abyste se mohli rozmluvit.',
+            'basic': 'Máte dobrý základ, na kterém můžeme pomocí strukturované výuky postavit sebevědomou konverzaci.',
+            'intermediate': 'Základy již máte, nyní je čas přejít na složitější gramatiku, která posune Vaše mluvení na úplně jiný level.',
+            'upper_intermediate': 'Potrebujete si upevniť základy, aby ste sa mohli rozhovoriť.',
+            'b2_ready': 'Potrebujete si upevniť základy, aby ste sa mohli rozhovoriť.',
+        }
+        plan_items_by_bucket = {
+            'starter': [
+                'Začněte individuálními nebo skupinovými lekcemi.',
+                'Pokud si vyberete individuální lekce, budete mít více prostoru a pozornosti a lekce bude možné lépe přizpůsobit Vašim potřebám. Tuto možnost doporučujeme zejména v případě, že jste v minulosti měli špatné zkušenosti se skupinovými lekcemi nebo pokud jste výrazně introvertní typ.',
+                'Pokud si vyberete skupinové lekce, můžete se učit také z chyb ostatních. Skupiny jsou malé, protože chceme, aby se každý student cítil, že je vnímán, vyslyšen a pochopen. Podporujeme individuální přístup i v rámci skupinek.',
+                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
+            ],
+            'basic': [
+                'Začněte individuálními nebo skupinovými lekcemi.',
+                'Pokud si vyberete individuální lekce, budete mít více prostoru a pozornosti a lekce bude možné lépe přizpůsobit Vašim potřebám. Tuto možnost doporučujeme zejména v případě, že jste v minulosti měli špatné zkušenosti se skupinovými lekcemi nebo pokud jste výrazně introvertní typ.',
+                'Pokud si vyberete skupinové lekce, můžete se učit také z chyb ostatních. Skupiny jsou malé, protože chceme, aby se každý student cítil, že je vnímán, vyslyšen a pochopen. Podporujeme individuální přístup i v rámci skupinek.',
+                'Pokud potřebujete s rozhodnutím pomoci, rádi Vás tímto procesem provedeme během 15minutového videohovoru. Pomůžeme Vám lépe pochopit náš systém a vybrat si možnost, která Vám bude nejvíce vyhovovat.',
+            ],
+            'upper_intermediate': [
+                'Doporučujeme Vám naše individuální lekce, díky kterým můžete odstranit některé nedostatky a získat větší jistotu v mluvení.',
+            ],
+            'b2_ready': [
+                'Začněte individuálními lekcemi, abyste odstranili své obtíže a získali větší jistotu.',
+                'Kombinujte individuální lekce se skupinovou výukou, abyste si procvičili konverzaci v reálných situacích.',
+            ],
         }
         return {
             'subject': 'Váš výsledek testu španělštiny a doporučený plán',
@@ -214,38 +254,55 @@ def _email_copy(language, score, band, full_name):
             'result_label': 'Odhadovaná úroveň',
             'score_label': 'Skóre',
             'bucket_text': tier_text[bucket],
+            'plan_items': plan_items_by_bucket.get(bucket),
             'plan_title': 'Doporučený plán',
             'plan_individual': 'Začněte individuálními lekcemi, které Vám pomohou odstranit obtíže a získat větší jistotu.',
             'plan_group': 'Doplňte je skupinovou výukou pro procvičení konverzace v reálných situacích.',
             'cta_primary': 'Rezervovat úvodní lekci',
             'cta_secondary': 'Prohlédnout programy a ceny',
             'urgency': 'Týdenní kapacita je omezená, abychom zachovali vysokou kvalitu výuky.',
-            'followup': 'Odpovězte na tento e-mail se svým cílem a zašleme Vám konkrétní plán na čtyři týdny.',
             'team': 'Tým Habluj',
         }
 
     tier_text = {
-        'starter': 'Najviac Vám teraz pomôže upevniť základy a začať plynulejšie rozprávať.',
-        'basic': 'Máte dobrý základ a môžete zrýchliť svoju plynulosť pomocou štruktúrovanej výučby.',
-        'intermediate': 'Základy už máte; teraz ich môžete premeniť na prirodzenú konverzáciu.',
-        'upper_intermediate': 'Ste blízko výrazného posunu v istote aj presnosti pri rozprávaní.',
-        'b2_ready': 'Máte skvelý základ na dosiahnutie solídnej úrovne B2.',
+        'starter': 'Potrebujete si upevniť základy, aby ste sa mohli rozhovoriť.',
+        'basic': 'Máte dobrý základ, na ktorom môžeme pomocou štruktúrovanej výučby postaviť sebavedomú konverzáciu.',
+        'intermediate': 'Základy už máte; teraz je čas prejsť na zložitejšiu gramatiku, ktorá posunie Vaše rozprávanie na celkom iný level.',
+        'upper_intermediate': 'Už ste veľmi blízko k tomu, aby ste sa v španielčine vyjadrovali sebavedomo aj v zložitejších vetách.',
+        'b2_ready': 'Máte skvelý gramatický základ, ktorý môžeme posunúť sa plynulú a sebavedomú konverzáciu na vysokej úrovni.',
+    }
+    plan_items_by_bucket = {
+        'starter': [
+            'Začnite individuálnymi alebo skupinovými lekciami.',
+            'Ak si vyberiete individuálne lekcie, budete mať viac pozornosti pre seba a lekcie bude možné lepšie prispôsobiť Vašim potrebám. Túto možnosť odporúčame najmä v prípade, ak ste v minulosti mali zlé skúsenosti so skupinovými lekciami alebo ak ste výrazne introvertný typ.',
+            'Ak si vyberiete skupinové lekcie, môžete sa učiť aj z chýb ostatných. Skupiny sú malé, pretože chceme, aby sa každý študent cítil videný, vypočutý a pochopený. Podporujeme individuálny prístup aj v rámci skupiniek.',
+            'Ak potrebujete s rozhodnutím pomôcť, radi Vás týmto procesom prevedieme počas 15-minútového videohovoru. Pomôžeme Vám lepšie pochopiť náš systém a vybrať si možnosť, ktorá Vám bude najviac vyhovovať.',
+        ],
+        'basic': [
+            'Začnite individuálnymi alebo skupinovými lekciami.',
+            'Ak si vyberiete individuálne lekcie, budete mať viac pozornosti pre seba a lekcie bude možné lepšie prispôsobiť Vašim potrebám. Túto možnosť odporúčame najmä v prípade, ak ste v minulosti mali zlé skúsenosti so skupinovými lekciami alebo ak ste výrazne introvertný typ.',
+            'Ak si vyberiete skupinové lekcie, môžete sa učiť aj z chýb ostatných. Skupiny sú malé, pretože chceme, aby sa každý študent cítil videný, vypočutý a pochopený. Podporujeme individuálny prístup aj v rámci skupiniek.',
+            'Ak potrebujete s rozhodnutím pomôcť, radi Vás týmto procesom prevedieme počas 15-minútového videohovoru. Pomôžeme Vám lepšie pochopiť náš systém a vybrať si možnosť, ktorá Vám bude najviac vyhovovať.',
+        ],
+        'b2_ready': [
+            'Odporúčame Vám naše individuálne lekcie, vďaka ktorým môžete odstrániť niektoré nedostatky a získať väčšiu istotu v rozprávaní.',
+        ],
     }
     return {
         'subject': 'Váš výsledok testu španielčiny a odporúčaný plán',
         'preheader': 'Poznáte svoju odhadovanú úroveň a ďalší odporúčaný krok.',
         'greeting': f'Dobrý deň, {first_name}:',
-        'intro': 'Ďakujeme Vám za vyplnenie testu úrovne v Habluj. Nižšie nájdete svoj výsledok a odporúčaný ďalší krok.',
+        'intro': 'Ďakujeme Vám za vyplnenie testu úrovne v Habluj. Nižšie nájdete svoj výsledok a ďalší odporúčaný krok.',
         'result_label': 'Odhadovaná úroveň',
         'score_label': 'Skóre',
         'bucket_text': tier_text[bucket],
+        'plan_items': plan_items_by_bucket.get(bucket),
         'plan_title': 'Odporúčaný plán',
         'plan_individual': 'Začnite individuálnymi lekciami, ktoré Vám pomôžu odstrániť ťažkosti a získať väčšiu istotu.',
         'plan_group': 'Doplňte ich skupinovou výučbou na precvičenie konverzácie v reálnych situáciách.',
         'cta_primary': 'Rezervovať úvodnú lekciu',
         'cta_secondary': 'Pozrieť si programy a ceny',
         'urgency': 'Týždenná kapacita je obmedzená, aby sme zachovali vysokú kvalitu výučby.',
-        'followup': 'Odpovedzte na tento e-mail so svojím cieľom a pošleme Vám konkrétny plán na štyri týždne.',
         'team': 'Tím Habluj',
     }
 
@@ -256,12 +313,14 @@ def _localized_test_band(language, band):
             'B2 (maximo del test)': 'B2 (máximo del test)',
         },
         'cz': {
-            'B1 alto': 'B1 vyšší',
+            'B1+': 'B1+',
+            'B1 alto': 'B1+',
             'B2 (máximo del test)': 'B2 (maximum testu)',
             'B2 (maximo del test)': 'B2 (maximum testu)',
         },
         'sk': {
-            'B1 alto': 'B1 vyššia úroveň',
+            'B1+': 'B1+',
+            'B1 alto': 'B1+',
             'B2 (máximo del test)': 'B2 (maximum testu)',
             'B2 (maximo del test)': 'B2 (maximum testu)',
         },
@@ -351,6 +410,7 @@ def send_level_test_results_email(*, lead, score, band):
 
     copy = _email_copy(language, score, band, lead.full_name)
     localized_band = _localized_test_band(language, band)
+    plan_items = copy.get('plan_items') or [copy['plan_individual'], copy['plan_group']]
     campaign = f'level_test_{language}'
     tracked_booking_url = _with_query_params(booking_url, {
         'utm_source': 'email',
@@ -376,12 +436,11 @@ def send_level_test_results_email(*, lead, score, band):
         f"{copy['score_label']}: {score}/15\n\n"
         f"{copy['bucket_text']}\n\n"
         f"{copy['plan_title']}:\n"
-        f"- {copy['plan_individual']}\n"
-        f"- {copy['plan_group']}\n\n"
+        + ''.join(f"- {item}\n" for item in plan_items)
+        + "\n"
         f"{copy['cta_primary']}: {tracked_booking_url}\n"
         f"{copy['cta_secondary']}: {tracked_services_url}\n\n"
         f"{copy['urgency']}\n\n"
-        f"{copy['followup']}\n\n"
         f"{copy['team']}\n"
     )
 
@@ -404,13 +463,11 @@ def send_level_test_results_email(*, lead, score, band):
         f'<p style="margin:0 0 18px;padding:12px 14px;background:#EEF6F2;border:1px solid #CFE3DA;border-radius:10px;font-size:14px;line-height:1.6;color:#2F6658;">{copy["bucket_text"]}</p>'
         f'<h2 style="margin:0 0 8px;font-size:18px;">{copy["plan_title"]}</h2>'
         '<ul style="margin:0 0 18px;padding-left:20px;color:#374151;font-size:14px;line-height:1.6;">'
-        f'<li style="margin-bottom:6px;">{copy["plan_individual"]}</li>'
-        f'<li>{copy["plan_group"]}</li>'
-        '</ul>'
+        + ''.join(f'<li style="margin-bottom:6px;">{item}</li>' for item in plan_items)
+        + '</ul>'
         f'<p style="margin:0 0 12px;font-size:14px;color:#6b7280;">{copy["urgency"]}</p>'
         f'<a href="{tracked_booking_url}" style="display:inline-block;background:#4F8A78;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;margin-right:8px;margin-bottom:10px;">{copy["cta_primary"]}</a>'
         f'<a href="{tracked_services_url}" style="display:inline-block;background:#ffffff;color:#3D6F61;text-decoration:none;padding:11px 16px;border-radius:10px;border:1px solid #4F8A78;font-weight:700;font-size:14px;margin-bottom:10px;">{copy["cta_secondary"]}</a>'
-        f'<p style="margin:14px 0 0;font-size:13px;color:#6b7280;line-height:1.6;">{copy["followup"]}</p>'
         '</td></tr>'
         '<tr><td style="padding:16px 24px;border-top:1px solid #e5e7eb;background:#fafafa;">'
         f'<p style="margin:0;font-size:12px;color:#6b7280;">{copy["team"]}</p>'

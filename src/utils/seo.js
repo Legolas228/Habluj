@@ -1,6 +1,6 @@
 const configuredSiteUrl = (import.meta.env.VITE_SITE_URL || 'https://habluj.vercel.app').trim();
 export const BASE_URL = configuredSiteUrl.replace(/\/$/, '');
-export const DEFAULT_OG_IMAGE = `${BASE_URL}/assets/images/og-image.png`;
+export const DEFAULT_OG_IMAGE = `${BASE_URL}/assets/images/logo-habluj.jpg`;
 export const SITE_LOGO_IMAGE = `${BASE_URL}/assets/images/logo-habluj.jpg`;
 
 const LANGUAGE_TO_SEGMENT = {
