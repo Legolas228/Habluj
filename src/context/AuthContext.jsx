@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => {
     try {
-      return localStorage.getItem(AUTH_TOKEN_KEY) || '';
+      return sessionStorage.getItem(AUTH_TOKEN_KEY) || '';
     } catch {
       return '';
     }
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
     setToken('');
     setUser(null);
     try {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
+      sessionStorage.removeItem(AUTH_TOKEN_KEY);
     } catch {
       // Ignore storage errors.
     }
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
     setToken(result.token);
     setUser(result.user);
     try {
-      localStorage.setItem(AUTH_TOKEN_KEY, result.token);
+      sessionStorage.setItem(AUTH_TOKEN_KEY, result.token);
     } catch {
       // Ignore storage errors.
     }
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     setToken(result.token);
     setUser(result.user);
     try {
-      localStorage.setItem(AUTH_TOKEN_KEY, result.token);
+      sessionStorage.setItem(AUTH_TOKEN_KEY, result.token);
     } catch {
       // Ignore storage errors.
     }

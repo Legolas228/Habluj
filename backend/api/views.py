@@ -1,4 +1,6 @@
 import csv
+import json
+from urllib import request as urllib_request
 from datetime import datetime, time
 from datetime import timedelta
 from datetime import timezone as dt_timezone
@@ -16,7 +18,8 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.http import FileResponse
 from rest_framework import viewsets, permissions, status
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
+from .authentication import ExpiringTokenAuthentication as TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -120,8 +123,33 @@ def remove_google_block_event(block):
 
 
 def _get_client_ip(request):
-    forwarded = (request.META.get('HTTP_X_FORWARDED_FOR') or '').split(',')[0].strip()
-    return forwarded or request.META.get('REMOTE_ADDR') or 'unknown'
+    # REMOTE_ADDR is not client-controlled. Do not trust X-Forwarded-For unless
+    # the deployment has a proxy that sanitizes it before forwarding requests.
+    return request.META.get('REMOTE_ADDR') or 'unknown'
+
+
+def _verify_turnstile(request, token):
+    secret = getattr(settings, 'TURNSTILE_SECRET_KEY', '')
+    if not secret:
+        return True
+    if not token:
+        return False
+    payload = json.dumps({
+        'secret': secret,
+        'response': token,
+        'remoteip': _get_client_ip(request),
+    }).encode('utf-8')
+    try:
+        verify_request = urllib_request.Request(
+            getattr(settings, 'TURNSTILE_VERIFY_URL'),
+            data=payload,
+            headers={'Content-Type': 'application/json'},
+            method='POST',
+        )
+        with urllib_request.urlopen(verify_request, timeout=5) as response:
+            return bool(json.loads(response.read().decode('utf-8')).get('success'))
+    except Exception:
+        return False
 
 
 def _auth_fail_key(scope, ip):
@@ -221,7 +249,8 @@ class StudentLoginView(APIView):
             return Response({'detail': 'Invalid username or password.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         _clear_auth_failures('login', ip)
-        token, _ = Token.objects.get_or_create(user=user)
+        Token.objects.filter(user=user).delete()
+        token = Token.objects.create(user=user)
         return Response({
             'token': token.key,
             'user': {
@@ -261,7 +290,7 @@ class StudentRegisterView(APIView):
 
         user = serializer.save()
         _clear_auth_failures('register', ip)
-        token, _ = Token.objects.get_or_create(user=user)
+        token = Token.objects.create(user=user)
         return Response({
             'token': token.key,
             'user': {
@@ -333,6 +362,12 @@ class LessonViewSet(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication, SessionAuthentication]
+
+    def get_permissions(self):
+        # Students can browse lessons, but only staff may manage the catalogue.
+        if self.action in ('list', 'retrieve'):
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
 
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
@@ -813,9 +848,16 @@ class StripeWebhookView(APIView):
                 if purchase.status != 'completed':
                     purchase.status = 'completed'
                     purchase.completed_at = timezone.now()
-                    purchase.save(update_fields=['status', 'email', 'completed_at', 'updated_at'])
+                    purchase.download_expires_at = timezone.now() + timedelta(
+                        seconds=getattr(settings, 'EBOOK_DOWNLOAD_MAX_AGE_SECONDS', 7 * 24 * 60 * 60)
+                    )
+                    purchase.save(update_fields=['status', 'email', 'completed_at', 'download_expires_at', 'updated_at'])
                 elif purchase.email:
-                    purchase.save(update_fields=['email', 'updated_at'])
+                    if not purchase.download_expires_at:
+                        purchase.download_expires_at = timezone.now() + timedelta(
+                            seconds=getattr(settings, 'EBOOK_DOWNLOAD_MAX_AGE_SECONDS', 7 * 24 * 60 * 60)
+                        )
+                    purchase.save(update_fields=['email', 'download_expires_at', 'updated_at'])
 
                 if purchase.email and not purchase.email_sent_at:
                     download_url = _ebook_download_url(purchase)
@@ -940,6 +982,8 @@ class EbookDownloadView(APIView):
 
     def get(self, request, token):
         purchase = EbookPurchase.objects.filter(download_token=token, status='completed').first()
+        if purchase and purchase.download_expires_at and purchase.download_expires_at <= timezone.now():
+            purchase = None
         if not purchase:
             return Response({'error': 'Download is not available.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -1265,7 +1309,11 @@ class LeadViewSet(viewsets.ModelViewSet):
         return None
 
     def perform_create(self, serializer):
-        ip = self.request.META.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip() or self.request.META.get('REMOTE_ADDR')
+        token = serializer.validated_data.pop('turnstile_token', '')
+        if not _verify_turnstile(self.request, token):
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError({'turnstile_token': 'Security verification failed.'})
+        ip = _get_client_ip(self.request)
         user_agent = self.request.META.get('HTTP_USER_AGENT', '')[:255]
         lead = serializer.save(ip_address=ip or None, user_agent=user_agent)
         lead.refresh_duplicate_status()

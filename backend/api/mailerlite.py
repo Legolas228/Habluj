@@ -1,5 +1,6 @@
 import json
 import os
+from html import escape
 from urllib import error, request
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -33,14 +34,14 @@ def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
     )
     html_content = (
         f'<h3>Nuevo lead en Habluj</h3>'
-        f'<p><strong>Nombre:</strong> {lead.full_name}</p>'
-        f'<p><strong>Email:</strong> {lead.email}</p>'
-        f'<p><strong>Teléfono:</strong> {lead.phone or "-"}</p>'
-        f'<p><strong>Idioma:</strong> {lead.preferred_language}</p>'
-        f'<p><strong>Origen:</strong> {lead.source}</p>'
+        f'<p><strong>Nombre:</strong> {escape(lead.full_name)}</p>'
+        f'<p><strong>Email:</strong> {escape(lead.email)}</p>'
+        f'<p><strong>Teléfono:</strong> {escape(lead.phone or "-")}</p>'
+        f'<p><strong>Idioma:</strong> {escape(lead.preferred_language)}</p>'
+        f'<p><strong>Origen:</strong> {escape(lead.source)}</p>'
         f'<p><strong>Consentimiento marketing:</strong> {"Si" if lead.consent_marketing else "No"}</p>'
-        f'<p><strong>Notas:</strong><br>{(lead.notes or "-").replace(chr(10), "<br>")}</p>'
-        f'<p><a href="{lead_url}">Abrir lead en admin</a></p>'
+        f'<p><strong>Notas:</strong><br>{escape(lead.notes or "-").replace(chr(10), "<br>")}</p>'
+        f'<p><a href="{escape(lead_url)}">Abrir lead en admin</a></p>'
     )
 
     try:
@@ -250,7 +251,7 @@ def _email_copy(language, score, band, full_name):
             'subject': 'Váš výsledek testu španělštiny a doporučený plán',
             'preheader': 'Znáte svou odhadovanou úroveň a další doporučený krok.',
             'greeting': f'Dobrý den, {first_name}:',
-            'intro': 'Děkujeme Vám za vyplnění testu úrovně v Habluj. Níže najdete svůj výsledek a doporučený další krok.',
+            'intro': 'Děkujeme Vám za vyplnění úrovňového testu Habluj. Níže najdete svůj výsledek a doporučený další krok.',
             'result_label': 'Odhadovaná úroveň',
             'score_label': 'Skóre',
             'bucket_text': tier_text[bucket],
@@ -292,7 +293,7 @@ def _email_copy(language, score, band, full_name):
         'subject': 'Váš výsledok testu španielčiny a odporúčaný plán',
         'preheader': 'Poznáte svoju odhadovanú úroveň a ďalší odporúčaný krok.',
         'greeting': f'Dobrý deň, {first_name}:',
-        'intro': 'Ďakujeme Vám za vyplnenie testu úrovne v Habluj. Nižšie nájdete svoj výsledok a ďalší odporúčaný krok.',
+        'intro': 'Ďakujeme Vám za vyplnenie úrovňového testu Habluj. Nižšie nájdete svoj výsledok a ďalší odporúčaný krok.',
         'result_label': 'Odhadovaná úroveň',
         'score_label': 'Skóre',
         'bucket_text': tier_text[bucket],
@@ -429,6 +430,16 @@ def send_level_test_results_email(*, lead, score, band):
         'band': band,
     })
 
+    html_copy = {
+        key: escape(str(value))
+        for key, value in copy.items()
+        if key != 'plan_items'
+    }
+    html_plan_items = [escape(str(item)) for item in plan_items]
+    html_band = escape(str(localized_band))
+    html_booking_url = escape(tracked_booking_url)
+    html_services_url = escape(tracked_services_url)
+
     text_content = (
         f"{copy['greeting']}\n\n"
         f"{copy['intro']}\n\n"
@@ -448,29 +459,29 @@ def send_level_test_results_email(*, lead, score, band):
         '<!doctype html>'
         '<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
         '<body style="margin:0;padding:0;background:#f6f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">'
-        f'<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">{copy["preheader"]}</div>'
+        f'<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">{html_copy["preheader"]}</div>'
         '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f7fb;padding:24px 0;">'
         '<tr><td align="center">'
         '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;">'
         '<tr><td style="background:linear-gradient(135deg,#4F8A78,#3D6F61);padding:28px 24px;color:#ffffff;">'
         '<p style="margin:0 0 8px;font-size:14px;opacity:.9;">Habluj</p>'
-        f'<h1 style="margin:0;font-size:24px;line-height:1.3;">{copy["result_label"]}: {localized_band}</h1>'
-        f'<p style="margin:10px 0 0;font-size:14px;opacity:.95;">{copy["score_label"]}: {score}/15</p>'
+        f'<h1 style="margin:0;font-size:24px;line-height:1.3;">{html_copy["result_label"]}: {html_band}</h1>'
+        f'<p style="margin:10px 0 0;font-size:14px;opacity:.95;">{html_copy["score_label"]}: {score}/15</p>'
         '</td></tr>'
         '<tr><td style="padding:24px;">'
-        f'<p style="margin:0 0 12px;font-size:16px;">{copy["greeting"]}</p>'
-        f'<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#374151;">{copy["intro"]}</p>'
-        f'<p style="margin:0 0 18px;padding:12px 14px;background:#EEF6F2;border:1px solid #CFE3DA;border-radius:10px;font-size:14px;line-height:1.6;color:#2F6658;">{copy["bucket_text"]}</p>'
-        f'<h2 style="margin:0 0 8px;font-size:18px;">{copy["plan_title"]}</h2>'
+        f'<p style="margin:0 0 12px;font-size:16px;">{html_copy["greeting"]}</p>'
+        f'<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#374151;">{html_copy["intro"]}</p>'
+        f'<p style="margin:0 0 18px;padding:12px 14px;background:#EEF6F2;border:1px solid #CFE3DA;border-radius:10px;font-size:14px;line-height:1.6;color:#2F6658;">{html_copy["bucket_text"]}</p>'
+        f'<h2 style="margin:0 0 8px;font-size:18px;">{html_copy["plan_title"]}</h2>'
         '<ul style="margin:0 0 18px;padding-left:20px;color:#374151;font-size:14px;line-height:1.6;">'
-        + ''.join(f'<li style="margin-bottom:6px;">{item}</li>' for item in plan_items)
+        + ''.join(f'<li style="margin-bottom:6px;">{item}</li>' for item in html_plan_items)
         + '</ul>'
-        f'<p style="margin:0 0 12px;font-size:14px;color:#6b7280;">{copy["urgency"]}</p>'
-        f'<a href="{tracked_booking_url}" style="display:inline-block;background:#4F8A78;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;margin-right:8px;margin-bottom:10px;">{copy["cta_primary"]}</a>'
-        f'<a href="{tracked_services_url}" style="display:inline-block;background:#ffffff;color:#3D6F61;text-decoration:none;padding:11px 16px;border-radius:10px;border:1px solid #4F8A78;font-weight:700;font-size:14px;margin-bottom:10px;">{copy["cta_secondary"]}</a>'
+        f'<p style="margin:0 0 12px;font-size:14px;color:#6b7280;">{html_copy["urgency"]}</p>'
+        f'<a href="{html_booking_url}" style="display:inline-block;background:#4F8A78;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:10px;font-weight:700;font-size:14px;margin-right:8px;margin-bottom:10px;">{html_copy["cta_primary"]}</a>'
+        f'<a href="{html_services_url}" style="display:inline-block;background:#ffffff;color:#3D6F61;text-decoration:none;padding:11px 16px;border-radius:10px;border:1px solid #4F8A78;font-weight:700;font-size:14px;margin-bottom:10px;">{html_copy["cta_secondary"]}</a>'
         '</td></tr>'
         '<tr><td style="padding:16px 24px;border-top:1px solid #e5e7eb;background:#fafafa;">'
-        f'<p style="margin:0;font-size:12px;color:#6b7280;">{copy["team"]}</p>'
+        f'<p style="margin:0;font-size:12px;color:#6b7280;">{html_copy["team"]}</p>'
         '</td></tr>'
         '</table>'
         '</td></tr></table></body></html>'

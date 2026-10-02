@@ -200,6 +200,7 @@ class EbookPurchase(models.Model):
     currency = models.CharField(max_length=3, choices=Booking.CURRENCY_CHOICES, default='EUR')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     download_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    download_expires_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     email_sent_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

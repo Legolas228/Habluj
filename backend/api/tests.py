@@ -1,7 +1,9 @@
 from unittest.mock import patch
+from datetime import timedelta
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test import override_settings
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
@@ -311,17 +313,19 @@ class StudentPortalDataApiTests(APITestCase):
 			duration=60,
 			price='20.00',
 		)
+		first_booking_date = (timezone.localdate() + timedelta(days=10)).isoformat()
+		second_booking_date = (timezone.localdate() + timedelta(days=11)).isoformat()
 		self.booking = Booking.objects.create(
 			student=self.student,
 			lesson=self.lesson,
-			date='2026-05-10',
+			date=first_booking_date,
 			time='12:00:00',
 			status='confirmed',
 		)
 		Booking.objects.create(
 			student=self.other_user,
 			lesson=self.lesson,
-			date='2026-05-11',
+			date=second_booking_date,
 			time='13:00:00',
 			status='confirmed',
 		)
@@ -373,6 +377,31 @@ class StudentPortalDataApiTests(APITestCase):
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		self.assertEqual(len(response.data), 1)
 		self.assertEqual(response.data[0]['title'], 'Guia Subjuntivo')
+
+	def test_student_can_browse_lessons_but_cannot_manage_catalogue(self):
+		self._auth()
+
+		list_response = self.client.get('/api/lessons/')
+		self.assertEqual(list_response.status_code, status.HTTP_200_OK)
+
+		create_response = self.client.post('/api/lessons/', {
+			'title': 'Intento de leccion',
+			'description': 'No debe crearse',
+			'level': 'A1',
+			'duration': 60,
+			'price': '10.00',
+		}, format='json')
+		self.assertEqual(create_response.status_code, status.HTTP_403_FORBIDDEN)
+
+		patch_response = self.client.patch(
+			f'/api/lessons/{self.lesson.id}/',
+			{'title': 'Catalogo manipulado'},
+			format='json',
+		)
+		self.assertEqual(patch_response.status_code, status.HTTP_403_FORBIDDEN)
+
+		delete_response = self.client.delete(f'/api/lessons/{self.lesson.id}/')
+		self.assertEqual(delete_response.status_code, status.HTTP_403_FORBIDDEN)
 
 	def test_student_can_view_goals_and_mark_message_as_read(self):
 		self._auth()

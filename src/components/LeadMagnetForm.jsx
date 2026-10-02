@@ -3,6 +3,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import { submitLeadCapture } from '../services/leads';
 import Input from './ui/Input';
 import Button from './ui/Button';
+import TurnstileField from './TurnstileField';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 const mapPreferredLanguage = (language) => {
@@ -40,6 +41,7 @@ const LeadMagnetForm = ({ source = 'level_quiz' }) => {
   const [consentMarketing, setConsentMarketing] = useState(false);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -84,6 +86,7 @@ const LeadMagnetForm = ({ source = 'level_quiz' }) => {
         consent_privacy: consentPrivacy,
         consent_marketing: consentMarketing,
         consent_version: 'v1',
+        turnstile_token: turnstileToken,
       });
       setStatus('success');
       setFullName('');
@@ -112,6 +115,7 @@ const LeadMagnetForm = ({ source = 'level_quiz' }) => {
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
       <h3 className="text-xl font-headlines font-bold text-foreground mb-2">{t('leadMagnet.title')}</h3>
       <p className="text-muted-foreground text-sm mb-6">{t('leadMagnet.subtitle')}</p>
+      <TurnstileField onToken={setTurnstileToken} />
 
       {status === 'success' && (
         <div className="mb-4 p-3 rounded-lg bg-success/10 border border-success/20 text-success text-sm">
