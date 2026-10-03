@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
 import Input from '../../components/ui/Input';
@@ -128,6 +129,9 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Header />
       <main id="main-content" tabIndex={-1} className="flex-1 flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-md bg-white rounded-xl border border-border shadow-soft p-6 md:p-8">

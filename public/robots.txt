@@ -13,5 +13,9 @@ Disallow: /es/login
 Disallow: /sk/signup
 Disallow: /cs/signup
 Disallow: /es/signup
+Disallow: /ester-dashboard
+Disallow: /sk/ester-dashboard
+Disallow: /cs/ester-dashboard
+Disallow: /es/ester-dashboard
 
-Sitemap: https://habluj.sk/sitemap.xml
+Sitemap: https://habluj.vercel.app/sitemap.xml
