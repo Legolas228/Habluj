@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/ui/Header';
 import HeroSection from './components/HeroSection';
 import MethodDemoSection from './components/MethodDemoSection';

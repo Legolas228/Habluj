@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
 import Input from '../../components/ui/Input';
