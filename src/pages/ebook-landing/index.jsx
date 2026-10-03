@@ -28,6 +28,14 @@ const copy = {
       'Okamžitý prístup po zaplatení',
       'eBook vo formáte PDF',
     ],
+    reviewsTitle: 'Čo hovoria o eBooku',
+    reviewsSubtitle: 'Skutočné skúsenosti s knihou Háblame en español.',
+    reviews: [
+      ['Aďka', 'Ester, veľmi pekne ďakujem za tvoju knihu Háblame en español. Dosiaľ najlepšia učebná pomôcka na učenie španielčiny, aká sa mi dostala do rúk. Je prehľadná, bohatá na slovnú zásobu a cvičenia a predovšetkým je v nej zrozumiteľne vysvetlená gramatika. Ďakujem ti veľmi pekne.'],
+      ['Judita', 'Kniha Háblame en español je za mňa najlepšia pomôcka na učenie sa španielčiny. Veľké množstvo slovnej zásoby mi pomáha lepšie rozumieť textom. Cvičenia sú pre mňa ľahko spracovateľné vďaka podrobne vysvetlenej gramatike. A vďaka prehľadnosti sa viem vždy rýchlo vrátiť k tomu, čo si chcem zopakovať 😊'],
+      ['Karin', 'Chcela by som vám odporučiť e-book od Ester. Kniha je prehľadná a krásne farebne rozdelená do kapitol. Každá kapitola má bohatú slovnú zásobu a veľa cvičení. Vďaka tejto knihe sa mi španielčina ľahšie učí a všetky potrebné veci nájdem na jednom mieste.'],
+      ['Sylvia', 'Kniha je perfektná a super spracovaná. Oceňujem, že je v nej všetko jasne vysvetlené, obsahuje bohatú slovnú zásobu a dostatočné množstvo cvičení. Tuším mám novú závislosť :D Odkedy mi kniha prišla, teším sa na španielčinu každý deň. :)'],
+    ],
     chaptersTitle: 'Čo sa v eBooku naučíte',
     chaptersSubtitle: 'Konkrétne bloky zamerané na problémy, ktoré pri španielčine najčastejšie brzdia slovenských a českých študentov.',
     chapters: [
@@ -86,6 +94,14 @@ const copy = {
       'Okamžitý přístup po zaplacení',
       'eBook ve formátu PDF',
     ],
+    reviewsTitle: 'Co říkají o eBooku',
+    reviewsSubtitle: 'Skutečné zkušenosti s knihou Háblame en español.',
+    reviews: [
+      ['Aďka', 'Ester, veľmi pekne ďakujem za tvoju knihu Háblame en español. Dosiaľ najlepšia učebná pomôcka na učenie španielčiny, aká sa mi dostala do rúk. Je prehľadná, bohatá na slovnú zásobu a cvičenia a predovšetkým je v nej zrozumiteľne vysvetlená gramatika. Ďakujem ti veľmi pekne.'],
+      ['Judita', 'Kniha Háblame en español je za mňa najlepšia pomôcka na učenie sa španielčiny. Veľké množstvo slovnej zásoby mi pomáha lepšie rozumieť textom. Cvičenia sú pre mňa ľahko spracovateľné vďaka podrobne vysvetlenej gramatike. A vďaka prehľadnosti sa viem vždy rýchlo vrátiť k tomu, čo si chcem zopakovať 😊'],
+      ['Karin', 'Chcela by som vám odporučiť e-book od Ester. Kniha je prehľadná a krásne farebne rozdelená do kapitol. Každá kapitola má bohatú slovnú zásobu a veľa cvičení. Vďaka tejto knihe sa mi španielčina ľahšie učí a všetky potrebné veci nájdem na jednom mieste.'],
+      ['Sylvia', 'Kniha je perfektná a super spracovaná. Oceňujem, že je v nej všetko jasne vysvetlené, obsahuje bohatú slovnú zásobu a dostatočné množstvo cvičení. Tuším mám novú závislosť :D Odkedy mi kniha prišla, teším sa na španielčinu každý deň. :)'],
+    ],
     chaptersTitle: 'Co se v eBooku naučíte',
     chaptersSubtitle: 'Konkrétní bloky zaměřené na problémy, které ve španělštině nejčastěji brzdí české a slovenské studenty.',
     chapters: [
@@ -143,6 +159,14 @@ const copy = {
       'Lee en móvil, tableta u ordenador',
       'Acceso instantáneo después del pago',
       'eBook en formato PDF',
+    ],
+    reviewsTitle: 'Qué opinan sobre el eBook',
+    reviewsSubtitle: 'Experiencias reales con el libro Háblame en español.',
+    reviews: [
+      ['Aďka', 'Ester, veľmi pekne ďakujem za tvoju knihu Háblame en español. Dosiaľ najlepšia učebná pomôcka na učenie španielčiny, aká sa mi dostala do rúk. Je prehľadná, bohatá na slovnú zásobu a cvičenia a predovšetkým je v nej zrozumiteľne vysvetlená gramatika. Ďakujem ti veľmi pekne.'],
+      ['Judita', 'Kniha Háblame en español je za mňa najlepšia pomôcka na učenie sa španielčiny. Veľké množstvo slovnej zásoby mi pomáha lepšie rozumieť textom. Cvičenia sú pre mňa ľahko spracovateľné vďaka podrobne vysvetlenej gramatike. A vďaka prehľadnosti sa viem vždy rýchlo vrátiť k tomu, čo si chcem zopakovať 😊'],
+      ['Karin', 'Chcela by som vám odporučiť e-book od Ester. Kniha je prehľadná a krásne farebne rozdelená do kapitol. Každá kapitola má bohatú slovnú zásobu a veľa cvičení. Vďaka tejto knihe sa mi španielčina ľahšie učí a všetky potrebné veci nájdem na jednom mieste.'],
+      ['Sylvia', 'Kniha je perfektná a super spracovaná. Oceňujem, že je v nej všetko jasne vysvetlené, obsahuje bohatú slovnú zásobu a dostatočné množstvo cvičení. Tuším mám novú závislosť :D Odkedy mi kniha prišla, teším sa na španielčinu každý deň. :)'],
     ],
     chaptersTitle: 'Qué aprenderás en el eBook',
     chaptersSubtitle: 'Bloques concretos para superar los problemas que más frenan a los estudiantes eslovacos y checos de español.',
@@ -241,6 +265,23 @@ const ProofBar = ({ items }) => {
     </section>
   );
 };
+
+const EbookReviews = ({ title, subtitle, reviews }) => (
+  <section className="bg-muted/30 py-10 sm:py-14 lg:py-20">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <SectionHeader title={title} subtitle={subtitle} />
+      <div className="mt-8 grid gap-5 md:grid-cols-2">
+        {reviews.map(([name, text]) => (
+          <article key={name} className="relative rounded-2xl border border-border bg-white p-6 shadow-soft sm:p-8">
+            <AppIcon name="Quote" size={28} className="absolute right-6 top-6 text-primary/20" />
+            <h3 className="text-xl font-headlines font-bold text-primary">{name}</h3>
+            <p className="mt-4 text-sm leading-relaxed text-foreground">{text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 const ChaptersGrid = ({ content }) => (
   <section className="py-10 sm:py-14 lg:py-20">
@@ -545,6 +586,7 @@ const EbookLandingPage = ({ lang = null }) => {
 
         <SamplePreview content={content} />
         <ProofBar items={content.proof} />
+        <EbookReviews title={content.reviewsTitle} subtitle={content.reviewsSubtitle} reviews={content.reviews} />
         <ChaptersGrid content={content} />
         <AudienceFit content={content} />
         <PricingCard content={content} price={price} lang={activeLang} loading={isLoading} onCheckout={handleCheckout} />

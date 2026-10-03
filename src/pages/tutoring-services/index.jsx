@@ -197,9 +197,9 @@ const TutoringServices = () => {
     ],
     'group-classes': [
       { icon: 'Users', color: 'bg-red-100', text: 'text-red-700' },
-      { icon: 'MessageCircle', color: 'bg-red-100', text: 'text-red-700' },
-      { icon: 'User', color: 'bg-red-100', text: 'text-red-700' },
       { icon: 'GraduationCap', color: 'bg-red-100', text: 'text-red-700' },
+      { icon: 'MessageCircle', color: 'bg-red-100', text: 'text-red-700' },
+      { icon: 'Briefcase', color: 'bg-red-100', text: 'text-red-700' },
     ],
     'intensive-courses': [
       { icon: 'Zap', color: 'bg-blue-100', text: 'text-blue-700' },
