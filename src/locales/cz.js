@@ -315,7 +315,7 @@ export default {
   "services.offers.highlight": "typ služby",
   "services.offers.subtitle": "Tři formáty navržené pro různé cíle a tempo učení.",
   "services.offers.individual.title": "Individuální lekce",
-  "services.offers.individual.subtitle": "S důrazem 1:1 na váš pokrok",
+  "services.offers.individual.subtitle": "S důrazem 1:1 na Váš pokrok",
   "services.offers.individual.item0": "Expres",
   "services.offers.individual.item0desc": "30 min/lekce · 375 Kč",
   "services.offers.individual.item0help": "Ideální, pokud chcete začít bez tlaku a zaměřit se na to nejdůležitější.",
