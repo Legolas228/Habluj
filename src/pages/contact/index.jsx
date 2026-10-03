@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from '../../hooks/useTranslation';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';

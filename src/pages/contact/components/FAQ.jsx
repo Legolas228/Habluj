@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Icon from '../../../components/AppIcon';
 import { contactInfo } from '../../../utils/contactInfo';
 import { useTranslation } from '../../../hooks/useTranslation';

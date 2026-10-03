@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Icon from '../../components/AppIcon';
 import { deleteLead, getLeadDetail, getLeads, loginAdminWithPassword, updateLeadStage } from '../../services/leads';
