@@ -83,6 +83,22 @@
   * {
     @apply border-border;
   }
+
+  :where(.grid > *, .flex > *) {
+    min-width: 0;
+  }
+
+  :where(img, video, canvas, iframe) {
+    max-width: 100%;
+  }
+
+  :where(img, video, canvas) {
+    height: auto;
+  }
+
+  :where(h1, h2, h3, h4, h5, h6, p) {
+    overflow-wrap: anywhere;
+  }
   
   body {
     @apply bg-background text-foreground;

@@ -233,11 +233,11 @@ const SectionHeader = ({ title, subtitle }) => (
 );
 
 const BookMockup = ({ title, subtitle }) => (
-  <div className="mx-auto w-full max-w-sm overflow-hidden rounded-xl border border-border bg-white p-1 shadow-soft">
+  <div className="mx-auto min-w-0 w-full max-w-sm overflow-hidden rounded-xl border border-border bg-white p-1 shadow-soft">
     <img
       src="/assets/images/portada-ebook.png"
       alt={`${title} ${subtitle}`}
-      className="h-auto w-full max-w-full object-cover"
+      className="block h-auto w-full max-w-full object-contain"
     />
   </div>
 );
@@ -549,8 +549,8 @@ const EbookLandingPage = ({ lang = null }) => {
       <Header />
       <main id="main-content" tabIndex={-1}>
         <section className="relative overflow-hidden bg-gradient-warm pt-20 pb-10 sm:pt-24 sm:pb-14 lg:pt-28 lg:pb-20">
-          <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-8 px-4 sm:gap-10 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
-            <div className="space-y-6">
+          <div className="relative z-10 mx-auto grid min-w-0 w-full max-w-7xl gap-8 px-4 sm:gap-10 sm:px-6 lg:grid-cols-2 lg:items-center lg:px-8">
+            <div className="min-w-0 space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
                 <AppIcon name="BookOpen" size={16} />
                 {content.heroBadge}
