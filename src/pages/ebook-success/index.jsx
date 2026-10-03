@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import SiteFooter from '../../components/ui/SiteFooter';
@@ -28,6 +29,9 @@ const EbookSuccessPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <Header />
       <main id="main-content" tabIndex={-1} className="flex min-h-[60vh] items-center justify-center px-4 py-16">
         <section className="w-full max-w-lg rounded-2xl border border-border bg-white p-6 text-center shadow-cultural sm:p-8">
