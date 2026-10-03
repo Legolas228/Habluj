@@ -7,7 +7,6 @@ import { submitLeadCapture } from '../services/leads';
 import { trackImpact } from '../utils/analytics';
 import { useTranslation } from '../hooks/useTranslation';
 import { getLocalizedPath } from '../utils/seo';
-import TurnstileField from './TurnstileField';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -73,7 +72,7 @@ const QUESTIONS = [
     prompt: '¿Qué frase es correcta?',
     options: [
       { key: 'a', text: 'Voy a casa de mi amigo mañana' },
-      { key: 'b', text: 'Voy a la casa de mi amigo mañana' },
+      { key: 'b', text: 'Voy a el casa de mi amigo mañana' },
       { key: 'c', text: 'Voy en casa de mi amigo mañana' },
       { key: 'd', text: 'Voy casa de mi amigo mañana' },
     ],
@@ -190,9 +189,9 @@ const ANSWER_KEY = {
 
 const computeBand = (score) => {
   if (score <= 3) return 'A0-A1';
-  if (score <= 7) return 'A2';
-  if (score <= 10) return 'B1';
-  if (score <= 13) return 'B1+';
+  if (score <= 6) return 'A2';
+  if (score <= 9) return 'B1';
+  if (score <= 12) return 'B1 alto';
   return 'B2 (máximo del test)';
 };
 
@@ -212,7 +211,6 @@ const AdvancedSpanishTestForm = () => {
   const [phone, setPhone] = useState('');
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
 
   const score = useMemo(() => {
     return QUESTIONS.reduce((total, question) => {
@@ -304,7 +302,6 @@ const AdvancedSpanishTestForm = () => {
         consent_privacy: true,
         consent_marketing: consentMarketing,
         consent_version: 'v1',
-        turnstile_token: turnstileToken,
       });
 
       if (leadResponse?.warning) {
@@ -327,7 +324,6 @@ const AdvancedSpanishTestForm = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
-      <TurnstileField onToken={setTurnstileToken} />
       <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 p-5">
         <h3 className="text-2xl font-headlines font-bold text-foreground mb-2">Test de nivel</h3>
         <p className="text-foreground/80 text-sm">

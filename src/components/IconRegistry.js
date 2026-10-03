@@ -143,6 +143,7 @@ export const IconRegistry = {
     MessageCircle,
     MessageSquare,
     MoreHorizontal,
+    MonitorSmartphone,
     Paperclip,
     PenTool,
     Plane,
