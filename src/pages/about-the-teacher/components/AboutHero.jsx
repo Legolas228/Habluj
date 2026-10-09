@@ -54,7 +54,7 @@ const AboutHero = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
               <img
                 src="/assets/images/ester-foto.webp"
-                alt="Ester Mesároš Borrull"
+                alt="Bc. Ester Mesároš Borrull"
                 className="w-full h-full object-cover"
                 fetchpriority="high"
                 loading="eager"
