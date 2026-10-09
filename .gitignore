@@ -31,3 +31,9 @@ backend/.audit-venv/
 self-improving-agent-*.zip
 self-improving-agent-*/
 .env*.local
+
+# Internal project documentation
+AGENT.md
+docs/**/*.md
+.github/**/*.md
+Manus docs/*.markdown
