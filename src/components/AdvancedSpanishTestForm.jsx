@@ -324,13 +324,6 @@ const AdvancedSpanishTestForm = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
-      <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 p-5">
-        <h3 className="text-2xl font-headlines font-bold text-foreground mb-2">Test de nivel</h3>
-        <p className="text-foreground/80 text-sm">
-          Flujo guiado en 2 pasos: respuestas y envío por correo de tu resultado.
-        </p>
-      </div>
-
       {step === 'quiz' && (
         <>
           <div className="mb-5">
