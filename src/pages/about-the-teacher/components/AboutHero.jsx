@@ -70,7 +70,7 @@ const AboutHero = () => {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-medium text-foreground italic">"{t('about.hero.quote')}"</p>
-                    <p className="text-xs text-muted-foreground mt-1">- Ester Mesároš Borrull</p>
+                    <p className="text-xs text-muted-foreground mt-1">- Bc. Ester Mesároš Borrull</p>
                   </div>
                 </div>
               </div>
