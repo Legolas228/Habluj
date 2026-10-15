@@ -20,7 +20,7 @@ const copy = {
     bookTitle: 'Španielčina',
     bookSubtitle: 'bez strachu',
     title: 'Prestaňte sa učiť španielčinu naslepo',
-    subtitle: 'Praktický eBook, ktorý Vám vytvorí pevné základy španielčiny. V čom sa táto kniha líši od bežných učebníc španielčiny? Okrem toho, že v každej lekcii nájdete 19 - 25 praktických cvičení na precvičenie gramatiky, je navrhnutá našou kruhovou metódou. Táto metóda podporuje skoré rozprávanie študenta a to práve vďaka tomu, že vrámci piatich lekcií sa naučíte ako prítomný, tak aj budúci a minulý čas. V knihe sa nachádza viac ako 600 slov vrámci slovnej zásoby. Každá lekcia obsahuje jasne vysvetlenú gramatiku a záver lekcie s užitočnými radami s učeniu.',
+    subtitle: 'Praktický eBook, ktorý Vám vytvorí pevné základy španielčiny. V čom sa táto kniha líši od bežných učebníc španielčiny? Okrem toho, že v každej lekcii nájdete 19 - 25 praktických cvičení na precvičenie gramatiky, je navrhnutá našou kruhovou metódou. Táto metóda podporuje skoré rozprávanie študenta a to práve vďaka tomu, že vrámci piatich lekcií sa naučíte ako prítomný, tak aj budúci a minulý čas. V knihe sa nachádza viac ako 600 slov vrámci slovnej zásoby. Každá lekcia obsahuje jasne vysvetlenú gramatiku a záver lekcie s užitočnými radami k učeniu.',
     cta: 'Kúpiť za 24,90 €',
     secureBadge: 'Bezpečná platba a okamžitý prístup',
     proof: [
@@ -52,7 +52,7 @@ const copy = {
       'chcete začať hovoriť po španielsky bez hanby',
       'potrebujete jasný plán namiesto náhodných aplikácií',
       'ste Slovák alebo Čech a chcete vysvetlenia, ktoré vám dávajú zmysel',
-      'ste ochotní robiť malé, pravidelné kroky',
+      'ste ochotný robiť malé, pravidelné kroky',
     ],
     badFit: [
       'hľadáte magický trik bez práce',

@@ -19,7 +19,7 @@ const ContactMethods = () => {
       title: 'Vyberte si spôsob komunikácie',
       subtitle: 'Ponúkame viacero možností, ako sa s nami môžete spojiť. Vyberte si tú, ktorá Vám najviac vyhovuje.',
       recommended: 'Odporúčané',
-      hoursTitle: 'Pracovné hodiny',
+      hoursTitle: 'Otváracia doba',
       hours: 'Pondelok - Piatok: 8:00 - 21:00\nSobota: 8:00 - 14:00\nNedeľa: Zatvorené',
       hoursNote: 'Mimo pracovnej doby odpovedáme v nasledujúci pracovný deň',
     },
