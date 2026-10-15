@@ -12,7 +12,6 @@ const TutoringServices = lazy(() => import('./pages/tutoring-services'));
 const AboutTheTeacher = lazy(() => import('./pages/about-the-teacher'));
 const BookingSystem = lazy(() => import('./pages/booking-system'));
 const LevelQuestionnairePage = lazy(() => import('./pages/level-questionnaire'));
-const IntensiveCoursesPage = lazy(() => import('./pages/intensive-courses'));
 const EbookLandingPage = lazy(() => import('./pages/ebook-landing'));
 const EbookSuccessPage = lazy(() => import('./pages/ebook-success'));
 const Homepage = lazy(() => import('./pages/homepage'));
@@ -83,7 +82,6 @@ const Routes = () => {
             <Route path="/" element={<Navigate to={redirectToLocalized('/')} replace />} />
             <Route path="/contact" element={<Navigate to={redirectToLocalized('/contact')} replace />} />
             <Route path="/tutoring-services" element={<Navigate to={redirectToLocalized('/tutoring-services')} replace />} />
-            <Route path="/intensive-courses" element={<Navigate to={redirectToLocalized('/intensive-courses')} replace />} />
             <Route path="/ebook" element={<Navigate to={redirectToLocalized('/ebook')} replace />} />
             <Route path="/ebook/success" element={<Navigate to={redirectToLocalized('/ebook/success')} replace />} />
             <Route path="/login" element={<Navigate to={redirectToLocalized('/login')} replace />} />
@@ -106,7 +104,6 @@ const Routes = () => {
               <Route index element={<Homepage />} />
               <Route path="contact" element={<ContactPage />} />
               <Route path="tutoring-services" element={<TutoringServices />} />
-              <Route path="intensive-courses" element={<IntensiveCoursesPage />} />
               <Route path="ebook" element={<EbookLandingPage />} />
               <Route path="ebook/success" element={<EbookSuccessPage />} />
               <Route path="login" element={<LoginPage />} />

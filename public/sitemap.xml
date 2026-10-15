@@ -83,16 +83,6 @@
   </url>
 
   <url>
-    <loc>https://habluj.vercel.app/sk/intensive-courses</loc>
-    <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.vercel.app/sk/intensive-courses" />
-    <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.vercel.app/cs/intensive-courses" />
-    <xhtml:link rel="alternate" hreflang="es" href="https://habluj.vercel.app/es/intensive-courses" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://habluj.vercel.app/sk/intensive-courses" />
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
     <loc>https://habluj.vercel.app/sk/ebook</loc>
     <xhtml:link rel="alternate" hreflang="sk" href="https://habluj.vercel.app/sk/ebook" />
     <xhtml:link rel="alternate" hreflang="cs" href="https://habluj.vercel.app/cs/ebook" />
