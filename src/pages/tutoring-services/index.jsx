@@ -531,16 +531,6 @@ const TutoringServices = () => {
                           >
                             <Link to={getLocalizedPath('/contact', language)}>{t('services.hero.ctaContact')}</Link>
                           </Button>
-                        ) : section.id === 'intensive-courses' ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            fullWidth
-                            className={accentStyle.button}
-                            asChild
-                          >
-                            <Link to={getLocalizedPath('/intensive-courses', language)}>Más información</Link>
-                          </Button>
                         ) : (
                           <Button
                             variant="outline"

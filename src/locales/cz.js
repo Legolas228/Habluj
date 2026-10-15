@@ -265,7 +265,7 @@ export default {
   "levelQuiz.page.heading": "Úrovňový test",
   "levelQuiz.page.subheading": "Vyplňte test a hodnocení Vám zašleme e-mailem.",
   "waitlist.sectionTitle": "Čekací listina na kurzy",
-  "waitlist.sectionSubtitle": "Pokud jsou intenzivní kurzy nebo malé skupinky dočasně obsazené, zapište se zde a my Vás upozorníme na uvolnění míst.",
+  "waitlist.sectionSubtitle": "Pokud jsou intenzivní kurzy nebo malé skupinky dočasně uzavřené, zapište se zde a my Vás upozorníme na uvolnění míst.",
   "waitlist.title": "Formulář seznamu čekatelů",
   "waitlist.subtitle": "Vyberte typ kurzu a zadejte své kontaktní údaje. Pole označená hvězdičkou jsou povinná.",
   "waitlist.courseLabel": "Typ kurzu",
