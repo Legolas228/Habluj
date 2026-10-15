@@ -69,6 +69,16 @@ const SiteFooter = () => {
                 <Icon name="Mail" size={16} />
                 <span className="font-medium">{contactInfo.email}</span>
               </a>
+              <a
+                href={getContactLinks.whatsapp()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors"
+                aria-label="Open WhatsApp"
+              >
+                <Icon name="MessageCircle" size={16} />
+                <span className="font-medium">WhatsApp</span>
+              </a>
             </div>
           </div>
         </div>

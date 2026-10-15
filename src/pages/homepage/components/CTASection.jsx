@@ -28,6 +28,16 @@ const CTASection = () => {
               <span className="font-medium">{contactInfo.email}</span>
             </a>
             <a
+              href={getContactLinks.whatsapp()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-border text-foreground hover:border-primary/40 hover:text-primary transition-colors"
+              aria-label="Open WhatsApp"
+            >
+              <Icon name="MessageCircle" size={16} />
+              <span className="font-medium">WhatsApp</span>
+            </a>
+            <a
               href={getContactLinks.instagram()}
               target="_blank"
               rel="noopener noreferrer"
