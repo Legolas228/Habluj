@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Icon from '../../../components/AppIcon';
-import { contactInfo } from '../../../utils/contactInfo';
+import { contactInfo, getContactLinks } from '../../../utils/contactInfo';
 import { useTranslation } from '../../../hooks/useTranslation';
 
 const faqContent = {
@@ -20,6 +20,7 @@ const faqContent = {
     emptyText: 'Skúste iný výraz alebo kategóriu.',
     ctaTitle: 'Nenašli ste odpoveď?',
     ctaText: 'Napíšte nám, radi Vám pomôžeme.',
+    whatsappCta: 'WhatsApp',
     emailCta: 'Napísať email',
     igCta: 'Instagram',
     faqs: [
@@ -44,6 +45,7 @@ const faqContent = {
     emptyText: 'Zkuste jiný výraz nebo kategorii.',
     ctaTitle: 'Nenašli jste odpověď?',
     ctaText: 'Napište nám přímo a pomůžeme Vám vybrat správný postup.',
+    whatsappCta: 'WhatsApp',
     emailCta: 'Napsat email',
     igCta: 'Instagram',
     faqs: [
@@ -68,6 +70,7 @@ const faqContent = {
     emptyText: 'Prueba otro término o categoría.',
     ctaTitle: '¿No has encontrado tu respuesta?',
     ctaText: 'Escríbenos directamente y te ayudaremos a elegir el siguiente paso más adecuado.',
+    whatsappCta: 'WhatsApp',
     emailCta: 'Enviar correo',
     igCta: 'Instagram',
     faqs: [
@@ -169,6 +172,16 @@ const FAQ = () => {
             <h3 className="text-xl font-headlines font-semibold text-foreground mb-3">{content.ctaTitle}</h3>
             <p className="text-muted-foreground mb-6">{content.ctaText}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href={getContactLinks.whatsapp()}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 bg-[#25D366] text-white rounded-md hover:bg-[#20bd5a] transition-colors"
+                aria-label="Open WhatsApp"
+              >
+                <Icon name="MessageCircle" size={18} className="mr-2" />
+                {content.whatsappCta}
+              </a>
               <a
                 href={`mailto:${contactInfo.email}`}
                 className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"

@@ -19,29 +19,83 @@ def _smtp_notifications_available():
     return bool(host) and backend != 'django.core.mail.backends.console.EmailBackend'
 
 
+def _lead_source_label(source):
+    return {
+        'contact_form': 'Mensajes',
+        'homepage_cta': 'Mensajes',
+        'advanced_level_test': 'Pruebas de nivel',
+        'level_quiz': 'Pruebas de nivel',
+        'waitlist_intensive': 'Lista de espera',
+        'waitlist_small_group': 'Lista de espera',
+    }.get(source, source or '-')
+
+
 def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
-    subject = f'Nuevo lead recibido: {lead.full_name}'
+    subject = f'Nuevo registro en Habluj: {lead.full_name}'
+    created_at = lead.created_at.strftime('%d/%m/%Y a las %H:%M') if lead.created_at else '-'
+    source_label = _lead_source_label(lead.source)
+    duplicate_status = (
+        f'Sí (lead #{lead.duplicate_of_id}, coincidencia por {lead.duplicate_confidence})'
+        if lead.duplicate_of_id
+        else 'No'
+    )
     text_content = (
-        'Nuevo lead en Habluj\n\n'
+        'Nuevo registro en Habluj\n\n'
         f'Nombre: {lead.full_name}\n'
         f'Email: {lead.email}\n'
         f'Teléfono: {lead.phone or "-"}\n'
-        f'Idioma: {lead.preferred_language}\n'
-        f'Origen: {lead.source}\n'
-        f'Consentimiento marketing: {"Si" if lead.consent_marketing else "No"}\n\n'
+        f'Idioma preferido: {lead.preferred_language}\n'
+        f'Origen: {source_label}\n'
+        f'Estado: {lead.stage}\n'
+        f'Fecha: {created_at}\n'
+        f'Consentimiento de privacidad: {"Sí" if lead.consent_privacy else "No"}\n'
+        f'Consentimiento de marketing: {"Sí" if lead.consent_marketing else "No"}\n'
+        f'Duplicado: {duplicate_status}\n\n'
         f'Notas:\n{lead.notes or "-"}\n\n'
-        f'Abrir lead en admin: {lead_url}\n'
+        f'Abrir registro en el dashboard: {lead_url}\n'
     )
+    details = [
+        ('Nombre', lead.full_name),
+        ('Email', lead.email),
+        ('Teléfono', lead.phone or '-'),
+        ('Idioma preferido', lead.preferred_language),
+        ('Origen', source_label),
+        ('Estado', lead.stage),
+        ('Fecha', created_at),
+        ('Privacidad', 'Sí' if lead.consent_privacy else 'No'),
+        ('Marketing', 'Sí' if lead.consent_marketing else 'No'),
+        ('Duplicado', duplicate_status),
+    ]
+    detail_rows = ''.join(
+        f'<tr><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#666;font-weight:600;">'
+        f'{escape(label)}</td><td style="padding:10px 12px;border-bottom:1px solid #eee;color:#222;">'
+        f'{escape(str(value))}</td></tr>'
+        for label, value in details
+    )
+    notes = escape(lead.notes or '-').replace('\n', '<br>')
     html_content = (
-        f'<h3>Nuevo lead en Habluj</h3>'
-        f'<p><strong>Nombre:</strong> {escape(lead.full_name)}</p>'
-        f'<p><strong>Email:</strong> {escape(lead.email)}</p>'
-        f'<p><strong>Teléfono:</strong> {escape(lead.phone or "-")}</p>'
-        f'<p><strong>Idioma:</strong> {escape(lead.preferred_language)}</p>'
-        f'<p><strong>Origen:</strong> {escape(lead.source)}</p>'
-        f'<p><strong>Consentimiento marketing:</strong> {"Si" if lead.consent_marketing else "No"}</p>'
-        f'<p><strong>Notas:</strong><br>{escape(lead.notes or "-").replace(chr(10), "<br>")}</p>'
-        f'<p><a href="{escape(lead_url)}">Abrir lead en admin</a></p>'
+        '<div style="margin:0;background:#f7f4f0;padding:32px 16px;font-family:Arial,sans-serif;color:#222;">'
+        '<div style="max-width:620px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;'
+        'box-shadow:0 4px 18px rgba(0,0,0,.08);">'
+        '<div style="background:#9F1239;padding:26px 30px;color:#fff;">'
+        '<div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;opacity:.9;">Habluj</div>'
+        '<h1 style="margin:8px 0 0;font-size:26px;line-height:1.2;">Nuevo registro recibido</h1>'
+        '</div>'
+        '<div style="padding:28px 30px;">'
+        f'<p style="margin:0 0 20px;font-size:16px;line-height:1.5;">Hola Ester, tienes un nuevo registro de '
+        f'<strong>{escape(lead.full_name)}</strong> en tu dashboard.</p>'
+        f'<table role="presentation" style="width:100%;border-collapse:collapse;font-size:14px;">{detail_rows}</table>'
+        '<div style="margin-top:22px;padding:16px;background:#faf8f5;border-radius:8px;">'
+        '<div style="margin-bottom:8px;color:#666;font-size:13px;font-weight:600;">Notas</div>'
+        f'<div style="font-size:14px;line-height:1.5;">{notes}</div>'
+        '</div>'
+        f'<a href="{escape(lead_url)}" style="display:inline-block;margin-top:24px;padding:12px 20px;'
+        'background:#9F1239;color:#fff;text-decoration:none;border-radius:7px;font-weight:600;">'
+        'Abrir registro en el dashboard</a>'
+        '</div>'
+        '<div style="padding:18px 30px;background:#faf8f5;color:#777;font-size:12px;">'
+        'Notificación automática de Habluj</div>'
+        '</div></div>'
     )
 
     try:
@@ -372,7 +426,11 @@ def sync_lead_to_mailerlite(lead):
 
 
 def send_new_lead_notification(lead):
-    recipient = os.environ.get('MAILERLITE_NOTIFICATION_TO', 'habluj.sk@gmail.com')
+    recipient = (
+        os.environ.get('LEAD_NOTIFICATION_TO')
+        or os.environ.get('MAILERLITE_NOTIFICATION_TO')
+        or 'habluj.sk@gmail.com'
+    )
     sender_email = os.environ.get('MAILERLITE_SENDER_EMAIL') or getattr(settings, 'DEFAULT_FROM_EMAIL', '')
 
     admin_base_url = os.environ.get('DJANGO_ADMIN_BASE_URL', '')
@@ -383,7 +441,7 @@ def send_new_lead_notification(lead):
         return {'status': 'skipped', 'reason': 'MAILERLITE_SENDER_EMAIL or DJANGO_DEFAULT_FROM_EMAIL is not configured'}
 
     if not _smtp_notifications_available():
-        return {'status': 'skipped', 'reason': 'SMTP is not configured for MailerLite notifications'}
+        return {'status': 'skipped', 'reason': 'SMTP is not configured for lead notifications'}
 
     return _send_django_email_notification(
         lead=lead,

@@ -633,6 +633,24 @@ const TutoringServices = () => {
             </div>
 
             <a
+              href={getContactLinks.email()}
+              className="inline-flex items-center gap-2 mt-6 mr-3 px-4 py-2 rounded-full bg-white/15 border border-white/30 text-white hover:bg-white/25 transition-colors"
+              aria-label={`Send email to ${contactInfo.email}`}
+            >
+              <Icon name="Mail" size={16} />
+              <span className="font-medium">{contactInfo.email}</span>
+            </a>
+            <a
+              href={getContactLinks.whatsapp()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-6 mr-3 px-4 py-2 rounded-full bg-white/15 border border-white/30 text-white hover:bg-white/25 transition-colors"
+              aria-label="Open WhatsApp"
+            >
+              <Icon name="MessageCircle" size={16} />
+              <span className="font-medium">WhatsApp</span>
+            </a>
+            <a
               href={getContactLinks.instagram()}
               target="_blank"
               rel="noopener noreferrer"

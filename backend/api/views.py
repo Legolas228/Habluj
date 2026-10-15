@@ -1331,21 +1331,6 @@ class LeadViewSet(viewsets.ModelViewSet):
         if level_test_email_warning:
             warnings.append(level_test_email_warning)
 
-        if not getattr(settings, 'LEAD_EXTERNAL_INTEGRATIONS_ENABLED', False):
-            lead.mailerlite_sync_error = ' | '.join(warnings) if warnings else ''
-            lead.save(update_fields=['mailerlite_sync_error', 'updated_at'])
-            return lead, warnings
-
-        sync_result = sync_lead_to_mailerlite(lead)
-        if sync_result['status'] == 'synced':
-            lead.mailerlite_contact_id = sync_result.get('contact_id', '')
-            lead.mailerlite_synced_at = timezone.now()
-            lead.mailerlite_sync_error = ''
-        else:
-            reason = sync_result.get('reason', 'MailerLite sync skipped')
-            lead.mailerlite_sync_error = reason
-            warnings.append(reason)
-
         try:
             notification_result = send_new_lead_notification(lead)
             if notification_result.get('status') != 'sent':
@@ -1358,6 +1343,17 @@ class LeadViewSet(viewsets.ModelViewSet):
             warnings.append(warning)
             existing = lead.mailerlite_sync_error.strip()
             lead.mailerlite_sync_error = f'{existing} | {warning}' if existing else warning
+
+        if getattr(settings, 'LEAD_EXTERNAL_INTEGRATIONS_ENABLED', False):
+            sync_result = sync_lead_to_mailerlite(lead)
+            if sync_result['status'] == 'synced':
+                lead.mailerlite_contact_id = sync_result.get('contact_id', '')
+                lead.mailerlite_synced_at = timezone.now()
+            else:
+                reason = sync_result.get('reason', 'MailerLite sync skipped')
+                warnings.append(reason)
+                existing = lead.mailerlite_sync_error.strip()
+                lead.mailerlite_sync_error = f'{existing} | {reason}' if existing else reason
 
         lead.save(update_fields=['mailerlite_contact_id', 'mailerlite_synced_at', 'mailerlite_sync_error', 'updated_at'])
         return lead, warnings

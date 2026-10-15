@@ -71,11 +71,6 @@
       "source": "/level-questionnaire",
       "destination": "/sk/level-questionnaire",
       "permanent": true
-    },
-    {
-      "source": "/intensive-courses",
-      "destination": "/sk/intensive-courses",
-      "permanent": true
     }
   ],
   "rewrites": [
