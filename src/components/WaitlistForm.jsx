@@ -39,7 +39,7 @@ const FieldLabel = ({ children, required = false }) => (
   </span>
 );
 
-const WaitlistForm = ({ preferredCourseType = 'intensive', showAvailabilityNotice = false }) => {
+const WaitlistForm = ({ preferredCourseType = 'intensive', preferredGroupCourse = 'group_pair' }) => {
   const { t, language } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -47,7 +47,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive', showAvailabilityNotic
   const [message, setMessage] = useState('');
   const [courseType, setCourseType] = useState(preferredCourseType);
   const [intensiveCourse, setIntensiveCourse] = useState('intensive_a1');
-  const [groupCourse, setGroupCourse] = useState('group_pair');
+  const [groupCourse, setGroupCourse] = useState(preferredGroupCourse);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
   const [status, setStatus] = useState('idle');
@@ -57,6 +57,10 @@ const WaitlistForm = ({ preferredCourseType = 'intensive', showAvailabilityNotic
   useEffect(() => {
     setCourseType(preferredCourseType || 'intensive');
   }, [preferredCourseType]);
+
+  useEffect(() => {
+    setGroupCourse(preferredGroupCourse || 'group_pair');
+  }, [preferredGroupCourse]);
 
   useEffect(() => {
     if (courseType !== 'intensive') {
@@ -126,10 +130,10 @@ const WaitlistForm = ({ preferredCourseType = 'intensive', showAvailabilityNotic
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
       <h3 className="text-xl font-headlines font-bold text-foreground mb-2">{t('waitlist.title')}</h3>
-      {showAvailabilityNotice && (
+      {courseType === 'individual' && (
         <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-foreground">
           <p className="font-semibold">{t('waitlist.availabilityNotice')}</p>
-          <p className="mt-1 text-muted-foreground">{t('waitlist.availabilityDetails')}</p>
+          <p className="mt-1 text-muted-foreground">{t('waitlist.availabilityDetails')}.</p>
         </div>
       )}
       <p className="text-muted-foreground text-sm mb-6">{t('waitlist.subtitle')}</p>
