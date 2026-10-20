@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from '../../hooks/useTranslation';
 import Icon from '../AppIcon';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
-import { SETMORE_BOOKING_URL } from '../../utils/setmore';
 import { getLocalizedPath } from '../../utils/seo';
 
 const SiteFooter = () => {
@@ -34,7 +33,7 @@ const SiteFooter = () => {
               <li><Link to={getLocalizedPath('/', language)} className="text-gray-300 hover:text-white transition-colors">{t('header.home')}</Link></li>
               <li><Link to={getLocalizedPath('/about-the-teacher', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.aboutTeacher')}</Link></li>
               <li><Link to={getLocalizedPath('/tutoring-services', language)} className="text-gray-300 hover:text-white transition-colors">{t('footer.services')}</Link></li>
-              <li><a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">{t('footer.booking')}</a></li>
+              <li><Link to={`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`} className="text-gray-300 hover:text-white transition-colors">{t('footer.booking')}</Link></li>
               <li><Link to={getLocalizedPath('/contact', language)} className="text-gray-300 hover:text-white transition-colors">{t('header.contact')}</Link></li>
             </ul>
           </div>

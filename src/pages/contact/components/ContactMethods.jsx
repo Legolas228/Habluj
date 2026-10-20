@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { contactInfo, getContactLinks } from '../../../utils/contactInfo';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { openSetmoreBooking } from '../../../utils/setmore';
+import { getLocalizedPath } from '../../../utils/seo';
 
 const ContactMethods = () => {
   const { language } = useTranslation();
@@ -103,7 +103,7 @@ const ContactMethods = () => {
         window.location.href = `mailto:${method?.contact}`;
         break;
       case "Calendar":
-        openSetmoreBooking();
+        window.location.href = `${getLocalizedPath('/tutoring-services', language)}#course-waitlist`;
         break;
       default:
         break;

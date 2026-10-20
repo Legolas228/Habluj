@@ -22,7 +22,6 @@ import {
 import StudentLessonsPanel from './components/StudentLessonsPanel';
 import StudentResourcesPanel from './components/StudentResourcesPanel';
 import { Suspense, lazy } from 'react';
-import { openSetmoreBooking } from '../../utils/setmore';
 import { getLocalizedPath } from '../../utils/seo';
 
 // Lazy loading heavy components, specially those using recharts
@@ -440,9 +439,9 @@ const StudentDashboard = () => {
                 iconName="CalendarPlus"
                 iconPosition="left"
                 className="bg-white text-primary hover:bg-white/90 shadow-soft font-semibold"
-                onClick={openSetmoreBooking}
+                onClick={() => { window.location.href = `${getLocalizedPath('/tutoring-services', language)}#course-waitlist`; }}
               >
-                {copy.bookLesson}
+                {t('waitlist.ctaNoPlaces')}
               </Button>
             </div>
             {bookingsError && (
@@ -541,14 +540,14 @@ const StudentDashboard = () => {
           <div className="space-y-3">
             <button
               type="button"
-              onClick={openSetmoreBooking}
+              onClick={() => { window.location.href = `${getLocalizedPath('/tutoring-services', language)}#course-waitlist`; }}
               className="w-full flex items-center space-x-3 p-3 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/15 transition-colors group text-left"
             >
               <div className="w-10 h-10 bg-primary/15 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <Icon name="CalendarPlus" size={20} className="text-primary" />
               </div>
               <div className="flex-1 text-left">
-                <h4 className="font-semibold text-foreground">{copy.bookLesson}</h4>
+                <h4 className="font-semibold text-foreground">{t('waitlist.ctaNoPlaces')}</h4>
                 <p className="text-sm text-muted-foreground">{copy.bookReschedule}</p>
               </div>
               <Icon name="ChevronRight" size={16} className="text-primary" />

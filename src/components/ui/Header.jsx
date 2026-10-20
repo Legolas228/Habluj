@@ -4,7 +4,6 @@ import Icon from '../AppIcon';
 import Button from './Button';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from '../../hooks/useTranslation';
-import { SETMORE_BOOKING_URL } from '../../utils/setmore';
 import { getLocalizedPath, stripLanguagePrefix } from '../../utils/seo';
 
 const Header = () => {
@@ -150,7 +149,7 @@ const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer">
+              <Link to={`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`}>
                 <Button 
                   variant="default" 
                   size="sm"
@@ -158,7 +157,7 @@ const Header = () => {
                 >
                   {t('header.book')}
                 </Button>
-              </a>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -233,7 +232,7 @@ const Header = () => {
                     🇪🇸
                   </button>
                 </div>
-                <a href={SETMORE_BOOKING_URL} target="_blank" rel="noopener noreferrer" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link to={`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`} onClick={() => setIsMobileMenuOpen(false)}>
                   <Button 
                     variant="default" 
                     fullWidth
@@ -241,7 +240,7 @@ const Header = () => {
                   >
                     {t('header.book')}
                   </Button>
-                </a>
+                </Link>
               </div>
             </nav>
           </div>
