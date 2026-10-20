@@ -18,11 +18,13 @@ const TutoringServices = () => {
   const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/tutoring-services');
   const [waitlistCourseType, setWaitlistCourseType] = React.useState('intensive');
-  const [showWaitlistNotice, setShowWaitlistNotice] = React.useState(false);
+  const [waitlistGroupCourse, setWaitlistGroupCourse] = React.useState('group_pair');
 
   React.useEffect(() => {
-    if (window.location.hash === `#${WAITLIST_TARGET_ID}`) {
-      setShowWaitlistNotice(true);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('course') === 'group_maturita') {
+      setWaitlistCourseType('small_group');
+      setWaitlistGroupCourse('group_maturita');
     }
   }, []);
   const localeByLanguage = {
@@ -84,7 +86,6 @@ const TutoringServices = () => {
   };
 
   const handleBookLesson = () => {
-    setShowWaitlistNotice(true);
     openWaitlist('individual');
   };
 
@@ -96,7 +97,6 @@ const TutoringServices = () => {
   };
 
   const openWaitlist = (courseType) => {
-    setShowWaitlistNotice(true);
     setWaitlistCourseType(courseType);
     scrollToSection(WAITLIST_TARGET_ID);
   };
@@ -583,7 +583,7 @@ const TutoringServices = () => {
           <div className="max-w-xl mx-auto">
             <WaitlistForm
               preferredCourseType={waitlistCourseType}
-              showAvailabilityNotice={showWaitlistNotice}
+              preferredGroupCourse={waitlistGroupCourse}
             />
           </div>
         </div>

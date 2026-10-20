@@ -65,22 +65,10 @@ const HeroSection = () => {
               <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground font-accent leading-relaxed">
                 {t('hero.subtitle')}
               </p>
-            </div>
-
-            {/* CTA principal único: Test de Nivel */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <Link to={getLocalizedPath('/level-questionnaire', language)} className="w-full sm:w-auto">
-                <Button
-                  variant="default"
-                  size="lg"
-                  className="w-full sm:w-auto bg-cta hover:bg-cta/90 text-white shadow-warm hover:shadow-cultural transition-all duration-300 hover:scale-[1.02]"
-                  iconName="Zap"
-                  iconPosition="left"
-                >
-                  {t('hero.bookLesson')}
-                </Button>
-              </Link>
-              <a href="#method-demo" className="text-sm text-primary hover:text-primary/80 underline underline-offset-4">
+              <a
+                href="#method-demo"
+                className="inline-flex text-sm font-medium text-primary underline underline-offset-4 transition-colors hover:text-primary/80"
+              >
                 {t('hero.watchVideo')}
               </a>
             </div>
@@ -99,6 +87,27 @@ const HeroSection = () => {
                 <div className="text-xl sm:text-2xl font-bold text-accent">{t('hero.stat3Value')}</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('hero.stat3Label')}</div>
               </div>
+            </div>
+
+            <div className="space-y-4">
+              <Link
+                to={`${getLocalizedPath('/tutoring-services', language)}?course=group_maturita#course-waitlist`}
+                className="inline-flex w-full items-center gap-3 rounded-2xl border-2 border-primary/30 bg-gradient-to-r from-primary/10 to-secondary/10 px-5 py-4 text-base font-bold text-primary shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-cultural"
+              >
+                <Icon name="Sparkles" size={20} />
+                <span>{t('hero.maturitaNotice')}</span>
+              </Link>
+              <Link to={getLocalizedPath('/level-questionnaire', language)} className="block w-full sm:w-fit">
+                <Button
+                  variant="default"
+                  size="xl"
+                  className="h-14 w-full rounded-xl bg-cta px-8 text-lg font-bold text-white shadow-warm hover:bg-cta/90 hover:shadow-cultural transition-all duration-300 hover:scale-[1.02]"
+                  iconName="Zap"
+                  iconPosition="left"
+                >
+                  {t('hero.bookLesson')}
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -142,10 +151,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="hidden lg:block absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-70" aria-hidden="true">
-        <Icon name="ChevronDown" size={24} className="text-muted-foreground" />
-      </div>
     </section>
   );
 };
