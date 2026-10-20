@@ -3,8 +3,6 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useTranslation } from '../../../hooks/useTranslation';
 
-const SETMORE_BOOKING_URL = import.meta.env.VITE_SETMORE_BOOKING_URL || 'https://habluj.setmore.com/';
-
 const localeByLanguage = {
   sk: 'sk-SK',
   cz: 'cs-CZ',
@@ -50,7 +48,9 @@ const StudentLessonsPanel = ({
   language = 'sk',
 }) => {
   const { t } = useTranslation();
-  const openSetmore = () => window.open(SETMORE_BOOKING_URL, '_blank', 'noopener,noreferrer');
+  const openWaitlist = () => {
+    window.location.href = `/${language}/tutoring-services#course-waitlist`;
+  };
 
   const handleCancel = (bookingId) => {
     const confirmed = window.confirm(t('studentLessons.cancelConfirm'));
@@ -63,8 +63,8 @@ const StudentLessonsPanel = ({
       <div className="bg-white rounded-lg shadow-soft border p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-headlines font-bold text-foreground">{t('studentLessons.upcomingLessons')}</h2>
-          <Button variant="outline" size="sm" iconName="Calendar" onClick={openSetmore}>
-            {t('studentLessons.bookReschedule')}
+          <Button variant="outline" size="sm" iconName="Calendar" onClick={openWaitlist}>
+            {t('waitlist.ctaNoPlaces')}
           </Button>
         </div>
 
@@ -100,11 +100,11 @@ const StudentLessonsPanel = ({
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="default" size="sm" iconName="Video" onClick={openSetmore}>
-                  {t('studentLessons.join')}
+                <Button variant="default" size="sm" iconName="Video" onClick={openWaitlist}>
+                  {t('waitlist.ctaNoPlaces')}
                 </Button>
-                <Button variant="outline" size="sm" iconName="ExternalLink" onClick={openSetmore}>
-                  {t('studentLessons.rescheduleSetmore')}
+                <Button variant="outline" size="sm" iconName="ExternalLink" onClick={openWaitlist}>
+                  {t('waitlist.ctaNoPlaces')}
                 </Button>
                 {(booking.status === 'pending' || booking.status === 'confirmed') && (
                   <Button

@@ -27,6 +27,7 @@ def _lead_source_label(source):
         'level_quiz': 'Pruebas de nivel',
         'waitlist_intensive': 'Lista de espera',
         'waitlist_small_group': 'Lista de espera',
+        'waitlist_individual': 'Lista de espera',
     }.get(source, source or '-')
 
 

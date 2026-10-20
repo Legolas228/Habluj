@@ -11,7 +11,6 @@ import WaitlistForm from '../../components/WaitlistForm';
 import { useTranslation } from '../../hooks/useTranslation';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
 import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks, getLocalizedPath } from '../../utils/seo';
-import { openSetmoreBooking } from '../../utils/setmore';
 
 const WAITLIST_TARGET_ID = 'course-waitlist';
 
@@ -19,6 +18,13 @@ const TutoringServices = () => {
   const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/tutoring-services');
   const [waitlistCourseType, setWaitlistCourseType] = React.useState('intensive');
+  const [showWaitlistNotice, setShowWaitlistNotice] = React.useState(false);
+
+  React.useEffect(() => {
+    if (window.location.hash === `#${WAITLIST_TARGET_ID}`) {
+      setShowWaitlistNotice(true);
+    }
+  }, []);
   const localeByLanguage = {
     sk: 'sk-SK',
     cz: 'cs-CZ',
@@ -78,7 +84,8 @@ const TutoringServices = () => {
   };
 
   const handleBookLesson = () => {
-    openSetmoreBooking();
+    setShowWaitlistNotice(true);
+    openWaitlist('individual');
   };
 
   const scrollToSection = (targetId) => {
@@ -89,6 +96,7 @@ const TutoringServices = () => {
   };
 
   const openWaitlist = (courseType) => {
+    setShowWaitlistNotice(true);
     setWaitlistCourseType(courseType);
     scrollToSection(WAITLIST_TARGET_ID);
   };
@@ -312,6 +320,15 @@ const TutoringServices = () => {
               <span className="text-primary">{t('learning.highlight')}</span>
             </h2>
 
+            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-5 py-2 mb-6">
+              <span className="text-lg lg:text-xl font-headlines font-bold tracking-wide text-success">
+                {t('learning.onlineValue')}
+              </span>
+              <span className="text-lg lg:text-xl font-headlines font-semibold tracking-wide text-foreground">
+                {t('learning.onlineLabel')}
+              </span>
+            </div>
+
             <p className="text-lg text-muted-foreground leading-relaxed">
               {t('learning.subtitle')}
             </p>
@@ -411,7 +428,7 @@ const TutoringServices = () => {
                 iconPosition="left"
                 onClick={handleBookLesson}
               >
-                {t('services.hero.ctaBook')}
+                {t('waitlist.ctaNoPlaces')}
               </Button>
             </div>
           </div>
@@ -564,7 +581,10 @@ const TutoringServices = () => {
           </div>
 
           <div className="max-w-xl mx-auto">
-            <WaitlistForm preferredCourseType={waitlistCourseType} />
+            <WaitlistForm
+              preferredCourseType={waitlistCourseType}
+              showAvailabilityNotice={showWaitlistNotice}
+            />
           </div>
         </div>
       </section>

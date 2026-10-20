@@ -14,6 +14,7 @@ const mapPreferredLanguage = (language) => {
 };
 
 const mapWaitlistSource = (courseType) => {
+  if (courseType === 'individual') return 'waitlist_individual';
   if (courseType === 'small_group') return 'waitlist_small_group';
   return 'waitlist_intensive';
 };
@@ -38,7 +39,7 @@ const FieldLabel = ({ children, required = false }) => (
   </span>
 );
 
-const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
+const WaitlistForm = ({ preferredCourseType = 'intensive', showAvailabilityNotice = false }) => {
   const { t, language } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -88,7 +89,11 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
       const source = mapWaitlistSource(courseType);
       const cleanMessage = message.trim();
       const cleanPhone = phone.trim();
-      const selectedCourse = courseType === 'intensive' ? intensiveCourse : groupCourse;
+      const selectedCourse = courseType === 'individual'
+        ? 'individual'
+        : courseType === 'intensive'
+          ? intensiveCourse
+          : groupCourse;
       const courseMeta = `[COURSE:${selectedCourse}]`;
       const combinedNotes = [courseMeta, cleanMessage].filter(Boolean).join('\n').trim();
 
@@ -121,6 +126,12 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
   return (
     <div className="bg-white rounded-2xl shadow-soft border border-border p-6">
       <h3 className="text-xl font-headlines font-bold text-foreground mb-2">{t('waitlist.title')}</h3>
+      {showAvailabilityNotice && (
+        <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-foreground">
+          <p className="font-semibold">{t('waitlist.availabilityNotice')}</p>
+          <p className="mt-1 text-muted-foreground">{t('waitlist.availabilityDetails')}</p>
+        </div>
+      )}
       <p className="text-muted-foreground text-sm mb-6">{t('waitlist.subtitle')}</p>
       <TurnstileField onToken={setTurnstileToken} />
 
@@ -145,6 +156,7 @@ const WaitlistForm = ({ preferredCourseType = 'intensive' }) => {
             onChange={(event) => setCourseType(event.target.value)}
             required
           >
+            <option value="individual">{t('waitlist.course.individual')}</option>
             <option value="intensive">{t('waitlist.course.intensive')}</option>
             <option value="small_group">{t('waitlist.course.smallGroup')}</option>
           </select>
