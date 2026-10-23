@@ -11,6 +11,7 @@ import LevelQuizTeaser from '../../../components/LevelQuizTeaser';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { submitLeadCapture } from '../../../services/leads';
 import TurnstileField from '../../../components/TurnstileField';
+import { trackImpact } from '../../../utils/analytics';
 
 const mapPreferredLanguage = (language) => {
   if (language === 'cz') return 'cz';
@@ -187,6 +188,7 @@ const ContactForm = () => {
       });
 
       setSubmitStatus('success');
+      trackImpact('lead_submit', { lead_type: 'contact_form', location: 'contact' });
       reset();
     } catch (error) {
       setSubmitStatus('error');
