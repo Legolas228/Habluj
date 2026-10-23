@@ -121,7 +121,8 @@ const HeroSection = () => {
                     src="/assets/images/ester-foto.webp"
                     alt={t('hero.imageAlt')}
                     className="w-full h-full object-cover"
-                    loading="lazy"
+                    loading="eager"
+                    fetchPriority="high"
                     width="600"
                     height="700"
                   />

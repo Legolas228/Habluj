@@ -21,6 +21,7 @@ import {
 } from '../../services/studentAuth';
 import StudentLessonsPanel from './components/StudentLessonsPanel';
 import StudentResourcesPanel from './components/StudentResourcesPanel';
+import { openSetmoreBooking } from '../../utils/setmore';
 import { Suspense, lazy } from 'react';
 import { getLocalizedPath } from '../../utils/seo';
 
@@ -519,7 +520,7 @@ const StudentDashboard = () => {
                 <Button variant="default" size="sm" iconName="Video" iconPosition="left" className="flex-1">
                     {copy.join}
                 </Button>
-                <Button variant="outline" size="sm" iconName="Calendar">
+                <Button variant="outline" size="sm" iconName="Calendar" onClick={openSetmoreBooking}>
                   Setmore
                 </Button>
               </div>

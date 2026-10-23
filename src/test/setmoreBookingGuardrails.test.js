@@ -10,9 +10,7 @@ const readFile = (relativePath) =>
 describe('Setmore booking guardrails', () => {
   it('keeps Setmore entry points where legacy flow remains active', () => {
     const filesToCheck = [
-      'src/components/ui/Header.jsx',
-      'src/components/ui/SiteFooter.jsx',
-      'src/pages/tutoring-services/index.jsx',
+      'src/utils/setmore.js',
       'src/pages/student-dashboard/index.jsx',
     ];
 

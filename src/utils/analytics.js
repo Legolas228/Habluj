@@ -8,18 +8,7 @@ export const trackImpact = (eventName, params = {}) => {
     page_path: window.location.pathname,
   };
 
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', eventName, payload);
-  }
-
-  if (Array.isArray(window.dataLayer)) {
-    window.dataLayer.push({
-      event: eventName,
-      ...payload,
-    });
-  }
-
-  // Useful for debugging or hooking custom listeners without vendor lock-in.
+  // Keep events local until an explicit analytics consent mechanism is enabled.
   window.dispatchEvent(
     new CustomEvent('habluj-impact', {
       detail: {

@@ -223,6 +223,8 @@ const normalizeLang = (lang) => {
   return 'sk';
 };
 
+const getEbookLanguageSegment = (language) => (language === 'cs' ? 'cz' : language);
+
 const samplePages = [1, 2, 6, 8, 21, 48, 64, 76, 79, 104, 144, 172];
 
 const SectionHeader = ({ title, subtitle }) => (
@@ -497,6 +499,7 @@ const EbookLandingPage = ({ lang = null }) => {
   const content = copy[activeLang];
   const price = priceByLanguage[activeLang];
   const hreflangLinks = getHreflangLinks('/ebook');
+  const languageSegment = getEbookLanguageSegment(activeLang);
   const isLoading = false;
 
   const schema = useMemo(() => ({
@@ -514,7 +517,7 @@ const EbookLandingPage = ({ lang = null }) => {
       price: price.amount,
       priceCurrency: activeLang === 'cs' ? 'CZK' : 'EUR',
       availability: 'https://schema.org/InStock',
-      url: getCanonicalUrl('/ebook', activeLang === 'cs' ? 'cz' : 'sk'),
+      url: getCanonicalUrl('/ebook', languageSegment),
     },
   }), [activeLang, content, price]);
 
@@ -530,13 +533,13 @@ const EbookLandingPage = ({ lang = null }) => {
       <Helmet>
         <title>{content.metaTitle}</title>
         <meta name="description" content={content.metaDescription} />
-        <link rel="canonical" href={getCanonicalUrl('/ebook', activeLang === 'cs' ? 'cz' : 'sk')} />
+        <link rel="canonical" href={getCanonicalUrl('/ebook', languageSegment)} />
         {hreflangLinks.map((link) => (
           <link key={link.hrefLang} rel="alternate" hrefLang={link.hrefLang} href={link.href} />
         ))}
         <meta property="og:title" content={content.metaTitle} />
         <meta property="og:description" content={content.metaDescription} />
-        <meta property="og:url" content={getCanonicalUrl('/ebook', activeLang === 'cs' ? 'cz' : 'sk')} />
+        <meta property="og:url" content={getCanonicalUrl('/ebook', languageSegment)} />
         <meta property="og:type" content="product" />
         <meta property="og:image" content={DEFAULT_OG_IMAGE} />
         <meta name="twitter:card" content="summary_large_image" />
