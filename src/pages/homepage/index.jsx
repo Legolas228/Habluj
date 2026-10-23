@@ -10,6 +10,7 @@ import CTASection from './components/CTASection';
 import SiteFooter from '../../components/ui/SiteFooter';
 import { useTranslation } from '../../hooks/useTranslation';
 import { DEFAULT_OG_IMAGE, SITE_LOGO_IMAGE, getCanonicalUrl, getHreflangLinks } from '../../utils/seo';
+import { contactInfo } from '../../utils/contactInfo';
 
 const Homepage = () => {
   const { t, language } = useTranslation();
@@ -43,6 +44,17 @@ const Homepage = () => {
     areaServed: ['SK', 'CZ'],
     inLanguage: [locale, 'es-ES'],
     description: t('meta.homeDescription'),
+    founder: {
+      '@type': 'Person',
+      name: 'Ester Mesároš Borrull',
+      jobTitle: 'Profesora de español',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      email: contactInfo.email,
+      availableLanguage: ['es', 'sk', 'cs'],
+    },
   };
 
   const websiteSchema = {
