@@ -84,7 +84,7 @@ const HeroSection = () => {
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('hero.stat2Label')}</div>
               </div>
               <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-accent">{t('hero.stat3Value')}</div>
+                <div className="text-xl sm:text-2xl font-bold text-primary">{t('hero.stat3Value')}</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">{t('hero.stat3Label')}</div>
               </div>
             </div>
@@ -119,7 +119,7 @@ const HeroSection = () => {
                 <div className="relative w-full h-full">
                   <img
                     src="/assets/images/ester-foto-480.webp"
-                    srcSet="/assets/images/ester-foto-480.webp 480w, /assets/images/ester-foto-768.webp 768w, /assets/images/ester-foto-1023.webp 1023w"
+                    srcSet="/assets/images/ester-foto-480.webp 480w, /assets/images/ester-foto-720.webp 720w, /assets/images/ester-foto-1023.webp 1023w"
                     sizes="(max-width: 1023px) 100vw, 50vw"
                     alt={t('hero.imageAlt')}
                     className="w-full h-full object-cover"

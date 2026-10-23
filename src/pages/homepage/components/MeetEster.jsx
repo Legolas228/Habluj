@@ -50,7 +50,7 @@ const MeetEster = () => {
                 <div className="text-sm font-medium text-foreground">{t('meet-ester.stats.olympiad')}</div>
               </div>
               <div className="bg-white rounded-xl p-4 sm:p-6 border border-accent/10 hover:border-accent/20 transition-colors">
-                <div className="text-2xl sm:text-3xl font-bold text-accent font-headlines mb-2">40+</div>
+                <div className="text-2xl sm:text-3xl font-bold text-primary font-headlines mb-2">40+</div>
                 <div className="text-sm font-medium text-foreground">{t('meet-ester.stats.students')}</div>
               </div>
               <div className="bg-white rounded-xl p-4 sm:p-6 border border-green-200/30 hover:border-green-200/50 transition-colors">

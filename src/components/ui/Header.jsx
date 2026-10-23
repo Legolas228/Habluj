@@ -88,11 +88,11 @@ const Header = () => {
             {/* Logo */}
             <Link to={getLocalizedPath('/', language)} className="flex items-center space-x-3 group">
               <img
-                src="/assets/images/logo-habluj.jpg"
+                src="/assets/images/logo-habluj.webp"
                 alt="Habluj"
                 className="h-11 w-auto max-w-[118px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-                width="1041"
-                height="600"
+                width="320"
+                height="185"
               />
               <div className="hidden sm:block border-l border-border pl-3">
                 <p className="text-xs text-muted-foreground font-accent">{t('header.tagline')}</p>
