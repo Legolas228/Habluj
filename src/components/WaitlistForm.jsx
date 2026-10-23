@@ -39,14 +39,18 @@ const FieldLabel = ({ children, required = false }) => (
   </span>
 );
 
-const WaitlistForm = ({ preferredCourseType = 'intensive', preferredGroupCourse = 'group_pair' }) => {
+const WaitlistForm = ({
+  preferredCourseType = 'intensive',
+  preferredIntensiveCourse = 'intensive_a1',
+  preferredGroupCourse = 'group_pair',
+}) => {
   const { t, language } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [courseType, setCourseType] = useState(preferredCourseType);
-  const [intensiveCourse, setIntensiveCourse] = useState('intensive_a1');
+  const [intensiveCourse, setIntensiveCourse] = useState(preferredIntensiveCourse);
   const [groupCourse, setGroupCourse] = useState(preferredGroupCourse);
   const [consentPrivacy, setConsentPrivacy] = useState(false);
   const [consentMarketing, setConsentMarketing] = useState(false);
@@ -61,6 +65,10 @@ const WaitlistForm = ({ preferredCourseType = 'intensive', preferredGroupCourse 
   useEffect(() => {
     setGroupCourse(preferredGroupCourse || 'group_pair');
   }, [preferredGroupCourse]);
+
+  useEffect(() => {
+    setIntensiveCourse(preferredIntensiveCourse || 'intensive_a1');
+  }, [preferredIntensiveCourse]);
 
   useEffect(() => {
     if (courseType !== 'intensive') {

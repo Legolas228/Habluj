@@ -18,6 +18,7 @@ const TutoringServices = () => {
   const { t, language } = useTranslation();
   const hreflangLinks = getHreflangLinks('/tutoring-services');
   const [waitlistCourseType, setWaitlistCourseType] = React.useState('intensive');
+  const [waitlistIntensiveCourse, setWaitlistIntensiveCourse] = React.useState('intensive_a1');
   const [waitlistGroupCourse, setWaitlistGroupCourse] = React.useState('group_pair');
 
   React.useEffect(() => {
@@ -96,8 +97,14 @@ const TutoringServices = () => {
     }
   };
 
-  const openWaitlist = (courseType) => {
+  const openWaitlist = (courseType, course) => {
     setWaitlistCourseType(courseType);
+    if (courseType === 'intensive') {
+      setWaitlistIntensiveCourse(course || 'intensive_a1');
+    }
+    if (courseType === 'small_group') {
+      setWaitlistGroupCourse(course || 'group_pair');
+    }
     scrollToSection(WAITLIST_TARGET_ID);
   };
 
@@ -145,6 +152,7 @@ const TutoringServices = () => {
           lessons: t('services.offers.group.item1lessons'),
           price: t('services.offers.group.item1price'),
           action: 'waitlist',
+          waitlistCourse: 'group_small',
         },
         {
           title: t('services.offers.group.item4'),
@@ -152,6 +160,7 @@ const TutoringServices = () => {
           duration: t('services.offers.group.item4duration'),
           lessons: t('services.offers.group.item4lessons'),
           price: t('services.offers.group.item4price'),
+          waitlistCourse: 'group_maturita',
         },
         {
           title: t('services.offers.group.item3'),
@@ -161,6 +170,7 @@ const TutoringServices = () => {
             t('services.offers.group.item3price60'),
             t('services.offers.group.item3price90'),
           ],
+          waitlistCourse: 'group_pair',
         },
         {
           title: t('services.offers.group.item2'),
@@ -179,18 +189,22 @@ const TutoringServices = () => {
         {
           title: t('services.offers.intensive.item1'),
           description: t('services.offers.intensive.item1desc'),
+          waitlistCourse: 'intensive_a1',
         },
         {
           title: t('services.offers.intensive.item2'),
           description: t('services.offers.intensive.item2desc'),
+          waitlistCourse: 'intensive_a2',
         },
         {
           title: t('services.offers.intensive.item3'),
           description: t('services.offers.intensive.item3desc'),
+          waitlistCourse: 'intensive_b1',
         },
         {
           title: t('services.offers.intensive.item4'),
           description: t('services.offers.intensive.item4desc'),
+          waitlistCourse: 'intensive_conversation',
         },
       ],
     },
@@ -554,7 +568,7 @@ const TutoringServices = () => {
                             size="sm"
                             fullWidth
                             className={accentStyle.button}
-                            onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType) : handleBookLesson}
+                            onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType, item.waitlistCourse) : handleBookLesson}
                           >
                             {isWaitlistOnly ? t('waitlist.ctaJoin') : t('services.hero.ctaBook')}
                           </Button>
@@ -583,6 +597,7 @@ const TutoringServices = () => {
           <div className="max-w-xl mx-auto">
             <WaitlistForm
               preferredCourseType={waitlistCourseType}
+              preferredIntensiveCourse={waitlistIntensiveCourse}
               preferredGroupCourse={waitlistGroupCourse}
             />
           </div>
