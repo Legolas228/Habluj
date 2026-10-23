@@ -1,0 +1,16 @@
+# Habluj
+
+Habluj ofrece clases de español online, pruebas de nivel y materiales para aprender español.
+
+## Páginas principales
+
+- [Inicio](https://habluj.vercel.app/es)
+- [Clases de español](https://habluj.vercel.app/es/tutoring-services)
+- [Sobre Ester](https://habluj.vercel.app/es/about-the-teacher)
+- [Prueba de nivel](https://habluj.vercel.app/es/level-questionnaire)
+- [Contacto](https://habluj.vercel.app/es/contact)
+- [eBook](https://habluj.vercel.app/es/ebook)
+
+## Idiomas
+
+La web está disponible en español, eslovaco y checo. Las rutas localizadas utilizan los prefijos `/es`, `/sk` y `/cz`.

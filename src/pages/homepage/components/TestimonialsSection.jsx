@@ -132,7 +132,7 @@ const TestimonialsSection = () => {
             <div className="text-sm text-muted-foreground">{t('testimonials.stat2')}</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-accent mb-2">{t('testimonials.stats.value3')}</div>
+            <div className="text-3xl font-bold text-primary mb-2">{t('testimonials.stats.value3')}</div>
             <div className="text-sm text-muted-foreground">{t('testimonials.stat3')}</div>
           </div>
           <div className="text-center">
