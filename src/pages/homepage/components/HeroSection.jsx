@@ -101,7 +101,7 @@ const HeroSection = () => {
                 <Button
                   variant="default"
                   size="xl"
-                  className="h-14 w-full rounded-xl bg-cta px-8 text-lg font-bold text-white shadow-warm hover:bg-cta/90 hover:shadow-cultural transition-all duration-300 hover:scale-[1.02]"
+                  className="!whitespace-normal flex h-auto min-h-14 w-full min-w-0 rounded-xl bg-cta px-4 py-3 text-base leading-tight font-bold text-white shadow-warm hover:bg-cta/90 hover:shadow-cultural transition-all duration-300 hover:scale-[1.02] sm:px-8 sm:text-lg"
                   iconName="Zap"
                   iconPosition="left"
                 >
