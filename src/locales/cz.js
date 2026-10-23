@@ -353,7 +353,7 @@ export default {
   "services.offers.group.item4desc": "Kurz vytvořený speciálně pro studenty posledního ročníku střední školy, se zvláštním důrazem na konverzaci, i když budeme řešit také gramatické dotazy. Kurz zahrnuje vysvětlující materiály a gramatická cvičení aktualizovaná podle potřeb skupiny.",
   "services.offers.group.item4duration": "4 týdny",
   "services.offers.group.item4lessons": "8 x 60 min",
-  "services.offers.group.item4price": "2 975 Kč",
+  "services.offers.group.item4price": "2 490 Kč",
   "services.offers.intensive.title": "Intenzivní kurzy",
   "services.offers.intensive.subtitle": "Zrychlené programy podle úrovní",
   "services.offers.intensive.item1": "Letní intenzivní A1",

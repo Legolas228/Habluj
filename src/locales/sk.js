@@ -514,7 +514,7 @@ export default {
   "services.offers.group.item4desc": "Kurz vytvorený špeciálne pre maturantov s výrazným zameraním na konverzáciu, aj keď budeme riešiť aj gramatické otázky a nejasnosti. Kurz zahŕňa vysvetľujúce materiály, ako aj gramatické cvičenia aktualizované podľa potreby skupinky.",
   "services.offers.group.item4duration": "4 týždne",
   "services.offers.group.item4lessons": "8 x 60 min",
-  "services.offers.group.item4price": "119 €",
+  "services.offers.group.item4price": "99 €",
   "services.offers.intensive.title": "Intenzívne kurzy",
   "services.offers.intensive.subtitle": "Zrýchlené programy podľa úrovne",
   "services.offers.intensive.item1": "Letný intenzívny kurz A1",

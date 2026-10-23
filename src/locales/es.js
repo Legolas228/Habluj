@@ -354,7 +354,7 @@ export default {
   "services.offers.group.item4desc": "Curso creado especialmente para los del último año del bachillerato con énfasis especialmente en la conversación, aunque también se solucionarán dudas gramaticales. El curso incluye materiales explicativos y ejercicios de gramática actualizados según la necesidad del grupo.",
   "services.offers.group.item4duration": "4 semanas",
   "services.offers.group.item4lessons": "8 x 60 min",
-  "services.offers.group.item4price": "119 €",
+  "services.offers.group.item4price": "99 €",
   "services.offers.intensive.title": "Cursos intensivos",
   "services.offers.intensive.subtitle": "Programas acelerados por niveles",
   "services.offers.intensive.item1": "Intensivo de verano A1",
