@@ -4,6 +4,7 @@ import { submitLeadCapture } from '../services/leads';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import TurnstileField from './TurnstileField';
+import { trackImpact } from '../utils/analytics';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -123,6 +124,10 @@ const WaitlistForm = ({
       });
 
       setStatus('success');
+      trackImpact(courseType === 'small_group' ? 'group_course_signup' : 'lead_submit', {
+        lead_type: courseType,
+        location: 'course_waitlist',
+      });
       setFullName('');
       setEmail('');
       setPhone('');

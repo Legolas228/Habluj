@@ -8,6 +8,7 @@ import AppIcon from '../../components/AppIcon';
 import { getEbookAccess } from '../../services/studentAuth';
 import { getLocalizedPath } from '../../utils/seo';
 import { useTranslation } from '../../hooks/useTranslation';
+import { trackImpact } from '../../utils/analytics';
 
 const EbookSuccessPage = () => {
   const { t, language } = useTranslation();
@@ -23,7 +24,10 @@ const EbookSuccessPage = () => {
     }
 
     getEbookAccess(sessionId)
-      .then((data) => setDownloadUrl(data.download_url))
+      .then((data) => {
+        setDownloadUrl(data.download_url);
+        trackImpact('purchase', { product: 'ebook', location: 'ebook_success' });
+      })
       .catch((accessError) => setError(accessError.message));
   }, [searchParams, t]);
 
