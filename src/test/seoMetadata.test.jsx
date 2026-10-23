@@ -51,17 +51,25 @@ describe('SEO guardrails', () => {
     });
   });
 
+  it('builds ebook metadata for the current language', () => {
+    const ebook = readFile('src/pages/ebook-landing/index.jsx');
+
+    expect(ebook).toContain("const getEbookLanguageSegment = (language) => (language === 'cs' ? 'cz' : language);");
+    expect(ebook).toContain('getCanonicalUrl(\'/ebook\', languageSegment)');
+    expect(ebook).not.toContain("activeLang === 'cs' ? 'cz' : 'sk'");
+  });
+
   it('keeps sitemap entries and x-default alternates for public routes', () => {
     const sitemap = readFile('public/sitemap.xml');
     [
-      'https://habluj.sk/sk',
-      'https://habluj.sk/sk/about-the-teacher',
-      'https://habluj.sk/sk/tutoring-services',
-      'https://habluj.sk/sk/contact',
-      'https://habluj.sk/sk/booking-system',
-      'https://habluj.sk/sk/privacy-policy',
-      'https://habluj.sk/sk/terms-and-conditions',
-      'https://habluj.sk/sk/cookies-policy',
+      'https://habluj.vercel.app/sk',
+      'https://habluj.vercel.app/sk/about-the-teacher',
+      'https://habluj.vercel.app/sk/tutoring-services',
+      'https://habluj.vercel.app/sk/contact',
+      'https://habluj.vercel.app/sk/booking-system',
+      'https://habluj.vercel.app/sk/privacy-policy',
+      'https://habluj.vercel.app/sk/terms-and-conditions',
+      'https://habluj.vercel.app/sk/cookies-policy',
     ].forEach((url) => {
       expect(sitemap).toContain(`<loc>${url}</loc>`);
     });
@@ -77,7 +85,6 @@ describe('SEO guardrails', () => {
     expect(routes).toContain('<Route path="/level-questionnaire" element={<Navigate to={redirectToLocalized(\'/level-questionnaire\')} replace />} />');
     expect(routes).toContain('<Route path="level-questionnaire" element={<LevelQuestionnairePage />} />');
     expect(page).toContain('name="robots" content="noindex, nofollow"');
-    expect(sitemap).not.toContain('https://habluj.sk/sk/level-questionnaire');
+    expect(sitemap).not.toContain('https://habluj.vercel.app/sk/level-questionnaire');
   });
 });
-

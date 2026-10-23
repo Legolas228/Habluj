@@ -10,3 +10,8 @@ afterEach(() => {
 // Mock environment variables
 vi.stubEnv('VITE_CONTACT_EMAIL', 'test@example.com');
 vi.stubEnv('VITE_CONTACT_INSTAGRAM', 'habluj_sk');
+
+vi.mock('react-helmet-async', () => ({
+  Helmet: () => null,
+  HelmetProvider: ({ children }) => children,
+}));
