@@ -88,7 +88,9 @@ const Header = () => {
             {/* Logo */}
             <Link to={getLocalizedPath('/', language)} className="flex items-center space-x-3 group">
               <img
-                src="/assets/images/logo-habluj.webp"
+                src="/assets/images/logo-habluj-160.webp"
+                srcSet="/assets/images/logo-habluj-160.webp 160w, /assets/images/logo-habluj.webp 320w"
+                sizes="118px"
                 alt="Habluj"
                 className="h-11 w-auto max-w-[118px] object-contain transition-transform duration-300 group-hover:scale-[1.02]"
                 width="320"
