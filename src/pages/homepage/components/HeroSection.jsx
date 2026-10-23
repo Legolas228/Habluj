@@ -118,13 +118,15 @@ const HeroSection = () => {
                 {/* Ester Portrait Image */}
                 <div className="relative w-full h-full">
                   <img
-                    src="/assets/images/ester-foto.webp"
+                    src="/assets/images/ester-foto-768.webp"
+                    srcSet="/assets/images/ester-foto-768.webp 768w, /assets/images/ester-foto-1023.webp 1023w"
+                    sizes="(max-width: 1023px) 100vw, 50vw"
                     alt={t('hero.imageAlt')}
                     className="w-full h-full object-cover"
                     loading="eager"
                     fetchPriority="high"
-                    width="600"
-                    height="700"
+                    width="768"
+                    height="1154"
                   />
                   {/* Dark Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>

@@ -19,6 +19,8 @@ const SiteFooter = () => {
                 src="/assets/images/logo-habluj.png"
                 alt="Habluj"
                 className="h-12 w-auto max-w-[128px] object-contain"
+                width="1114"
+                height="1060"
               />
               <div>
                 <p className="text-xs text-gray-300 font-accent">{t('footer.tagline')}</p>
