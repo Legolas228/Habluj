@@ -29,7 +29,7 @@ const HeroSection = () => {
                 <span className="text-xs font-semibold text-foreground uppercase tracking-wide">{t('hero.marketBadge')}</span>
               </div>
               {trustBadges.map((badge) => (
-                <div key={badge} className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-background/80 px-3 py-1">
+                <div key={badge} className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-white/90 px-3 py-1">
                   <Icon name="CheckCircle" size={14} className="text-success" />
                   <span className="text-xs font-medium text-foreground">{badge}</span>
                 </div>
@@ -117,17 +117,24 @@ const HeroSection = () => {
               <div className="w-full h-full rounded-2xl overflow-hidden shadow-cultural bg-gray-200">
                 {/* Ester Portrait Image */}
                 <div className="relative w-full h-full">
-                  <img
-                    src="/assets/images/ester-foto-480.webp"
-                    srcSet="/assets/images/ester-foto-480.webp 480w, /assets/images/ester-foto-720.webp 720w, /assets/images/ester-foto-1023.webp 1023w"
-                    sizes="(max-width: 1023px) 100vw, 50vw"
-                    alt={t('hero.imageAlt')}
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    fetchPriority="high"
-                    width="480"
-                    height="721"
-                  />
+                  <picture>
+                    <source
+                      media="(max-width: 767px)"
+                      srcSet="/assets/images/ester-foto-480.webp 480w, /assets/images/ester-foto-640.webp 640w"
+                      sizes="calc(100vw - 2rem)"
+                    />
+                    <img
+                      src="/assets/images/ester-foto-480.webp"
+                      srcSet="/assets/images/ester-foto-480.webp 480w, /assets/images/ester-foto-720.webp 720w, /assets/images/ester-foto-1023.webp 1023w"
+                      sizes="(max-width: 1023px) calc(100vw - 2rem), 50vw"
+                      alt={t('hero.imageAlt')}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      fetchPriority="high"
+                      width="480"
+                      height="721"
+                    />
+                  </picture>
                   {/* Dark Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                   
