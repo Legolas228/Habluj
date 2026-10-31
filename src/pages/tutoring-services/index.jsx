@@ -11,6 +11,8 @@ import WaitlistForm from '../../components/WaitlistForm';
 import { useTranslation } from '../../hooks/useTranslation';
 import { contactInfo, getContactLinks } from '../../utils/contactInfo';
 import { DEFAULT_OG_IMAGE, getCanonicalUrl, getHreflangLinks, getLocalizedPath } from '../../utils/seo';
+import { getBookingSettings } from '../../services/bookingAvailability';
+import { openSetmoreBooking } from '../../utils/setmore';
 
 const WAITLIST_TARGET_ID = 'course-waitlist';
 
@@ -20,6 +22,7 @@ const TutoringServices = () => {
   const [waitlistCourseType, setWaitlistCourseType] = React.useState('intensive');
   const [waitlistIntensiveCourse, setWaitlistIntensiveCourse] = React.useState('intensive_a1');
   const [waitlistGroupCourse, setWaitlistGroupCourse] = React.useState('group_pair');
+  const [individualBookingsOpen, setIndividualBookingsOpen] = React.useState(false);
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -27,6 +30,18 @@ const TutoringServices = () => {
       setWaitlistCourseType('small_group');
       setWaitlistGroupCourse('group_maturita');
     }
+  }, []);
+
+  React.useEffect(() => {
+    let active = true;
+    getBookingSettings()
+      .then((data) => {
+        if (active) setIndividualBookingsOpen(Boolean(data?.individual_bookings_open));
+      })
+      .catch(() => {
+        if (active) setIndividualBookingsOpen(false);
+      });
+    return () => { active = false; };
   }, []);
   const localeByLanguage = {
     sk: 'sk-SK',
@@ -87,6 +102,10 @@ const TutoringServices = () => {
   };
 
   const handleBookLesson = () => {
+    if (individualBookingsOpen) {
+      openSetmoreBooking();
+      return;
+    }
     openWaitlist('individual');
   };
 
@@ -570,7 +589,7 @@ const TutoringServices = () => {
                             className={accentStyle.button}
                             onClick={isWaitlistOnly ? () => openWaitlist(waitlistCourseType, item.waitlistCourse) : handleBookLesson}
                           >
-                            {isWaitlistOnly ? t('waitlist.ctaJoin') : t('services.hero.ctaBook')}
+                            {isWaitlistOnly ? t('waitlist.ctaJoin') : individualBookingsOpen ? t('services.hero.ctaBook') : t('waitlist.ctaJoin')}
                           </Button>
                         )}
                       </div>
