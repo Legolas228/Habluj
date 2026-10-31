@@ -5,10 +5,13 @@ import Button from './Button';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from '../../hooks/useTranslation';
 import { getLocalizedPath, stripLanguagePrefix } from '../../utils/seo';
+import { getBookingSettings } from '../../services/bookingAvailability';
+import { openSetmoreBooking } from '../../utils/setmore';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [individualBookingsOpen, setIndividualBookingsOpen] = useState(false);
   const menuToggleRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,6 +30,18 @@ const Header = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location?.pathname]);
+
+  useEffect(() => {
+    let active = true;
+    getBookingSettings()
+      .then((data) => {
+        if (active) setIndividualBookingsOpen(Boolean(data?.individual_bookings_open));
+      })
+      .catch(() => {
+        if (active) setIndividualBookingsOpen(false);
+      });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (!isMobileMenuOpen) {
@@ -63,6 +78,14 @@ const Header = () => {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleBookingClick = () => {
+    if (individualBookingsOpen) {
+      openSetmoreBooking();
+      return;
+    }
+    navigate(`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`);
   };
 
   const handleLanguageChange = (targetLanguage) => {
@@ -153,15 +176,14 @@ const Header = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <Link to={`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`}>
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  className="bg-cta hover:bg-cta/90 text-white shadow-warm"
-                >
-                  {t('header.book')}
-                </Button>
-              </Link>
+              <Button
+                variant="default"
+                size="sm"
+                className="bg-cta hover:bg-cta/90 text-white shadow-warm"
+                onClick={handleBookingClick}
+              >
+                {t('header.book')}
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -236,15 +258,14 @@ const Header = () => {
                     🇪🇸
                   </button>
                 </div>
-                <Link to={`${getLocalizedPath('/tutoring-services', language)}#course-waitlist`} onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button 
-                    variant="default" 
-                    fullWidth
-                    className="bg-cta hover:bg-cta/90 text-white"
-                  >
-                    {t('header.book')}
-                  </Button>
-                </Link>
+                <Button
+                  variant="default"
+                  fullWidth
+                  className="bg-cta hover:bg-cta/90 text-white"
+                  onClick={() => { setIsMobileMenuOpen(false); handleBookingClick(); }}
+                >
+                  {t('header.book')}
+                </Button>
               </div>
             </nav>
           </div>
