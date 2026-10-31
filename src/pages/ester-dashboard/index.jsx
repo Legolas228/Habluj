@@ -4,6 +4,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Too
 import Icon from '../../components/AppIcon';
 import { deleteLead, getLeadDetail, getLeads, loginAdminWithPassword, updateLeadStage } from '../../services/leads';
 import { LEVEL_TEST_ANSWER_KEY, LEVEL_TEST_QUESTIONS } from '../../data/levelTest';
+import { getAdminBookingSettings, updateAdminBookingSettings } from '../../services/bookingAvailability';
 
 const AUTH_STORAGE_KEY = 'ester_dashboard_auth';
 const STAGES = ['new', 'nurturing', 'qualified', 'booked', 'won', 'lost'];
@@ -93,6 +94,65 @@ const DashboardCharts = ({ leads, counts }) => {
   return <div className="mb-8 grid gap-4 xl:grid-cols-2"><section className="rounded-2xl border border-border bg-white p-5 shadow-sm"><div className="mb-4"><h2 className="text-sm font-semibold text-foreground">Actividad reciente</h2><p className="mt-1 text-xs text-muted-foreground">Solicitudes recibidas durante los últimos seis meses</p></div><div className="h-52"><ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}><AreaChart data={monthlyData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}><defs><linearGradient id="requestsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#C4622D" stopOpacity={0.28} /><stop offset="95%" stopColor="#C4622D" stopOpacity={0.02} /></linearGradient></defs><CartesianGrid vertical={false} stroke="#edf0ed" /><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#667085' }} /><YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#667085' }} /><Tooltip contentStyle={tooltipStyle} formatter={(value) => [value, 'Solicitudes']} /><Area type="monotone" dataKey="solicitudes" stroke="#C4622D" strokeWidth={2.5} fill="url(#requestsFill)" /></AreaChart></ResponsiveContainer></div></section><section className="rounded-2xl border border-border bg-white p-5 shadow-sm"><div className="mb-4"><h2 className="text-sm font-semibold text-foreground">Reparto de solicitudes</h2><p className="mt-1 text-xs text-muted-foreground">Volumen actual por bandeja</p></div><div className="h-52"><ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}><BarChart data={categoryData} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}><CartesianGrid vertical={false} stroke="#edf0ed" /><XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#667085' }} /><YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: '#667085' }} /><Tooltip contentStyle={tooltipStyle} formatter={(value) => [value, 'Registros']} /><Bar dataKey="total" fill="#4F8A78" radius={[6, 6, 0, 0]} barSize={34} /></BarChart></ResponsiveContainer></div></section></div>;
 };
 
+const BookingAvailabilityControl = ({ isOpen, updating, onToggle }) => (
+  <section className={`w-full max-w-md rounded-2xl border p-4 shadow-sm ${isOpen ? 'border-emerald-200 bg-emerald-50/70' : 'border-border bg-white'}`}>
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <p className="text-sm font-semibold text-foreground">Reservas individuales</p>
+        <p className="mt-1 text-xs text-muted-foreground">{isOpen ? 'El botón abre Setmore directamente.' : 'El botón dirige a la lista de espera.'}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={isOpen}
+        aria-label={isOpen ? 'Cerrar reservas individuales' : 'Abrir reservas individuales'}
+        title={isOpen ? 'Cerrar reservas individuales' : 'Abrir reservas individuales'}
+        onClick={onToggle}
+        disabled={updating}
+        className={`relative h-12 w-24 shrink-0 rounded-full p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:cursor-wait disabled:opacity-60 ${isOpen ? 'bg-emerald-600' : 'bg-slate-300'}`}
+      >
+        <span className={`flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-transform ${isOpen ? 'translate-x-12' : 'translate-x-0'}`}>
+          <Icon name={isOpen ? 'ShieldCheck' : 'Shield'} size={17} className={isOpen ? 'text-emerald-700' : 'text-slate-500'} />
+        </span>
+      </button>
+    </div>
+    <p className={`mt-3 text-xs font-semibold ${isOpen ? 'text-emerald-700' : 'text-slate-600'}`}>{isOpen ? 'Abiertas' : 'Cerradas'}</p>
+  </section>
+);
+
+const DashboardBookingAvailability = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    getAdminBookingSettings(sessionStorage.getItem(AUTH_STORAGE_KEY))
+      .then((data) => setIsOpen(Boolean(data?.individual_bookings_open)))
+      .catch((settingsError) => setError(settingsError?.message || 'No se pudo cargar el estado.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const toggle = async () => {
+    setUpdating(true);
+    setError('');
+    try {
+      const data = await updateAdminBookingSettings({
+        authHeader: sessionStorage.getItem(AUTH_STORAGE_KEY),
+        individualBookingsOpen: !isOpen,
+      });
+      setIsOpen(Boolean(data?.individual_bookings_open));
+    } catch (settingsError) {
+      setError(settingsError?.message || 'No se pudo actualizar el estado.');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  if (loading) return <div className="rounded-2xl border border-border bg-white p-5 text-sm text-muted-foreground">Cargando reservas...</div>;
+  return <div>{error && <p className="mb-2 text-xs text-error">{error}</p>}<BookingAvailabilityControl isOpen={isOpen} updating={updating} onToggle={toggle} /></div>;
+};
+
 const LoginScreen = ({ username, password, setUsername, setPassword, onLogin, error, loading }) => <main className="flex min-h-screen items-center justify-center bg-[#f7f8f6] px-4 py-10"><Helmet><title>Acceso privado | Habluj</title></Helmet><section className="w-full max-w-md border border-border bg-white p-8 shadow-sm sm:p-10"><div className="mb-8 flex items-start justify-between gap-5"><div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Habluj</p><h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">Panel de Ester</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">Gestiona los contactos y solicitudes de tu web desde un solo lugar.</p></div><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Icon name="ShieldCheck" size={21} /></span></div><form className="space-y-4" onSubmit={onLogin}><label className="block text-sm font-medium text-foreground">Usuario<input className="mt-2 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" /></label><label className="block text-sm font-medium text-foreground">Contraseña<input type="password" className="mt-2 h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" /></label>{error && <p className="rounded-xl bg-error/10 px-3 py-2 text-sm text-error">{error}</p>}<button type="submit" className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60" disabled={loading}><Icon name="ArrowRight" size={17} />{loading ? 'Entrando...' : 'Entrar al panel'}</button></form></section></main>;
 
 const LeadList = ({ items, selectedId, onSelect, section, loading, query, setQuery }) => {
@@ -103,7 +163,7 @@ const LeadList = ({ items, selectedId, onSelect, section, loading, query, setQue
 };
 
 const LeadDetail = ({ lead, detail, section, onStageChange, onDelete, updating }) => {
-  if (!lead) return <aside className="rounded-2xl border border-dashed border-border bg-white"><EmptyState icon="User" title="Selecciona un registro" description="Aquí aparecerá la información completa de la persona seleccionada." /></aside>;
+  if (!lead) return <aside className="space-y-4"><DashboardBookingAvailability /><div className="rounded-2xl border border-dashed border-border bg-white"><EmptyState icon="User" title="Selecciona un registro" description="Aquí aparecerá la información completa de la persona seleccionada." /></div></aside>;
   const fullLead = detail || lead; const notes = parseNotes(fullLead.notes); const answers = Object.entries(notes).filter(([key]) => /^q\d+$/i.test(key));
   const tone = statusTone(fullLead.stage);
   return <aside className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm"><div className="border-b border-border bg-[#fbfcfa] p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">{section === 'tests' ? 'Prueba de nivel' : section === 'waitlist' ? 'Solicitud de curso' : 'Mensaje web'}</p><h2 className="mt-2 text-xl font-semibold text-foreground">{fullLead.full_name || 'Sin nombre'}</h2><p className="mt-1 text-sm text-muted-foreground">{fullLead.email}</p></div><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon name={section === 'tests' ? 'FileText' : section === 'waitlist' ? 'ListOrdered' : 'MessageCircle'} size={19} /></span></div></div><div className="space-y-6 p-5">{section === 'tests' && <div className="grid grid-cols-2 gap-3"><div className="rounded-xl bg-secondary/10 p-4"><p className="text-xs text-muted-foreground">Puntuación</p><p className="mt-1 text-2xl font-semibold text-foreground">{notes.test_score || '-'}</p></div><div className="rounded-xl bg-primary/10 p-4"><p className="text-xs text-muted-foreground">Nivel estimado</p><p className="mt-1 text-2xl font-semibold text-foreground">{notes.test_band || '-'}</p></div></div>}{section === 'waitlist' && <div className="rounded-xl bg-accent/10 p-4"><p className="text-xs text-muted-foreground">Curso solicitado</p><p className="mt-1 text-base font-semibold text-foreground">{courseLabel(fullLead)}</p></div>}<div className="grid gap-x-5 gap-y-4 sm:grid-cols-2">{detailRows(fullLead).map(([label, value]) => <div key={label}><p className="text-xs font-medium text-muted-foreground">{label}</p><p className="mt-1 break-words text-sm text-foreground">{value}</p></div>)}</div><label className="block text-xs font-medium text-muted-foreground">Estado de seguimiento<select className={`mt-2 h-10 w-full rounded-xl border px-3 text-sm outline-none focus:border-primary ${tone.select}`} value={fullLead.stage || 'new'} onChange={(event) => onStageChange(fullLead, event.target.value)} disabled={updating}>{statusOptions(section).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label><button type="button" onClick={() => onDelete(fullLead)} className="flex items-center gap-2 text-sm font-medium text-error transition hover:text-error/80" disabled={updating}><Icon name="XCircle" size={16} />Eliminar registro</button>{section === 'tests' && answers.length > 0 && <div><h3 className="text-sm font-semibold text-foreground">Respuestas</h3><div className="mt-3 space-y-2">{answers.map(([key, value]) => { const answer = testAnswerDetails(key, value); if (!answer.question) return null; return <div className={`rounded-lg border px-3 py-3 ${answer.isCorrect ? 'border-emerald-200 bg-emerald-50/70' : 'border-rose-200 bg-rose-50/70'}`} key={key}><div className="flex items-start gap-2"><Icon name={answer.isCorrect ? 'CheckCircle2' : 'XCircle'} size={18} className={`mt-0.5 shrink-0 ${answer.isCorrect ? 'text-emerald-600' : 'text-rose-600'}`} /><div className="min-w-0"><p className="font-semibold text-foreground">Pregunta {answer.question.id}<span className="sr-only">Q{answer.question.id}</span></p><p className="mt-1 text-xs text-muted-foreground">{answer.question.prompt}</p><p className="mt-2 text-sm text-foreground"><span className="font-medium">Respuesta:</span> {answer.selected?.text || 'Sin respuesta'}</p>{!answer.isCorrect && <p className="mt-1 text-sm text-emerald-700"><span className="font-medium">Correcta:</span> {answer.correct?.text}</p>}</div></div></div>; })}</div></div>}<div><h3 className="text-sm font-semibold text-foreground">{section === 'tests' ? 'Información de la prueba' : 'Mensaje y notas'}</h3><div className="mt-2 rounded-xl bg-muted/30 p-4 text-sm text-muted-foreground"><FormattedNotes lead={fullLead} section={section} /></div></div>{fullLead.activities?.length > 0 && <div><h3 className="text-sm font-semibold text-foreground">Actividad reciente</h3><div className="mt-2 space-y-2">{fullLead.activities.map((activity) => <div className="rounded-lg border border-border px-3 py-2 text-xs" key={activity.id}><div className="flex justify-between gap-4"><span className="font-medium text-foreground">{activityLabel(activity.action)}</span><span className="shrink-0 text-muted-foreground">{formatDate(activity.created_at)}</span></div>{activityDetails(activity) && <p className="mt-1 leading-5 text-muted-foreground">{activityDetails(activity)}</p>}</div>)}</div></div>}</div></aside>;

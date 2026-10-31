@@ -459,3 +459,15 @@ class LeadActivity(models.Model):
 
     def __str__(self):
         return f"LeadActivity<{self.lead_id}:{self.action}>"
+
+
+class BookingSettings(models.Model):
+    individual_bookings_open = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Booking settings'
+        verbose_name_plural = 'Booking settings'
+
+    def __str__(self):
+        return 'Booking settings'

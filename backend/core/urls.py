@@ -43,6 +43,8 @@ from api.views import (
     EbookCheckoutView,
     EbookDownloadView,
     EbookAccessView,
+    PublicBookingSettingsView,
+    AdminBookingSettingsView,
 )
 
 router = DefaultRouter()
@@ -71,6 +73,8 @@ urlpatterns = [
     path('api/ebook/checkout/', EbookCheckoutView.as_view(), name='ebook-checkout'),
     path('api/ebook/download/<uuid:token>/', EbookDownloadView.as_view(), name='ebook-download'),
     path('api/ebook/access/', EbookAccessView.as_view(), name='ebook-access'),
+    path('api/booking-settings/', PublicBookingSettingsView.as_view(), name='public-booking-settings'),
+    path('api/admin/booking-settings/', AdminBookingSettingsView.as_view(), name='admin-booking-settings'),
     path('api/admin/students/', AdminStudentListView.as_view(), name='admin-students'),
     path('api/admin/students/<int:user_id>/', AdminStudentDetailView.as_view(), name='admin-student-detail'),
     path('api/admin/google-calendar/events/', AdminGoogleCalendarEventsView.as_view(), name='admin-google-calendar-events'),

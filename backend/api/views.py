@@ -44,6 +44,7 @@ from .models import (
     StudentMessage,
     Lead,
     LeadActivity,
+    BookingSettings,
     EbookPurchase,
 )
 from .serializers import (
@@ -1242,6 +1243,7 @@ class LeadViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+
     def _create_activity(self, lead, action, *, from_stage='', to_stage='', details=''):
         actor = self.request.user if self.request.user.is_authenticated else None
         LeadActivity.objects.create(
@@ -1477,6 +1479,35 @@ class LeadViewSet(viewsets.ModelViewSet):
             ])
 
         return response
+
+
+class PublicBookingSettingsView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        settings_object, _ = BookingSettings.objects.get_or_create(pk=1)
+        return Response({'individual_bookings_open': settings_object.individual_bookings_open})
+
+
+class AdminBookingSettingsView(APIView):
+    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        settings_object, _ = BookingSettings.objects.get_or_create(pk=1)
+        return Response({'individual_bookings_open': settings_object.individual_bookings_open})
+
+    def patch(self, request):
+        value = request.data.get('individual_bookings_open')
+        if not isinstance(value, bool):
+            return Response(
+                {'detail': 'individual_bookings_open must be a boolean.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        settings_object, _ = BookingSettings.objects.get_or_create(pk=1)
+        settings_object.individual_bookings_open = value
+        settings_object.save(update_fields=['individual_bookings_open', 'updated_at'])
+        return Response({'individual_bookings_open': settings_object.individual_bookings_open})
 
 
 class AdminStudentListView(APIView):
