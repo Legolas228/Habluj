@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from html import escape
 from urllib import error, request
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
@@ -31,6 +32,88 @@ def _lead_source_label(source):
     }.get(source, source or '-')
 
 
+COURSE_LABELS = {
+    'individual': 'Clases individuales',
+    'intensive_a1': 'Intensivo de verano A1',
+    'intensive_a2': 'Intensivo de verano A2',
+    'intensive_b1': 'Intensivo de verano B1',
+    'intensive_conversation': 'Intensivo conversacional',
+    'group_pair': 'Clases en pareja',
+    'group_small': 'Grupo reducido',
+    'group_private': 'Grupos privados',
+    'group_maturita': 'Preparación para la maturita de español',
+}
+
+LEVEL_TEST_ANSWER_KEY = {
+    1: 'b', 2: 'b', 3: 'b', 4: 'b', 5: 'a', 6: 'a', 7: 'a', 8: 'c',
+    9: 'c', 10: 'c', 11: 'b', 12: 'c', 13: 'a', 14: 'c', 15: 'a',
+}
+
+LEVEL_TEST_OPTIONS = {
+    1: {'a': 'estoy', 'b': 'soy', 'c': 'tengo', 'd': 'hay'},
+    2: {'a': 'Yo jugo al fútbol y vosotros jugáis al baloncesto', 'b': 'Yo juego al fútbol y vosotros jugáis al baloncesto', 'c': 'Yo jugo el fútbol y vosotros jugáis el baloncesto', 'd': 'Yo juego el fútbol y vosotros jugáis el baloncesto'},
+    3: {'a': 'tengo ir a la ciudad', 'b': 'tengo que ir a la ciudad', 'c': 'tengo ir en la ciudad', 'd': 'tengo que ir en la ciudad'},
+    4: {'a': 'hemos estado', 'b': 'estuvimos', 'c': 'habíamos estado', 'd': 'éramos'},
+    5: {'a': 'gusta', 'b': 'gustan', 'c': 'gusto', 'd': 'guste'},
+    6: {'a': 'Voy a casa de mi amigo mañana', 'b': 'Voy a el casa de mi amigo mañana', 'c': 'Voy en casa de mi amigo mañana', 'd': 'Voy casa de mi amigo mañana'},
+    7: {'a': 'iré', 'b': 'iba', 'c': 'fuera', 'd': 'habría ido'},
+    8: {'a': 'tiene', 'b': 'tendrá', 'c': 'tenga', 'd': 'tuvo'},
+    9: {'a': 'qué', 'b': 'que', 'c': 'cuál', 'd': 'cuáles'},
+    10: {'a': 'quiero', 'b': 'querría', 'c': 'quiera', 'd': 'quise'},
+    11: {'a': 'actuaría', 'b': 'habria actuado', 'c': 'actue', 'd': 'hubiera actuar'},
+    12: {'a': 'teneré', 'b': 'saberás', 'c': 'querremos', 'd': 'poderá'},
+    13: {'a': 'lo', 'b': 'le', 'c': 'se', 'd': 'me'},
+    14: {'a': 'pero', 'b': 'sino', 'c': 'sino que', 'd': 'ademas'},
+    15: {'a': 'tan', 'b': 'tanto', 'c': 'tal', 'd': 'muy'},
+}
+
+
+def _humanize_lead_notes(lead):
+    raw_notes = (lead.notes or '').strip()
+    if not raw_notes:
+        return '-'
+
+    if lead.source == 'advanced_level_test':
+        lines = []
+        for fragment in raw_notes.split('|'):
+            item = fragment.strip()
+            if item.startswith('test_type:'):
+                lines.append('La persona completó la prueba de nivel de español.')
+            elif item.startswith('test_score:'):
+                lines.append(f"Puntuación obtenida: {item.split(':', 1)[1].strip()}.")
+            elif item.startswith('test_band:'):
+                band = item.split(':', 1)[1].strip().replace('B1 alto', 'B1+')
+                lines.append(f'Nivel estimado: {band}.')
+            else:
+                match = re.fullmatch(r'q(\d+):([a-d])', item, re.IGNORECASE)
+                if match:
+                    question_id = int(match.group(1))
+                    answer_key = match.group(2).lower()
+                    answer_text = LEVEL_TEST_OPTIONS.get(question_id, {}).get(answer_key, f'opción {answer_key.upper()}')
+                    correct_key = LEVEL_TEST_ANSWER_KEY.get(question_id)
+                    status = 'respuesta correcta' if answer_key == correct_key else 'respuesta incorrecta'
+                    lines.append(f'Pregunta {question_id}: «{answer_text}» ({status}).')
+        return '\n'.join(lines) or '-'
+
+    humanized = []
+    for fragment in re.split(r'\s*\|\s*|\n+', raw_notes):
+        item = fragment.strip()
+        if not item:
+            continue
+        course_match = re.fullmatch(r'\[COURSE:([^\]]+)\]', item)
+        if course_match:
+            humanized.append(f"Curso solicitado: {COURSE_LABELS.get(course_match.group(1), course_match.group(1))}.")
+            continue
+        field_match = re.match(r'^([^:]+):\s*(.*)$', item)
+        if field_match:
+            key, value = field_match.groups()
+            labels = {'inquiry': 'Tipo de consulta', 'subject': 'Asunto', 'message': 'Mensaje', 'course_type': 'Tipo de curso'}
+            humanized.append(f'{labels.get(key, key.replace("_", " ").capitalize())}: {value}.')
+        else:
+            humanized.append(item)
+    return '\n'.join(humanized) or '-'
+
+
 def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
     subject = f'Nuevo registro en Habluj: {lead.full_name}'
     created_at = lead.created_at.strftime('%d/%m/%Y a las %H:%M') if lead.created_at else '-'
@@ -40,6 +123,7 @@ def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
         if lead.duplicate_of_id
         else 'No'
     )
+    humanized_notes = _humanize_lead_notes(lead)
     text_content = (
         'Nuevo registro en Habluj\n\n'
         f'Nombre: {lead.full_name}\n'
@@ -52,7 +136,7 @@ def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
         f'Consentimiento de privacidad: {"Sí" if lead.consent_privacy else "No"}\n'
         f'Consentimiento de marketing: {"Sí" if lead.consent_marketing else "No"}\n'
         f'Duplicado: {duplicate_status}\n\n'
-        f'Notas:\n{lead.notes or "-"}\n\n'
+        f'Notas:\n{humanized_notes}\n\n'
         f'Abrir registro en el dashboard: {lead_url}\n'
     )
     details = [
@@ -73,7 +157,7 @@ def _send_django_email_notification(*, lead, recipient, sender_email, lead_url):
         f'{escape(str(value))}</td></tr>'
         for label, value in details
     )
-    notes = escape(lead.notes or '-').replace('\n', '<br>')
+    notes = escape(humanized_notes).replace('\n', '<br>')
     html_content = (
         '<div style="margin:0;background:#f7f4f0;padding:32px 16px;font-family:Arial,sans-serif;color:#222;">'
         '<div style="max-width:620px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;'
@@ -460,7 +544,7 @@ def send_level_test_results_email(*, lead, score, band):
     language = (lead.preferred_language or 'sk').lower()
     services_path_by_language = {
         'es': '/es/tutoring-services',
-        'cz': '/cz/tutoring-services',
+        'cz': '/cs/tutoring-services',
         'sk': '/sk/tutoring-services',
     }
     services_url = services_url_env or f"{services_base_url}{services_path_by_language.get(language, '/sk/tutoring-services')}"
