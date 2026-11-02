@@ -58,8 +58,8 @@ const TutoringServices = () => {
   const isCzech = language === 'cz';
   const offerCurrency = isCzech ? 'CZK' : 'EUR';
   const individualFromPrice = isCzech ? '500' : '20';
-  const groupFromPrice = isCzech ? '3750' : '150';
-  const highPrice = isCzech ? '3750' : '150';
+  const groupFromPrice = isCzech ? '2475' : '99';
+  const highPrice = isCzech ? '2475' : '99';
 
   const servicesSchema = {
     '@context': 'https://schema.org',
