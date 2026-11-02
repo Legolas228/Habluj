@@ -342,7 +342,7 @@ const AdvancedSpanishTestForm = () => {
                 {activeQuestion.id}. {activeQuestion.prompt}
               </legend>
               <div className="mt-3 space-y-2">
-                {activeQuestion.options.map((option) => {
+                {[...activeQuestion.options, { key: 'x', text: t('levelQuiz.dontKnow') }].map((option) => {
                   const isSelected = answers[activeQuestion.id] === option.key;
                   return (
                     <label

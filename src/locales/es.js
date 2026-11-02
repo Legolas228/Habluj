@@ -267,6 +267,7 @@ export default {
   "levelQuiz.page.description": "Formulario interno de diagnóstico de nivel para nuevos alumnos de Habluj.",
   "levelQuiz.page.heading": "Test de nivel",
   "levelQuiz.page.subheading": "Completa el test y te enviaremos la evaluación por correo.",
+  "levelQuiz.dontKnow": "No sé",
 
   "waitlist.sectionTitle": "Lista de espera para cursos",
   "waitlist.sectionSubtitle": "Si los intensivos o los grupos reducidos están cerrados temporalmente, apúntate en la lista de espera y te avisaremos al abrir nuevos cursos.",

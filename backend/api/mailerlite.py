@@ -85,13 +85,13 @@ def _humanize_lead_notes(lead):
                 band = item.split(':', 1)[1].strip().replace('B1 alto', 'B1+')
                 lines.append(f'Nivel estimado: {band}.')
             else:
-                match = re.fullmatch(r'q(\d+):([a-d])', item, re.IGNORECASE)
+                match = re.fullmatch(r'q(\d+):([a-dx])', item, re.IGNORECASE)
                 if match:
                     question_id = int(match.group(1))
                     answer_key = match.group(2).lower()
-                    answer_text = LEVEL_TEST_OPTIONS.get(question_id, {}).get(answer_key, f'opción {answer_key.upper()}')
+                    answer_text = 'No sabe / no responde' if answer_key == 'x' else LEVEL_TEST_OPTIONS.get(question_id, {}).get(answer_key, f'opción {answer_key.upper()}')
                     correct_key = LEVEL_TEST_ANSWER_KEY.get(question_id)
-                    status = 'respuesta correcta' if answer_key == correct_key else 'respuesta incorrecta'
+                    status = 'sin respuesta' if answer_key == 'x' else ('respuesta correcta' if answer_key == correct_key else 'respuesta incorrecta')
                     lines.append(f'Pregunta {question_id}: «{answer_text}» ({status}).')
         return '\n'.join(lines) or '-'
 

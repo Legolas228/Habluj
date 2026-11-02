@@ -267,6 +267,7 @@ export default {
   "levelQuiz.page.description": "Interný diagnostický formulár úrovne pre nových študentov Habluj.",
   "levelQuiz.page.heading": "Úrovňový test",
   "levelQuiz.page.subheading": "Dokončite test a hodnotenie Vám pošleme e-mailom.",
+  "levelQuiz.dontKnow": "Neviem",
   "waitlist.sectionTitle": "Čakacia listina na kurzy",
   "waitlist.sectionSubtitle": "Ak sú intenzívne kurzy alebo malé skupinky dočasne zatvorené, zapíšte sa na čakaciu listinu a dáme Vám vedieť, keď otvoríme nový kurz.",
   "waitlist.title": "Prihláška do čakacej listiny",
