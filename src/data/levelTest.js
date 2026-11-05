@@ -6,7 +6,7 @@ export const LEVEL_TEST_QUESTIONS = [
   { id: 5, prompt: 'Me ___ el café.', options: [{ key: 'a', text: 'gusta' }, { key: 'b', text: 'gustan' }, { key: 'c', text: 'gusto' }, { key: 'd', text: 'guste' }] },
   { id: 6, prompt: '¿Qué frase es correcta?', options: [{ key: 'a', text: 'Voy a casa de mi amigo mañana' }, { key: 'b', text: 'Voy a el casa de mi amigo mañana' }, { key: 'c', text: 'Voy en casa de mi amigo mañana' }, { key: 'd', text: 'Voy casa de mi amigo mañana' }] },
   { id: 7, prompt: 'Si tengo tiempo, ___ contigo.', options: [{ key: 'a', text: 'iré' }, { key: 'b', text: 'iba' }, { key: 'c', text: 'fuera' }, { key: 'd', text: 'habría ido' }] },
-  { id: 8, prompt: 'No  que ella ___ razón.', options: [{ key: 'a', text: 'tiene' }, { key: 'b', text: 'tendrá' }, { key: 'c', text: 'tenga' }, { key: 'd', text: 'tuvo' }] },
+  { id: 8, prompt: 'No creo que ella ___ razón.', options: [{ key: 'a', text: 'tiene' }, { key: 'b', text: 'tendrá' }, { key: 'c', text: 'tenga' }, { key: 'd', text: 'tuvo' }] },
   { id: 9, prompt: 'Mira estos vestidos. ____ de ellos te gusta más?', options: [{ key: 'a', text: 'qué' }, { key: 'b', text: 'que' }, { key: 'c', text: 'cuál' }, { key: 'd', text: 'cuáles' }] },
   { id: 10, prompt: 'No es que no ___ hacerlo, es que no puedo.', options: [{ key: 'a', text: 'quiero' }, { key: 'b', text: 'querría' }, { key: 'c', text: 'quiera' }, { key: 'd', text: 'quise' }] },
   { id: 11, prompt: 'De haberlo sabido, no ___ asi.', options: [{ key: 'a', text: 'actuaría' }, { key: 'b', text: 'habria actuado' }, { key: 'c', text: 'actue' }, { key: 'd', text: 'hubiera actuar' }] },
