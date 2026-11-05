@@ -89,7 +89,7 @@ const QUESTIONS = [
   },
   {
     id: 8,
-    prompt: 'No pienso que ella ___ razón.',
+    prompt: 'No creo que ella ___ razón.',
     options: [
       { key: 'a', text: 'tiene' },
       { key: 'b', text: 'tendrá' },
