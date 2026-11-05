@@ -32,18 +32,16 @@ const PageLoader = () => (
 
 const getPreferredLanguageSegment = () => {
   if (typeof window !== 'undefined') {
-    try {
-      const savedLanguage = localStorage.getItem('language');
-      if (savedLanguage) {
-        return getLanguageSegment(savedLanguage);
-      }
-    } catch (error) {
-      // Ignore localStorage access issues.
-    }
+    const browserLanguages = Array.isArray(navigator.languages) && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language];
 
-    const browserLanguage = (navigator.language || '').toLowerCase();
-    if (browserLanguage.startsWith('cs')) return 'cs';
-    if (browserLanguage.startsWith('es')) return 'es';
+    for (const browserLanguage of browserLanguages) {
+      const normalized = String(browserLanguage || '').toLowerCase();
+      if (normalized.startsWith('cs')) return 'cs';
+      if (normalized.startsWith('es')) return 'es';
+      if (normalized.startsWith('sk')) return 'sk';
+    }
   }
   return 'sk';
 };

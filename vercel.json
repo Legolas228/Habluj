@@ -3,11 +3,6 @@
   "outputDirectory": "build",
   "redirects": [
     {
-      "source": "/",
-      "destination": "/sk",
-      "permanent": true
-    },
-    {
       "source": "/homepage",
       "destination": "/sk",
       "permanent": true
